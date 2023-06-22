@@ -1,0 +1,112 @@
+{
+  "id": "2023-001",
+  "version": "1",
+  "title": "Experience, Meet Team",
+  "author": "Quigley",
+  "panels": [
+    {
+      "background": "thought-1-1-0010",
+      "captions": [
+        {
+          "text": [
+            "Me",
+            "(Motivated)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "text": [
+            "Just going to pump",
+            "out some boilerplate",
+            "crap I've done a thousand",
+            "times before..."
+          ]
+        }
+      ]
+    },
+    {
+      "background": "thought-1-1-1010",
+      "captions": [
+        {
+          "text": [
+            "20 minutes later"
+          ]
+        },
+        {
+          "text": [
+            "Me",
+            "(Chuffed)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "text": [
+            "Awesome! Moving on."
+          ]
+        }
+      ]
+    },
+    {
+      "background": "speech-1-1-1010",
+      "captions": [
+        {
+          "text": [
+            "During the next",
+            "standup..."
+          ]
+        },
+        {
+          "text": [
+            "Me to Team",
+            "(Casually)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "text": [
+            "Oh by the way, I knocked",
+            "out some of the usual",
+            "stuff in the project",
+            "yesterday."
+          ]
+        }
+      ]
+    },
+    {
+      "background": "speech-1-3-0010",
+      "captions": [
+        {
+          "text": [
+            "Team",
+            "(Swarm of hornets)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "text": [
+            "Did we even",
+            "need it?"
+          ]
+        },
+        {
+          "text": [
+            "Did we",
+            "agree to this",
+            "as a team?"
+          ]
+        },
+        {
+          "text": [
+            "I can't find",
+            "that story in",
+            "the backlog!"
+          ]
+        }
+      ]
+    }
+  ]
+}
