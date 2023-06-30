@@ -13,51 +13,55 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-// Background
-var my_gradient = ctx.createLinearGradient(0, 0, 0, 595);
-my_gradient.addColorStop(0, "#B3B3B3");
-my_gradient.addColorStop(1, "#F7F7F7");
-ctx.fillStyle = my_gradient;
-ctx.fillRect(10,10,610,610);
-ctx.strokeStyle = "#666666";
-ctx.strokeRect(10,10,610,610);
-
-
-// Bubble
+// Load images
+// https://stackoverflow.com/questions/30496817/javascript-drawimage-only-works-on-refresh
 //var background = new Image();
 //background.src = "https://canvas.resurnate.com/img/speech.png";
 //const image = new Image(60, 45); // Using optional size for image
-let bubble = getBubble();
-bubble.onload = drawImageAfterLoad(); // Draw when image has loaded
+//let bubble = getBubble();
+//bubble.onload = drawImageAfterLoad(); // Draw when image has loaded
 
 
+var imageURLs=[];  
+imageURLs.push("https://canvas.resurnate.com/img/speech.png");
+var imgs=[];
+var imagesOK=0;
+startLoadingAllImages(imagesAreNowLoaded);
 
-// 631x471
-//ctx.drawImage(background, 0, 105);
-//ctx.font="30px Comic Sans MS";
-//ctx.fillStyle = "black";
-//ctx.textAlign = "center";
-//ctx.fillText("ANOTHER... THAT IS SUPER", 310, 175);
-//ctx.fillText("ANOTHER... THAT IS SUPER", 310, 205);
-//ctx.fillText("JUST GOING TO THAT IS SUPER", 310, 235);
-//ctx.fillText("PUMP OUT SOME THAT IS SUPER", 310, 265);
-//ctx.fillText("BOILERPLATE CRAP THAT IS SUPER", 310, 295);
-//ctx.fillText("SOME MIDDLE TEXT THAT IS SUPER", 310, 325);
-//ctx.fillText("I'VE DONE A THAT IS SUPER", 310, 355);
-//ctx.fillText("THOUSAND TIMES THAT IS SUPER", 310, 385);
-//ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
-//ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
-//ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
+//function getBubble(){
+//  let bubble = new Image();
+//  bubble.src = "https://canvas.resurnate.com/img/speech.png";
+//  return bubble;
+//}
 
+function startLoadingAllImages(callback){
 
-
-function getBubble(){
-  let bubble = new Image();
-  bubble.src = "https://canvas.resurnate.com/img/speech.png";
-  return bubble;
+  // iterate through the imageURLs array and create new images for each
+  for (var i=0; i<imageURLs.length; i++) {
+    // create a new image an push it into the imgs[] array
+    var img = new Image();
+    // Important! By pushing (saving) this img into imgs[],
+    //     we make sure the img variable is free to
+    //     take on the next value in the loop.
+    imgs.push(img);
+    // when this image loads, call this img.onload
+    img.onload = function(){ 
+      // this img loaded, increment the image counter
+      imagesOK++; 
+      // if we've loaded all images, call the callback
+      if (imagesOK>=imageURLs.length ) {
+        callback();
+      }
+    };
+    // notify if there's an error
+    img.onerror=function(){alert("image load failed");} 
+    // set img properties
+    img.src = imageURLs[i];
+  }      
 }
 
-function drawImageAfterLoad() {
+
+function imagesAreNowLoaded() {
   // Use the intrinsic size of image in CSS pixels for the canvas element
 //  canvas.width = this.naturalWidth;
 //  canvas.height = this.naturalHeight;
@@ -70,8 +74,21 @@ function drawImageAfterLoad() {
   // using the element's width and height properties - lets draw one
   // on top in the corner:
 //  ctx.drawImage(this, 0, 0, this.width, this.height);
+
+
+
+// Background
+var my_gradient = ctx.createLinearGradient(0, 0, 0, 595);
+my_gradient.addColorStop(0, "#B3B3B3");
+my_gradient.addColorStop(1, "#F7F7F7");
+ctx.fillStyle = my_gradient;
+ctx.fillRect(10,10,610,610);
+ctx.strokeStyle = "#666666";
+ctx.strokeRect(10,10,610,610);
+
+// Bubble
 // 631x471
-ctx.drawImage(bubble, 0, 105);
+ctx.drawImage(imgs[0], 0, 105);
 ctx.font="30px Comic Sans MS";
 ctx.fillStyle = "black";
 ctx.textAlign = "center";
