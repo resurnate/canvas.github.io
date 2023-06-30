@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>HTML5 Canvas</h1>
+
+<canvas id="myCanvas" width="630" height="630"></canvas>
+
+<!--
+<canvas id="myCanvas2" width="630" height="630" style="border:1px solid grey;"></canvas>
+-->
+
+<script>
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
+// Background
+var my_gradient = ctx.createLinearGradient(0, 0, 0, 595);
+my_gradient.addColorStop(0, "#B3B3B3");
+my_gradient.addColorStop(1, "#F7F7F7");
+ctx.fillStyle = my_gradient;
+ctx.fillRect(10,10,610,610);
+ctx.strokeStyle = "#666666";
+ctx.strokeRect(10,10,610,610);
+
+
+// Bubble
+var background = new Image();
+background.src = "https://canvas.resurnate.com/img/speech.png";
+// 631x471
+ctx.drawImage(background, 0, 105);
+ctx.font="30px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 175);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 205);
+ctx.fillText("JUST GOING TO THAT IS SUPER", 310, 235);
+ctx.fillText("PUMP OUT SOME THAT IS SUPER", 310, 265);
+ctx.fillText("BOILERPLATE CRAP THAT IS SUPER", 310, 295);
+ctx.fillText("SOME MIDDLE TEXT THAT IS SUPER", 310, 325);
+ctx.fillText("I'VE DONE A THAT IS SUPER", 310, 355);
+ctx.fillText("THOUSAND TIMES THAT IS SUPER", 310, 385);
+ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
+
+// Top left corner box
+ctx.fillStyle = "#FFFF88";
+ctx.fillRect(0,0,310,90);
+ctx.strokeRect(0, 0, 310, 90);
+ctx.font="italic bold 27px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("DURING THE NEXT", 150, 40);
+ctx.fillText("STANDUP...", 150, 67);
+
+// Top right corner box
+ctx.fillStyle = "#FFFFCC";
+ctx.fillRect(320,0,310,90);
+ctx.strokeRect(320,0,310,90);
+
+// Bottom left corner box
+ctx.fillStyle = "#CCE5FF";
+ctx.fillRect(0,540,310,90);
+ctx.strokeRect(0,540,310,90);
+ctx.font="27px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("ME TO PARTNER", 150, 580);
+ctx.fillText("(WINDING DOWN STU)", 150, 607);
+
+// Bottom right corner box
+ctx.fillStyle = "#DAE8FC";
+ctx.fillRect(320,540,310,90);
+ctx.strokeRect(320,540,310,90);
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("ME TO PARTNER", 474, 580);
+ctx.fillText("(SWARM OF HORNETS)", 474, 607);
+
+</script>
+
+</body>
+</html>
