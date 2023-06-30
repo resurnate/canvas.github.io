@@ -24,10 +24,11 @@ ctx.strokeRect(10,10,610,610);
 
 
 // Bubble
-var background = new Image();
-background.src = "https://canvas.resurnate.com/img/speech.png";
+//var background = new Image();
+//background.src = "https://canvas.resurnate.com/img/speech.png";
 //const image = new Image(60, 45); // Using optional size for image
-background.onload = drawImageAfterLoad(); // Draw when image has loaded
+let bubble = getBubble();
+bubble.onload = drawImageAfterLoad(); // Draw when image has loaded
 
 
 
@@ -47,6 +48,44 @@ background.onload = drawImageAfterLoad(); // Draw when image has loaded
 //ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
 //ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
 //ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
+
+
+
+function getBubble(){
+  let bubble = new Image();
+  bubble.src = "https://canvas.resurnate.com/img/speech.png";
+  return bubble;
+}
+
+function drawImageAfterLoad() {
+  // Use the intrinsic size of image in CSS pixels for the canvas element
+//  canvas.width = this.naturalWidth;
+//  canvas.height = this.naturalHeight;
+
+  // Will draw the image as 300x227, ignoring the custom size of 60x45
+  // given in the constructor
+//  ctx.drawImage(this, 0, 0);
+
+  // To use the custom size we'll have to specify the scale parameters
+  // using the element's width and height properties - lets draw one
+  // on top in the corner:
+//  ctx.drawImage(this, 0, 0, this.width, this.height);
+// 631x471
+ctx.drawImage(bubble, 0, 105);
+ctx.font="30px Comic Sans MS";
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 175);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 205);
+ctx.fillText("JUST GOING TO THAT IS SUPER", 310, 235);
+ctx.fillText("PUMP OUT SOME THAT IS SUPER", 310, 265);
+ctx.fillText("BOILERPLATE CRAP THAT IS SUPER", 310, 295);
+ctx.fillText("SOME MIDDLE TEXT THAT IS SUPER", 310, 325);
+ctx.fillText("I'VE DONE A THAT IS SUPER", 310, 355);
+ctx.fillText("THOUSAND TIMES THAT IS SUPER", 310, 385);
+ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
+ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
 
 // Top left corner box
 ctx.fillStyle = "#FFFF88";
@@ -83,37 +122,6 @@ ctx.fillText("ME TO PARTNER", 474, 580);
 ctx.fillText("(SWARM OF HORNETS)", 474, 607);
 
 
-
-
-function drawImageAfterLoad() {
-  // Use the intrinsic size of image in CSS pixels for the canvas element
-//  canvas.width = this.naturalWidth;
-//  canvas.height = this.naturalHeight;
-
-  // Will draw the image as 300x227, ignoring the custom size of 60x45
-  // given in the constructor
-//  ctx.drawImage(this, 0, 0);
-
-  // To use the custom size we'll have to specify the scale parameters
-  // using the element's width and height properties - lets draw one
-  // on top in the corner:
-//  ctx.drawImage(this, 0, 0, this.width, this.height);
-// 631x471
-ctx.drawImage(background, 0, 105);
-ctx.font="30px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 175);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 205);
-ctx.fillText("JUST GOING TO THAT IS SUPER", 310, 235);
-ctx.fillText("PUMP OUT SOME THAT IS SUPER", 310, 265);
-ctx.fillText("BOILERPLATE CRAP THAT IS SUPER", 310, 295);
-ctx.fillText("SOME MIDDLE TEXT THAT IS SUPER", 310, 325);
-ctx.fillText("I'VE DONE A THAT IS SUPER", 310, 355);
-ctx.fillText("THOUSAND TIMES THAT IS SUPER", 310, 385);
-ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
 }
 
 </script>
