@@ -3,36 +3,146 @@
 <body>
 <h1>HTML5 Canvas</h1>
 
-<canvas id="myCanvas" width="630" height="630"></canvas>
-
-<!--
-<canvas id="myCanvas2" width="630" height="630" style="border:1px solid grey;"></canvas>
--->
+<canvas id="myCanvas" width="1270" height="1270" style="border:1px solid grey;"></canvas>
 
 <script>
+
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
+const panelPadding = 10;
+const panelWidth = 630;  // which could be canvas width honestly
+const panelHeight = 630; // which could be canvas width honestly
+const captionWidth = (panelWidth - panelPadding) / 2;
+const captionHeight = 90;
 
-// Load images
-// https://stackoverflow.com/questions/30496817/javascript-drawimage-only-works-on-refresh
-//var background = new Image();
-//background.src = "https://canvas.resurnate.com/img/speech.png";
-//const image = new Image(60, 45); // Using optional size for image
-//let bubble = getBubble();
-//bubble.onload = drawImageAfterLoad(); // Draw when image has loaded
+const json =
+`{
+  "id": "2023-001",
+  "version": "1",
+  "copyright": "2023 resurnate.com",
+  "title": "Experience, Meet Team",
+  "author": "Quigley",
+  "panels": [
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "Me",
+            "(Motivated)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Just going to pump",
+            "out some boilerplate",
+            "crap I've done a thousand",
+            "times before..."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 2,
+          "text": [
+            "20 minutes later"
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Chuffed)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Awesome! Moving on."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "During the next",
+            "standup..."
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Me to Team",
+            "(Casually)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Oh by the way, I knocked",
+            "out some of the usual",
+            "stuff in the project",
+            "yesterday."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 4,
+          "text": [
+            "Team",
+            "(Swarm of hornets)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Did we even",
+            "need it?"
+          ]
+        }
+      ]
+    }
+  ]
+}`;
+const input = JSON.parse(json);
 
-
-var imageURLs=[];  
-imageURLs.push("https://canvas.resurnate.com/img/speech.png");
+var imageURLs = prepareImages(input);
 var imgs=[];
 var imagesOK=0;
 startLoadingAllImages(imagesAreNowLoaded);
 
-//function getBubble(){
-//  let bubble = new Image();
-//  bubble.src = "https://canvas.resurnate.com/img/speech.png";
-//  return bubble;
-//}
+function prepareImages(i) {
+  let r = [];
+  for (p of i.panels) {
+    if (p.image === 'speech1') {
+      r.push('https://canvas.resurnate.com/img/speech1.png');
+    } else {
+      r.push('?');
+    }
+  }
+  return r;
+}
 
 function startLoadingAllImages(callback){
 
@@ -60,8 +170,28 @@ function startLoadingAllImages(callback){
   }      
 }
 
-
 function imagesAreNowLoaded() {
+  let c = ctx;
+  var x = 0;
+  var y = 0;
+  for (var pi = 0; pi < input.panels.length; pi++) {
+    // Upper-left x-coordinate
+    if ((pi % 2) === 0) {
+      x = 0;
+    } else {
+      x = panelPadding + panelWidth;
+    }
+    // Upper-left y-coordinate
+    if (pi > 1) {
+      if ((pi % 2) === 0) {
+        y += panelPadding + panelHeight;
+      }
+    }
+    // Draw panel
+    let p = input.panels[pi];
+    drawPanel(c,x,y,p,pi);
+  }
+
   // Use the intrinsic size of image in CSS pixels for the canvas element
 //  canvas.width = this.naturalWidth;
 //  canvas.height = this.naturalHeight;
@@ -76,72 +206,212 @@ function imagesAreNowLoaded() {
 //  ctx.drawImage(this, 0, 0, this.width, this.height);
 
 
+//ctx.rotate(-Math.PI/2);
+//ctx.restore();
 
-// Background
-var my_gradient = ctx.createLinearGradient(0, 0, 0, 595);
-my_gradient.addColorStop(0, "#B3B3B3");
-my_gradient.addColorStop(1, "#F7F7F7");
-ctx.fillStyle = my_gradient;
-ctx.fillRect(10,10,610,610);
-ctx.strokeStyle = "#666666";
-ctx.strokeRect(10,10,610,610);
-
-// Bubble
-// 631x471
-ctx.drawImage(imgs[0], 0, 105);
-ctx.font="30px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 175);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 205);
-ctx.fillText("JUST GOING TO THAT IS SUPER", 310, 235);
-ctx.fillText("PUMP OUT SOME THAT IS SUPER", 310, 265);
-ctx.fillText("BOILERPLATE CRAP THAT IS SUPER", 310, 295);
-ctx.fillText("SOME MIDDLE TEXT THAT IS SUPER", 310, 325);
-ctx.fillText("I'VE DONE A THAT IS SUPER", 310, 355);
-ctx.fillText("THOUSAND TIMES THAT IS SUPER", 310, 385);
-ctx.fillText("BEFORE... THAT IS SUPER", 310, 415);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 445);
-ctx.fillText("ANOTHER... THAT IS SUPER", 310, 475);
-
-// Top left corner box
-ctx.fillStyle = "#FFFF88";
-ctx.fillRect(0,0,310,90);
-ctx.strokeRect(0, 0, 310, 90);
-ctx.font="italic bold 27px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("DURING THE NEXT", 150, 40);
-ctx.fillText("STANDUP...", 150, 67);
-
-// Top right corner box
-ctx.fillStyle = "#FFFFCC";
-ctx.fillRect(320,0,310,90);
-ctx.strokeRect(320,0,310,90);
-
-// Bottom left corner box
-ctx.fillStyle = "#CCE5FF";
-ctx.fillRect(0,540,310,90);
-ctx.strokeRect(0,540,310,90);
-ctx.font="27px Comic Sans MS";
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("ME TO PARTNER", 150, 580);
-ctx.fillText("(WINDING DOWN STU)", 150, 607);
-
-// Bottom right corner box
-ctx.fillStyle = "#DAE8FC";
-ctx.fillRect(320,540,310,90);
-ctx.strokeRect(320,540,310,90);
-ctx.fillStyle = "black";
-ctx.textAlign = "center";
-ctx.fillText("ME TO PARTNER", 474, 580);
-ctx.fillText("(SWARM OF HORNETS)", 474, 607);
-
+//const canvas = document.getElementById("myCanvas");
+//const dataURL = canvas.toDataURL();
 
 }
+
+  /**
+     c  = Canvas element context
+     x  = Panel upper-left corner x-coordinate
+     y  = Panel upper-left corner y-coordinate
+     ip = Panel input
+     ii = Panel input index
+   */
+  function drawPanel(c,x,y,ip,ii) {
+
+    // Panel
+    let p = {
+      p : panelPadding,
+      w : panelWidth,
+      h : panelHeight,
+      x : x,
+      y : y,
+      i : imgs[ii]
+    };
+    
+    // Background
+    let bgw = p.w - (p.p * 2);
+    let bgh = p.h - (p.p * 2);
+    let bgux = p.x + p.p;
+    let bguy = p.y + p.p;
+    let bg = {
+      w  : bgw,
+      h  : bgh,
+      ux : bgux,       // Upper-left
+      uy : bguy,
+      lx : bgux + bgw, // Lower-right
+      ly : bguy + bgh
+    };
+    p.bg = bg;
+
+    // Bubbles
+    let bbs = [];
+    if (ip.image === 'speech1') {
+      for (var bi = 0; bi < 1; bi++) {
+        var bbt = prepareBubble(ip,bi);
+      }
+      let bb = {
+        t : bbt
+      };
+      bbs.push(bb);
+    }
+    p.bbs = bbs;
+
+    // Captions
+    let cts = [];
+    for (var cti = 0; cti < 4; cti++) {
+      let ctw = captionWidth;
+      let cth = captionHeight;
+      var ctx = p.x;
+      var cty = p.y;
+      var ctc = "#FFFFFF";
+      var ctt = [];
+      if (cti === 0) {        // Upper-left
+        ctx = p.x;
+        cty = p.y;
+        ctc = "#FFFF88";
+        ctt = prepareCaption(ip,cti);
+      } else if (cti === 1) { // Upper-right
+        ctx = p.x + p.p + ctw;
+        cty = p.y;
+        ctc = "#FFFFCC";
+        ctt = prepareCaption(ip,cti);
+      } else if (cti === 2) { // Lower-left
+        ctx = p.x;
+        cty = p.y + p.h - cth;
+        ctc = "#CCE5FF";
+        ctt = prepareCaption(ip,cti);
+      } else {                // Lower-right
+        ctx = p.x + p.p + ctw;
+        cty = p.y + p.h - cth;
+        ctc = "#DAE8FC";
+        ctt = prepareCaption(ip,cti);
+      }
+      let ct = {
+        w : ctw,
+        h : cth,
+        x : ctx,
+        y : cty,
+        c : ctc,
+        t : ctt
+      };
+      cts.push(ct);
+    }
+    p.cts = cts;
+
+    // Draw
+    drawPanelBackground(c,p);
+    drawPanelBubble(c,p);
+    for (var cti = 0; cti < 4; cti++) {
+      drawPanelCaption(c,p,cti)
+    }
+
+  }
+  
+  function prepareBubble(i,bi) {
+    let r = [];
+    for (ib of i.bubbles) {
+      if ((ib.position - 1) === bi) {
+        for (ibt of ib.text) {
+          r.push(ibt);
+        }
+        break;
+      }
+    }
+    return r;
+  }
+
+  function prepareCaption(i,ci) {
+    let r = [];
+    for (ic of i.captions) {
+      if ((ic.position - 1) === ci) {
+        for (ict of ic.text) {
+          r.push(ict);
+        }
+        break;
+      }
+    }
+    return r;
+  }
+
+  function drawPanelBackground(c,p) {
+
+    // Background
+    let g = c.createLinearGradient(p.bg.ux, p.bg.uy, p.bg.ux, p.bg.ly);
+    g.addColorStop(0, "#B3B3B3");
+    g.addColorStop(1, "#F7F7F7");
+    c.strokeStyle = "#666666";
+    
+    // Draw
+    c.fillStyle = g;
+    c.fillRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
+    c.strokeRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
+
+  }
+
+  function drawPanelBubble(c,p) {
+    
+    let io = 0;                         // Image offset percentage
+    let iw = p.w;                       // Image width in pixels
+    var ih = p.h - (captionHeight * 2); // Height in pixels
+    ih += ih * io / 100;
+    let ix = p.x;                       // Upper-left corner x-coordinate
+    let iy = p.y + 105;                 // Upper-left corner y-coordinate
+    c.drawImage(p.i, ix, iy, iw, ih);
+
+    let to = -3;                        // Text offset percentage
+    let tf = 30;                        // Text font size
+    let tx = ix + (iw / 2);             // Start x-coordinate
+    let tcy = iy + (ih / 2) + (ih * to / 100); // Start center y-coordinate
+
+    let tls = p.bbs[0].t;
+    c.fillStyle = "black";
+    c.font = "30px Comic Sans MS";
+    c.textAlign = "center";
+    var ty = tcy - (Math.floor(tls.length / 2) * tf); // Start y-coordinate
+    if ((tls.length % 2) === 0) { ty += (tf / 2); }
+    for (tl of tls) {
+      c.fillText(tl.toUpperCase(), tx, ty);
+      ty += tf;
+    }
+
+  }
+
+  function drawPanelCaption(c,p,i) {
+    let ct = p.cts[i];
+    let tls = ct.t;
+    if (tls.length > 0) {
+
+      // Box
+      c.fillStyle = ct.c;
+      c.fillRect(ct.x,ct.y,ct.w,ct.h);
+      c.strokeStyle = "#666666";
+      c.strokeRect(ct.x,ct.y,ct.w,ct.h);
+
+      // Text
+      let to = -3;                // Offset percentage
+      let tf = 27;                // Font size
+      let tx = ct.x + (ct.w / 2); // Start x-coordinate
+      var ty = ct.y + ((ct.h) / 2) + (ct.h * to / 100); // Start y-coordinate
+      c.fillStyle = "black";
+      c.font = "italic bold 27px Comic Sans MS";
+      c.textAlign = "center";
+      ty = ty - (Math.floor(tls.length / 2) * tf) + Math.floor(tf / 2);
+      if ((tls.length % 2) === 0) { ty += (tf / 2); }
+      for (tl of tls) {
+        c.fillText(tl.toUpperCase(), tx, ty);
+        ty += tf;
+      }
+
+    }
+  }
 
 </script>
 
 </body>
 </html>
+
