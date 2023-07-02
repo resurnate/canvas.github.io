@@ -18,29 +18,33 @@
 // XXX: This should be read in from a v1 file appropriately!
   const BUBBLE_OFFSETS = [
     {
-      i : "speech1",
-      o : [
-        { iw : 0, ih : -150, ix : 0, iy : 100, tx : 0, ty : -15 }
+      l : "speech1",
+      i : { w : 0, h : -150, x : 0, y : 100 },
+      t : [
+        { x : 0, y : -15 }
       ]
     },
     {
-      i : "speech3",
-      o : [
-        { iw : -20, ih : -180, ix : 12, iy : 100, tx : 135, ty : -110 },
-        { iw : -20, ih : -180, ix : 12, iy : 100, tx : -140, ty : -49 },
-        { iw : -20, ih : -180, ix : 12, iy : 100, tx : -8, ty : 110}
+      l : "speech3",
+      i : { w : -20, h : -180, x : 12, y : 100 },
+      t : [
+        { x : 135, y : -110 },
+        { x : -140, y : -49 },
+        { x : -8, y : 110 }
       ]
     },
     {
-      i : "thought1",
-      o : [
-        { iw : -25, ih : -120, ix : 10, iy : 110, tx : 0, ty : -40 }
+      l : "thought1",
+      i : { w : -25, h : -120, x : 10, y : 110 },
+      t : [
+        { x : 0, y : -40 }
       ]
     },
     {
-      i : "burst1",
-      o : [
-        { iw : 20, ih : -140, ix : -10, iy : 70, tx : 0, ty : 10 }
+      l : "burst1",
+      i : { w : 20, h : -140, x : -10, y : 70 },
+      t : [
+        { x : 0, y : 10 }
       ]
     }
   ];
@@ -623,14 +627,12 @@ function loadImages(callback) {
       var b = p.bbs[bi];
       // Offset
       var o;
-      var os;
       for (var bo of BUBBLE_OFFSETS) {
-        if (bo.i === b.in) {
-          os = bo.o;
+        if (bo.l === b.in) {
+          o = bo;
           break;
         }
       }
-      o = os[bi];
       // Draw
       drawPanelBubble(c,p,o,bi);
     }
@@ -638,23 +640,46 @@ function loadImages(callback) {
 
   function drawPanelBubble(c,p,o,i) {
 
-    // Offset
-    let iw = p.bg.w + o.iw;
-    var ih = p.bg.h + o.ih;
-    let ix = p.bg.ux + o.ix;
-    let iy = p.bg.uy + o.iy;
-
-    // Draw bubble once
+    // Draw image (once)
     if (i === 0) {
-      c.cc.drawImage(p.i, ix, iy, iw, ih);
+      drawPanelBubbleImage(c,p,o);
     }
 
     // Draw text
+    drawPanelBubbleText(c,p,o,i);
+
+  }
+
+  function drawPanelBubbleImage(c,p,o) {
+
+    // Offset
+    let io = o.i;
+    let iw = p.bg.w + io.w;
+    var ih = p.bg.h + io.h;
+    let ix = p.bg.ux + io.x;
+    let iy = p.bg.uy + io.y;
+
+    // Draw
+    c.cc.drawImage(p.i, ix, iy, iw, ih);
+
+  }
+  
+  function drawPanelBubbleText(c,p,o,i) {
+
+    // Offset
+    let io = o.i;
+    let iw = p.bg.w + io.w;
+    var ih = p.bg.h + io.h;
+    let ix = p.bg.ux + io.x;
+    let iy = p.bg.uy + io.y;
+    let to = o.t[i];
     let tls = p.bbs[i].t;
     let tf = 30;
-    let tx = ix + (iw / 2) + o.tx;
-    var ty = iy + (ih / 2) + o.ty;
+    let tx = ix + (iw / 2) + to.x;
+    var ty = iy + (ih / 2) + to.y;
     ty = ty - (Math.floor(tls.length / 2) * tf);
+    
+    // Draw
     let t = {
       x  : tx,
       y  : ty,
