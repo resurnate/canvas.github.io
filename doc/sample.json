@@ -1,14 +1,15 @@
 {
-  "id": "2023-001",
   "version": "1",
+  "id": "2023-001",
   "copyright": "2023 resurnate.com",
   "title": "Experience, Meet Team",
   "author": "Quigley",
   "panels": [
     {
-      "background": "thought-1-1-0010.png",
+      "image": "thought1",
       "captions": [
         {
+          "position": 3,
           "text": [
             "Me",
             "(Motivated)"
@@ -17,6 +18,7 @@
       ],
       "bubbles": [
         {
+          "position": 1,
           "text": [
             "Just going to pump",
             "out some boilerplate",
@@ -27,14 +29,16 @@
       ]
     },
     {
-      "background": "thought-1-1-1010.png",
+      "image": "thought1",
       "captions": [
         {
+          "position": 1,
           "text": [
             "20 minutes later"
           ]
         },
         {
+          "position": 3,
           "text": [
             "Me",
             "(Chuffed)"
@@ -43,6 +47,7 @@
       ],
       "bubbles": [
         {
+          "position": 1,
           "text": [
             "Awesome! Moving on."
           ]
@@ -50,15 +55,17 @@
       ]
     },
     {
-      "background": "speech-1-1-1010.png",
+      "image": "speech1",
       "captions": [
         {
+          "position": 1,
           "text": [
             "During the next",
             "standup..."
           ]
         },
         {
+          "position": 3,
           "text": [
             "Me to Team",
             "(Casually)"
@@ -67,6 +74,7 @@
       ],
       "bubbles": [
         {
+          "position": 1,
           "text": [
             "Oh by the way, I knocked",
             "out some of the usual",
@@ -77,9 +85,10 @@
       ]
     },
     {
-      "background": "speech-1-3-0010.png",
+      "image": "speech3",
       "captions": [
         {
+          "position": 3,
           "text": [
             "Team",
             "(Swarm of hornets)"
@@ -88,12 +97,14 @@
       ],
       "bubbles": [
         {
+          "position": 1,
           "text": [
-            "Did we even",
+            "Do we even",
             "need it?"
           ]
         },
         {
+          "position": 2,
           "text": [
             "Did we",
             "agree to this",
@@ -101,10 +112,124 @@
           ]
         },
         {
+          "position": 3,
           "text": [
             "I can't find",
             "that story in",
             "the backlog!"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "thought1",
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Bewildered)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Sigh! I shouldn't",
+            "but fuck it..."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "burst1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "2 hours later"
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Me to team",
+            "(DEFCON 2)"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Team to me",
+            "(Contrary)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Countless",
+            "back-and-forths",
+            "defending some",
+            "inane industry-standard",
+            "thing to people, because...",
+            "arrrrggghh",
+            "what the living",
+            "fuck!"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "Still in the 15",
+            "minute standup..."
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Team",
+            "(Conceited)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "We should setup",
+            "a meeting",
+            "to discuss further."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "thought1",
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Dying on sword)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "When",
+            "will I",
+            "ever",
+            "learn!"
           ]
         }
       ]

@@ -2,9 +2,26 @@
 <html>
 <body>
 
-<h1>HTML5 Canvas</h1>
+<h1>Resurnate Canvas</h1>
 
-<canvas id="canvas"></canvas>
+<div>
+  <label for="textarea">Strip (JSON format):</label>
+  <div>
+    <textarea id="textarea" name="textarea" cols="156" rows="20" placeholder="Copy and paste your strip JSON formatted content here!">
+    </textarea>
+  </div>
+</div>
+
+<div>
+  <input type="button" value="Generate" onclick="generate()">
+</div>
+
+<div>
+  <label for="canvas">Generated canvas:</label>
+  <div>
+    <canvas id="canvas" name="canvas"></canvas>
+  </div>
+</div>
 
 <script>
 
@@ -49,251 +66,18 @@
     }
   ];
 
-  const json =
-`{
-  "version": "1",
-  "id": "2023-001",
-  "copyright": "2023 resurnate.com",
-  "title": "Experience, Meet Team",
-  "author": "Quigley",
-  "panels": [
-    {
-      "image": "thought1",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Motivated)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Just going to pump",
-            "out some boilerplate",
-            "crap I've done a thousand",
-            "times before..."
-          ]
-        }
-      ]
-    },
-    {
-      "image": "thought1",
-      "captions": [
-        {
-          "position": 1,
-          "text": [
-            "20 minutes later"
-          ]
-        },
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Chuffed)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Awesome! Moving on."
-          ]
-        }
-      ]
-    },
-    {
-      "image": "speech1",
-      "captions": [
-        {
-          "position": 1,
-          "text": [
-            "During the next",
-            "standup..."
-          ]
-        },
-        {
-          "position": 3,
-          "text": [
-            "Me to Team",
-            "(Casually)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Oh by the way, I knocked",
-            "out some of the usual",
-            "stuff in the project",
-            "yesterday."
-          ]
-        }
-      ]
-    },
-    {
-      "image": "speech3",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Team",
-            "(Swarm of hornets)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Do we even",
-            "need it?"
-          ]
-        },
-        {
-          "position": 2,
-          "text": [
-            "Did we",
-            "agree to this",
-            "as a team?"
-          ]
-        },
-        {
-          "position": 3,
-          "text": [
-            "I can't find",
-            "that story in",
-            "the backlog!"
-          ]
-        }
-      ]
-    },
-    {
-      "image": "thought1",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Bewildered)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Sigh! I shouldn't",
-            "but fuck it..."
-          ]
-        }
-      ]
-    },
-    {
-      "image": "burst1",
-      "captions": [
-        {
-          "position": 1,
-          "text": [
-            "2 hours later"
-          ]
-        },
-        {
-          "position": 3,
-          "text": [
-            "Me to team",
-            "(DEFCON 2)"
-          ]
-        },
-        {
-          "position": 4,
-          "text": [
-            "Team to me",
-            "(Contrary)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Countless",
-            "back-and-forths",
-            "defending some",
-            "inane industry-standard",
-            "thing to people, because...",
-            "arrrrggghh",
-            "what the living",
-            "fuck!"
-          ]
-        }
-      ]
-    },
-    {
-      "image": "speech1",
-      "captions": [
-        {
-          "position": 1,
-          "text": [
-            "Still in the 15",
-            "minute standup..."
-          ]
-        },
-        {
-          "position": 3,
-          "text": [
-            "Team",
-            "(Conceited)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "We should setup",
-            "a meeting",
-            "to discuss further."
-          ]
-        }
-      ]
-    },
-    {
-      "image": "thought1",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Dying on sword)"
-          ]
-        }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "When",
-            "will I",
-            "ever",
-            "learn!"
-          ]
-        }
-      ]
-    }
-  ]
-}`;
-const input = JSON.parse(json);
+  var input = '';
+  var imageURLs = [];
+  var imgs=[];
+  var imagesOK=0;
 
-var imageURLs = prepareImages(input);
-var imgs=[];
-var imagesOK=0;
-loadImages(prepareAndDraw);
+  function generate() {
+    let textarea = document.getElementById("textarea");
+    let json = textarea.value;
+    input = JSON.parse(json);
+    imageURLs = prepareImages(input);
+    loadImages(prepareAndDraw);
+  }
 
   function prepareImages(i) {
     let r = [];
@@ -303,31 +87,31 @@ loadImages(prepareAndDraw);
     return r;
   }
 
-function loadImages(callback) {
+  function loadImages(callback) {
 
-  // iterate through the imageURLs array and create new images for each
-  for (var i=0; i<imageURLs.length; i++) {
-    // create a new image an push it into the imgs[] array
-    var img = new Image();
-    // Important! By pushing (saving) this img into imgs[],
-    //     we make sure the img variable is free to
-    //     take on the next value in the loop.
-    imgs.push(img);
-    // when this image loads, call this img.onload
-    img.onload = function(){ 
-      // this img loaded, increment the image counter
-      imagesOK++; 
-      // if we've loaded all images, call the callback
-      if (imagesOK>=imageURLs.length ) {
-        callback();
-      }
-    };
-    // notify if there's an error
-    img.onerror=function(){alert("image load failed");} 
-    // set img properties
-    img.src = imageURLs[i];
-  }      
-}
+    // iterate through the imageURLs array and create new images for each
+    for (var i=0; i<imageURLs.length; i++) {
+      // create a new image an push it into the imgs[] array
+      var img = new Image();
+      // Important! By pushing (saving) this img into imgs[],
+      //     we make sure the img variable is free to
+      //     take on the next value in the loop.
+      imgs.push(img);
+      // when this image loads, call this img.onload
+      img.onload = function(){ 
+        // this img loaded, increment the image counter
+        imagesOK++; 
+        // if we've loaded all images, call the callback
+        if (imagesOK>=imageURLs.length ) {
+          callback();
+        }
+      };
+      // notify if there's an error
+      img.onerror=function(){alert("image load failed");} 
+      // set img properties
+      img.src = imageURLs[i];
+    }      
+  }
 
   function prepareAndDraw() {
 
