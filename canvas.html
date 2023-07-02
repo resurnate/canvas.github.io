@@ -5,16 +5,26 @@
 <h1>Resurnate Canvas</h1>
 
 <div>
-  <label for="textarea">Strip (JSON format):</label>
+  <label for="url">Strip (JSON URL):</label>
   <div>
-    <textarea id="textarea" name="textarea" cols="156" rows="20" placeholder="Copy and paste your strip JSON formatted content here!">
-    </textarea>
+    <input id="url" type="text" name = "url" value="https://canvas.resurnate.com/doc/sample.json" size="188">
+    <div>
+      <input type="button" value="Load" onclick="loadJson()">
+    </div>
   </div>
 </div>
 
 <div>
-  <input type="button" value="Generate" onclick="generate()">
+  <label for="textarea">Strip (JSON format):</label>
+  <div>
+    <textarea id="textarea" name="textarea" cols="156" rows="20" placeholder="Copy and paste your strip JSON formatted content here!">
+    </textarea>
+    <div>
+      <input type="button" value="Generate" onclick="generate()">
+    </div>
+  </div>
 </div>
+
 
 <div>
   <label for="canvas">Generated canvas:</label>
@@ -66,21 +76,52 @@
     }
   ];
 
-  var input = '';
-  var imageURLs = [];
-  var imgs=[];
-  var imagesOK=0;
+  var input;
+  var imageURLs;
+  var imgs;
+  var imagesOK;
+
+  function loadJson() {
+    let url = document.getElementById("url");
+    fetchJson(url.value)
+      .then((result) => {
+        let textarea = document.getElementById("textarea");
+        textarea.value = result;
+      })
+      .catch((err) => {
+        alert("Failed to load JSON file");
+      });
+  }
+              
+  function fetchJson(url) {
+    return new Promise(function (resolve, reject) {
+      let xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          let result = xhr.responseText;
+          resolve(result);
+        } else if (xhr.readyState === 4) {
+          reject(oopsMessage);
+        }
+      });
+      xhr.open('GET', url);
+      xhr.send();
+    });
+  }
 
   function generate() {
     let textarea = document.getElementById("textarea");
     let json = textarea.value;
     input = JSON.parse(json);
     imageURLs = prepareImages(input);
-    loadImages(prepareAndDraw);
+    loadImages(prepareAndDrawCanvas);
   }
 
   function prepareImages(i) {
     let r = [];
+    imageUrls = [];
+    imgs = [];
+    imagesOK = 0;
     for (p of i.panels) {
       r.push('https://canvas.resurnate.com/img/'+p.image+'.png');
     }
@@ -88,32 +129,23 @@
   }
 
   function loadImages(callback) {
-
-    // iterate through the imageURLs array and create new images for each
-    for (var i=0; i<imageURLs.length; i++) {
-      // create a new image an push it into the imgs[] array
-      var img = new Image();
-      // Important! By pushing (saving) this img into imgs[],
-      //     we make sure the img variable is free to
-      //     take on the next value in the loop.
+    for (var i = 0; i < imageURLs.length; i++) {
+      let img = new Image();
       imgs.push(img);
-      // when this image loads, call this img.onload
-      img.onload = function(){ 
-        // this img loaded, increment the image counter
+      img.onload = function() { 
         imagesOK++; 
-        // if we've loaded all images, call the callback
-        if (imagesOK>=imageURLs.length ) {
+        if (imagesOK >= imageURLs.length) {
           callback();
         }
       };
-      // notify if there's an error
-      img.onerror=function(){alert("image load failed");} 
-      // set img properties
+      img.onerror=function() {
+        alert("Failed to load images");
+      } 
       img.src = imageURLs[i];
     }      
   }
 
-  function prepareAndDraw() {
+  function prepareAndDrawCanvas() {
 
     // Prepare and draw canvas
     let c = prepareCanvas();
