@@ -15,6 +15,7 @@
   const PANEL_HEIGHT = 630;
   const CAPTION_WIDTH = (PANEL_WIDTH - PANEL_PADDING) / 2;
   const CAPTION_HEIGHT = 90;
+// XXX: This should be read in from a v1 file appropriately!
   const BUBBLE_OFFSETS = [
     {
       i : "speech1",
@@ -23,9 +24,23 @@
       ]
     },
     {
+      i : "speech3",
+      o : [
+        { iw : -20, ih : -180, ix : 12, iy : 100, tx : 135, ty : -110 },
+        { iw : -20, ih : -180, ix : 12, iy : 100, tx : -140, ty : -49 },
+        { iw : -20, ih : -180, ix : 12, iy : 100, tx : -8, ty : 110}
+      ]
+    },
+    {
       i : "thought1",
       o : [
         { iw : -25, ih : -120, ix : 10, iy : 110, tx : 0, ty : -40 }
+      ]
+    },
+    {
+      i : "burst1",
+      o : [
+        { iw : 20, ih : -140, ix : -10, iy : 70, tx : 0, ty : 10 }
       ]
     }
   ];
@@ -42,14 +57,7 @@
       "image": "thought1",
       "captions": [
         {
-          "position": 4,
-          "text": [
-            "Me",
-            "(Motivated)"
-          ]
-        },
-        {
-          "position": 2,
+          "position": 3,
           "text": [
             "Me",
             "(Motivated)"
@@ -69,10 +77,10 @@
       ]
     },
     {
-      "image": "speech1",
+      "image": "thought1",
       "captions": [
         {
-          "position": 2,
+          "position": 1,
           "text": [
             "20 minutes later"
           ]
@@ -125,14 +133,13 @@
       ]
     },
     {
-      "image": "speech1",
+      "image": "speech3",
       "captions": [
         {
-          "position": 4,
+          "position": 3,
           "text": [
             "Team",
-            "(Swarm of",
-            "hornets)"
+            "(Swarm of hornets)"
           ]
         }
       ],
@@ -140,8 +147,137 @@
         {
           "position": 1,
           "text": [
-            "Did we even",
+            "Do we even",
             "need it?"
+          ]
+        },
+        {
+          "position": 2,
+          "text": [
+            "Did we",
+            "agree to this",
+            "as a team?"
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "I can't find",
+            "that story in",
+            "the backlog!"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "thought1",
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Bewildered)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Sigh! I shouldn't",
+            "but fuck it..."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "burst1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "2 hours later"
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Me to team",
+            "(DEFCON 2)"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Team to me",
+            "(Contrary)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Countless",
+            "back-and-forths",
+            "defending some",
+            "inane industry-standard",
+            "thing to people, because...",
+            "arrrrggghh",
+            "what the living",
+            "fuck!"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "Still in the 15",
+            "minute standup..."
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Team",
+            "(Conceited)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "We should setup",
+            "a meeting",
+            "to discuss further."
+          ]
+        }
+      ]
+    },
+    {
+      "image": "thought1",
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Dying on sword)"
+          ]
+        }
+      ],
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "When",
+            "will I",
+            "ever",
+            "learn!"
           ]
         }
       ]
@@ -158,13 +294,7 @@ loadImages(prepareAndDraw);
   function prepareImages(i) {
     let r = [];
     for (p of i.panels) {
-      if (p.image === 'speech1') {
-        r.push('https://canvas.resurnate.com/img/speech1.png');
-      } else if (p.image === 'thought1') {
-        r.push('https://canvas.resurnate.com/img/thought1.png');
-      } else {
-        r.push('?');
-      }
+      r.push('https://canvas.resurnate.com/img/'+p.image+'.png');
     }
     return r;
   }
@@ -205,11 +335,16 @@ function loadImages(callback) {
     let ps = preparePanels(c);
     drawPanels(c,ps);
 
+    //
+    // Order is important to ensure information
+    // and copyright aren't overridden!
+    //
+
     // Draw information
-    drawInformation(c);
+    drawCanvasInformation(c);
     
     // Draw copyright
-    drawCopyright(c);
+    drawCanvasCopyright(c);
 
   }
 
@@ -272,14 +407,15 @@ function loadImages(callback) {
 
     // Panel
     let p = {
-      p : PANEL_PADDING,
-      w : PANEL_WIDTH,
-      h : PANEL_HEIGHT,
-      x : x,
-      y : y,
-      i : imgs[ii]
+      p  : PANEL_PADDING,
+      w  : PANEL_WIDTH,
+      h  : PANEL_HEIGHT,
+      x  : x,
+      y  : y,
+      i  : imgs[ii],
+      bi : ip.image
     };
-    
+
     // Background
     let bgw = p.w - (p.p * 2);
     let bgh = p.h - (p.p * 2);
@@ -308,6 +444,7 @@ function loadImages(callback) {
       };
       bbs.push(bb);
     }
+    p.bbi = ip.image;
     p.bbs = bbs;
 
     // Captions
@@ -318,16 +455,19 @@ function loadImages(callback) {
       var ctx = p.x;
       var cty = p.y;
       var ctc = "#FFFFFF";
+      var ctf = "27px Comic Sans MS";
       var ctt = [];
       if (cti === 0) {        // Upper-left
         ctx = p.x;
         cty = p.y;
         ctc = "#FFFF88";
+        ctf = 'italic bold '+ctf;
         ctt = prepareCaption(ip,cti);
       } else if (cti === 1) { // Upper-right
         ctx = p.x + p.p + ctw;
         cty = p.y;
         ctc = "#FFFFCC";
+        ctf = 'italic bold '+ctf;
         ctt = prepareCaption(ip,cti);
       } else if (cti === 2) { // Lower-left
         ctx = p.x;
@@ -346,6 +486,7 @@ function loadImages(callback) {
         x : ctx,
         y : cty,
         c : ctc,
+        f : ctf,
         t : ctt
       };
       cts.push(ct);
@@ -356,11 +497,25 @@ function loadImages(callback) {
   }
 
   function prepareBubble(i,bi) {
+    return prepareBubbleText(i,bi);
+  }
+
+  function prepareBubbleText(i,bi) {
     let r = [];
     for (ib of i.bubbles) {
       if ((ib.position - 1) === bi) {
         for (ibt of ib.text) {
-          r.push(ibt);
+          let lt = ibt;
+          let lc = "black";
+          let lf = "30px Comic Sans MS";
+          let la = "center";
+          let l = {
+            t : lt,
+            c : lc,
+            f : lf,
+            a : la
+          };
+          r.push(l);
         }
         break;
       }
@@ -369,11 +524,30 @@ function loadImages(callback) {
   }
 
   function prepareCaption(i,ci) {
+    return prepareCaptionText(i,ci);
+  }
+
+  function prepareCaptionText(i,ci) {
     let r = [];
     for (ic of i.captions) {
       if ((ic.position - 1) === ci) {
-        for (ict of ic.text) {
-          r.push(ict);
+        for (var ti = 0; ti < ic.text.length; ti++) {
+          let lt = ic.text[ti];
+          let lc = "black";
+          var lf = "27px Comic Sans MS";
+          let la = "center";
+          if (ic.position < 3) {
+            lf = 'italic bold '+lf;
+          } else if (ti > 0) {
+            lf = 'italic '+lf;
+          }
+          let l = {
+            t : lt,
+            c : lc,
+            f : lf,
+            a : la
+          };
+          r.push(l);
         }
         break;
       }
@@ -386,6 +560,30 @@ function loadImages(callback) {
     c.ce.height = c.ch;
   }
 
+  function drawCanvasInformation(c) {
+    c.cc.save();
+    c.cc.translate((c.cw / 2), ((c.ph / 2) + c.ph));
+    c.cc.rotate((3 * Math.PI) / 2);
+    c.cc.fillStyle = "black";
+    c.cc.font = "14px Helvetica";
+    c.cc.textAlign = "center";
+    let t = c.ii+' "'+c.it+'" by '+c.ia;
+    c.cc.fillText(t.toUpperCase(), 0, 5);
+    c.cc.restore();
+  }
+  
+  function drawCanvasCopyright(c) {
+    c.cc.save();
+    c.cc.translate((c.cw / 2), (c.ph / 2));
+    c.cc.rotate((3 * Math.PI) / 2);
+    c.cc.fillStyle = "black";
+    c.cc.font = "14px Helvetica";
+    c.cc.textAlign = "center";
+    let t = c.ic;
+    c.cc.fillText('\u00A9'+' '+t.toUpperCase(), 0, 5);
+    c.cc.restore();
+  }
+
   function drawPanels(c,ps) {
     for (var pi = 0; pi < ps.length; pi++) {
       let p = ps[pi];
@@ -395,12 +593,16 @@ function loadImages(callback) {
 
   function drawPanel(c,p) {
     drawPanelBackground(c,p);
-    drawPanelBubbles(c,p);
-    for (var cai = 0; cai < p.cts.length; cai++) {
-      drawPanelCaption(c,p,cai);
+    if (p.bbi.startsWith("burst")) {
+      // Bubble on top of captions - bursting!
+      drawPanelCaptions(c,p);
+      drawPanelBubbles(c,p);
+    } else {
+      drawPanelBubbles(c,p);
+      drawPanelCaptions(c,p);
     }
   }
-  
+
   function drawPanelBackground(c,p) {
 
     // Background
@@ -419,6 +621,8 @@ function loadImages(callback) {
   function drawPanelBubbles(c,p) {
     for (var bi = 0; bi < p.bbs.length; bi++) {
       var b = p.bbs[bi];
+      // Offset
+      var o;
       var os;
       for (var bo of BUBBLE_OFFSETS) {
         if (bo.i === b.in) {
@@ -426,30 +630,31 @@ function loadImages(callback) {
           break;
         }
       }
-// XXX: This won't work when multiple bubbles occur!
-      var o = os[0];
-      drawPanelBubble(c,p,o);
+      o = os[bi];
+      // Draw
+      drawPanelBubble(c,p,o,bi);
     }
   }
 
-  function drawPanelBubble(c,p,o) {
+  function drawPanelBubble(c,p,o,i) {
 
-    // Bubble
-// XXX: The image only needs to be drawn once
-//      So there's image offsets and there is text offsets
+    // Offset
     let iw = p.bg.w + o.iw;
     var ih = p.bg.h + o.ih;
     let ix = p.bg.ux + o.ix;
     let iy = p.bg.uy + o.iy;
-    c.cc.drawImage(p.i, ix, iy, iw, ih);
 
-    // Text
-    let tls = p.bbs[0].t;
+    // Draw bubble once
+    if (i === 0) {
+      c.cc.drawImage(p.i, ix, iy, iw, ih);
+    }
+
+    // Draw text
+    let tls = p.bbs[i].t;
     let tf = 30;
     let tx = ix + (iw / 2) + o.tx;
     var ty = iy + (ih / 2) + o.ty;
     ty = ty - (Math.floor(tls.length / 2) * tf);
-
     let t = {
       x  : tx,
       y  : ty,
@@ -459,77 +664,83 @@ function loadImages(callback) {
       s  : tf,
       ls : tls
     };
-    drawText(c,t);
+    drawPanelText(c,t);
 
   }
 
-  function drawPanelCaption(c,p,i) {
-    let ct = p.cts[i];
-    let tls = ct.t;
-    if (tls.length > 0) {
-
-      // Box
-      c.cc.fillStyle = ct.c;
-      c.cc.fillRect(ct.x,ct.y,ct.w,ct.h);
-      c.cc.strokeStyle = "#666666";
-      c.cc.strokeRect(ct.x,ct.y,ct.w,ct.h);
-
-      // Text
-      let to = -3;                // Offset percentage
-      let tf = 27;                // Font size
-      let tx = ct.x + (ct.w / 2); // Start x-coordinate
-      var ty = ct.y + ((ct.h) / 2) + (ct.h * to / 100); // Start y-coordinate
-      ty = ty - (Math.floor(tls.length / 2) * tf) + Math.floor(tf / 2);
-
-      let t = {
-        x  : tx,
-        y  : ty,
-        c  : "black",
-        f  : "italic bold 27px Comic Sans MS",
-        a  : "center",
-        s  : tf,
-        ls : tls
-      };
-      drawText(c,t);
-
+  function drawPanelCaptions(c,p) {
+    for (var i = 0; i < p.cts.length; i++) {
+      let ct = p.cts[i];
+      if (ct.t.length > 0) {
+        drawPanelCaption(c,p,ct);
+      }
     }
   }
 
-  function drawText(c,t) {
-    c.cc.fillStyle = t.c;
-    c.cc.font = t.f;
-    c.cc.textAlign = t.a;
+  function drawPanelCaption(c,p,ct) {
+
+    // Draw box
+    drawPanelCaptionBox(c,ct);
+
+    // Draw text
+    drawPanelCaptionText(c,ct);
+
+  }
+
+  function drawPanelCaptionBox(c,ca) {
+    c.cc.fillStyle = ca.c;
+    c.cc.fillRect(ca.x,ca.y,ca.w,ca.h);
+    c.cc.strokeStyle = "#666666";
+    c.cc.strokeRect(ca.x,ca.y,ca.w,ca.h);
+  }
+
+  function drawPanelCaptionText(c,ct) {
+  
+    // Offset
+    let to = -3;                // Offset percentage
+    let tf = 27;                // Font size
+    let tx = ct.x + (ct.w / 2); // Start x-coordinate
+    var ty = ct.y + ((ct.h) / 2) + (ct.h * to / 100); // Start y-coordinate
+    ty = ty - (Math.floor(ct.t.length / 2) * tf) + Math.floor(tf / 2);
+
+    // Draw text lines
+    let t = {
+      x  : tx,
+      y  : ty,
+      s  : tf,
+      ls : ct.t
+    };
+    drawPanelText(c,t);
+
+  }
+
+  /**
+   * Draw text lines in bubble or caption, where:
+   *  - c : canvas
+   *  - t : text
+   */
+  function drawPanelText(c,t) {
     let x = t.x;
     var y = t.y;
     if ((t.ls.length % 2) === 0) { y += (t.s / 2); } // Recenter
     for (l of t.ls) {
-      c.cc.fillText(l.toUpperCase(), x, y);
+      drawPanelTextLine(c,l,x,y);
       y += t.s;
     }
   }
 
-  function drawInformation(c) {
-    c.cc.save();
-    c.cc.translate((c.cw / 2), ((c.ph / 2) + c.ph));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = "black";
-    c.cc.font = "14px Helvetica";
-    c.cc.textAlign = "center";
-    let t = c.ii+' "'+c.it+'" by '+c.ia;
-    c.cc.fillText(t.toUpperCase(), 0, 5);
-    c.cc.restore();
-  }
-  
-  function drawCopyright(c) {
-    c.cc.save();
-    c.cc.translate((c.cw / 2), (c.ph / 2));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = "black";
-    c.cc.font = "14px Helvetica";
-    c.cc.textAlign = "center";
-    let t = c.ic;
-    c.cc.fillText('\u00A9'+' '+t.toUpperCase(), 0, 5);
-    c.cc.restore();
+  /**
+   *  Draw text line in bubble or caption, where:
+   *   - c : canvas
+   *   - l : line
+   *   - x : x-coordinate (relative to canvas)
+   *   - y : y-coordinate (relative to canvas)
+   */
+  function drawPanelTextLine(c,l,x,y) {
+    c.cc.fillStyle = l.c;
+    c.cc.font = l.f;
+    c.cc.textAlign = l.a;
+    c.cc.fillText(l.t.toUpperCase(), x, y);
   }
 
 </script>
