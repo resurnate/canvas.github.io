@@ -1,13 +1,35 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+    body {
+      max-width: 1270px;
+      margin: auto;"
+    }
+    input[type=text] {
+      width: 100%;
+    }
+    textarea {
+      width: 100%;
+    }
+  </style>
+</head>
 <body>
+
 
 <h1>Resurnate Canvas</h1>
 
 <div>
+  <label for="url">Server:</label>
+  <div>
+    <input id="server" type="text" name="server" value="https://canvas.resurnate.com">
+  </div>
+</div>
+
+<div>
   <label for="url">Strip (JSON URL):</label>
   <div>
-    <input id="url" type="text" name = "url" value="https://canvas.resurnate.com/doc/sample.json" size="188">
+    <input id="url" type="text" name="url" value="https://canvas.resurnate.com/doc/sample.json">
     <div>
       <input type="button" value="Load" onclick="loadJson()">
     </div>
@@ -15,10 +37,9 @@
 </div>
 
 <div>
-  <label for="textarea">Strip (JSON format):</label>
+  <label for="textarea">Strip (JSON formatted):</label>
   <div>
-    <textarea id="textarea" name="textarea" cols="156" rows="20" placeholder="Copy and paste your strip JSON formatted content here!">
-    </textarea>
+    <textarea id="textarea" name="textarea" rows="20" placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
     <div>
       <input type="button" value="Generate" onclick="generate()">
     </div>
@@ -77,9 +98,9 @@
   ];
 
   var input;
-  var imageURLs;
-  var imgs;
-  var imagesOK;
+  var imageURLs = [];
+  var imgs = [];
+  var imagesOK = 0;
 
   function loadJson() {
     let url = document.getElementById("url");
@@ -119,16 +140,19 @@
 
   function prepareImages(i) {
     let r = [];
+    let server = document.getElementById("server");
+    let url = server.value;
     imageUrls = [];
     imgs = [];
     imagesOK = 0;
     for (p of i.panels) {
-      r.push('https://canvas.resurnate.com/img/'+p.image+'.png');
+      r.push(url+'/img/'+p.image+'.png');
     }
     return r;
   }
 
   function loadImages(callback) {
+    var a = true;
     for (var i = 0; i < imageURLs.length; i++) {
       let img = new Image();
       imgs.push(img);
@@ -139,10 +163,13 @@
         }
       };
       img.onerror=function() {
-        alert("Failed to load images");
-      } 
+        if (a) {
+          alert("Failed to load image: " + imageURLs[i]);
+          a = false;
+        }
+      }
       img.src = imageURLs[i];
-    }      
+    }
   }
 
   function prepareAndDrawCanvas() {
