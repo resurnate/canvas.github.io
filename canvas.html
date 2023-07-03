@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resurnate Canvas</title>
+  <script type="text/javascript" src="/js/canvas.js"></script>
   <style>
 
     input[type=text] {
@@ -45,7 +46,7 @@
     }
 
     .centered canvas {
-      width: 50%;
+      width: 65%;
     }
 
     .button {
@@ -98,19 +99,13 @@
 <script>
 
   function preparePage() {
-    var viewportHeight = $(window).height();
-    let url = document.getElementById("url");
+    // var viewportHeight = window.height();
+    // let url = document.getElementById("url");
     let textarea = document.getElementById("textarea");
     textarea.rows = 100;
   }
 
   // const CANVAS_ELEMENT = document.getElementById("canvas");
-  const CANVAS_ROWS = 2;
-  const PANEL_PADDING = 10;
-  const PANEL_WIDTH = 630;
-  const PANEL_HEIGHT = 630;
-  const CAPTION_WIDTH = (PANEL_WIDTH - PANEL_PADDING) / 2;
-  const CAPTION_HEIGHT = 90;
 // XXX: This should be read in from a v1 file appropriately!
   const BUBBLE_OFFSETS = [
     {
@@ -606,6 +601,8 @@
     let tx = ix + (iw / 2) + to.x;
     var ty = iy + (ih / 2) + to.y;
     ty = ty - (Math.floor(tls.length / 2) * tf);
+    // Recenter if even number of lines
+    if ((tls.length % 2) === 0) { ty += (tf / 2); }
     
     // Draw
     let t = {
@@ -619,81 +616,6 @@
     };
     drawPanelText(c,t);
 
-  }
-
-  function drawPanelCaptions(c,p) {
-    for (var i = 0; i < p.cts.length; i++) {
-      let ct = p.cts[i];
-      if (ct.t.length > 0) {
-        drawPanelCaption(c,p,ct);
-      }
-    }
-  }
-
-  function drawPanelCaption(c,p,ct) {
-
-    // Draw box
-    drawPanelCaptionBox(c,ct);
-
-    // Draw text
-    drawPanelCaptionText(c,ct);
-
-  }
-
-  function drawPanelCaptionBox(c,ca) {
-    c.cc.fillStyle = ca.c;
-    c.cc.fillRect(ca.x,ca.y,ca.w,ca.h);
-    c.cc.strokeStyle = "#666666";
-    c.cc.strokeRect(ca.x,ca.y,ca.w,ca.h);
-  }
-
-  function drawPanelCaptionText(c,ct) {
-  
-    // Offset
-    let to = -3;                // Offset percentage
-    let tf = 27;                // Font size
-    let tx = ct.x + (ct.w / 2); // Start x-coordinate
-    var ty = ct.y + ((ct.h) / 2) + (ct.h * to / 100); // Start y-coordinate
-    ty = ty - (Math.floor(ct.t.length / 2) * tf) + Math.floor(tf / 2);
-
-    // Draw text lines
-    let t = {
-      x  : tx,
-      y  : ty,
-      s  : tf,
-      ls : ct.t
-    };
-    drawPanelText(c,t);
-
-  }
-
-  /**
-   * Draw text lines in bubble or caption, where:
-   *  - c : canvas
-   *  - t : text
-   */
-  function drawPanelText(c,t) {
-    let x = t.x;
-    var y = t.y;
-    if ((t.ls.length % 2) === 0) { y += (t.s / 2); } // Recenter
-    for (l of t.ls) {
-      drawPanelTextLine(c,l,x,y);
-      y += t.s;
-    }
-  }
-
-  /**
-   *  Draw text line in bubble or caption, where:
-   *   - c : canvas
-   *   - l : line
-   *   - x : x-coordinate (relative to canvas)
-   *   - y : y-coordinate (relative to canvas)
-   */
-  function drawPanelTextLine(c,l,x,y) {
-    c.cc.fillStyle = l.c;
-    c.cc.font = l.f;
-    c.cc.textAlign = l.a;
-    c.cc.fillText(l.t.toUpperCase(), x, y);
   }
 
 </script>
