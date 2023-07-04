@@ -377,45 +377,7 @@
     // Captions
     let cts = [];
     for (var cti = 0; cti < 4; cti++) {
-      let ctw = CAPTION_WIDTH;
-      let cth = CAPTION_HEIGHT;
-      var ctx = p.x;
-      var cty = p.y;
-      var ctc = "#FFFFFF";
-      var ctf = "27px Comic Sans MS";
-      var ctt = [];
-      if (cti === 0) {        // Upper-left
-        ctx = p.x;
-        cty = p.y;
-        ctc = "#FFFF88";
-        ctf = 'italic bold '+ctf;
-        ctt = prepareCaption(ip,cti);
-      } else if (cti === 1) { // Upper-right
-        ctx = p.x + p.p + ctw;
-        cty = p.y;
-        ctc = "#FFFFCC";
-        ctf = 'italic bold '+ctf;
-        ctt = prepareCaption(ip,cti);
-      } else if (cti === 2) { // Lower-left
-        ctx = p.x;
-        cty = p.y + p.h - cth;
-        ctc = "#CCE5FF";
-        ctt = prepareCaption(ip,cti);
-      } else {                // Lower-right
-        ctx = p.x + p.p + ctw;
-        cty = p.y + p.h - cth;
-        ctc = "#DAE8FC";
-        ctt = prepareCaption(ip,cti);
-      }
-      let ct = {
-        w : ctw,
-        h : cth,
-        x : ctx,
-        y : cty,
-        c : ctc,
-        f : ctf,
-        t : ctt
-      };
+      let ct = preparePanelCaptionBox(p,ip.captions,cti);
       cts.push(ct);
     }
     p.cts = cts;
@@ -450,34 +412,11 @@
     return r;
   }
 
-  function prepareCaption(i,ci) {
-    return prepareCaptionText(i,ci);
-  }
-
-  function prepareCaptionText(i,ci) {
-    let r = [];
-    for (ic of i.captions) {
-      if ((ic.position - 1) === ci) {
-        for (var ti = 0; ti < ic.text.length; ti++) {
-          let lt = ic.text[ti];
-          let lc = "black";
-          var lf = "27px Comic Sans MS";
-          let la = "center";
-          if (ic.position < 3) {
-            lf = 'italic bold '+lf;
-          } else if (ti > 0) {
-            lf = 'italic '+lf;
-          }
-          let l = {
-            t : lt,
-            c : lc,
-            f : lf,
-            a : la
-          };
-          r.push(l);
-        }
-        break;
-      }
+  function prepareCaption(icps,ci) {
+    var r = [];
+    let icp = parsePanelCaption(icps,ci);
+    if (icp !== undefined) {
+      r = preparePanelCaptionText(icp);
     }
     return r;
   }
