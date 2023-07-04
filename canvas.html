@@ -201,13 +201,14 @@
     drawPanels(c,ps);
 
     //
-    // Order is important to ensure information
+    // Order is important to ensure attribution
     // and copyright aren't overridden!
     //
 
-    // Draw information
-    drawCanvasInformation(c);
-    
+    // Prepare and draw attribution
+    let a = prepareAttribution(input);
+    drawAttribution(c,a);
+
     // Draw copyright
     drawCanvasCopyright(c);
 
@@ -258,9 +259,6 @@
       caw : CAPTION_WIDTH,
       cah : CAPTION_HEIGHT,
       iv  : input.version,
-      ii  : input.id,
-      it  : input.title,
-      ia  : input.author,
       ic  : input.copyright
     };
   }
@@ -338,18 +336,6 @@
   function drawCanvas(c) {
     c.ce.width = c.cw;
     c.ce.height = c.ch;
-  }
-
-  function drawCanvasInformation(c) {
-    c.cc.save();
-    c.cc.translate((c.cw / 2), ((c.ph / 2) + c.ph));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = "black";
-    c.cc.font = "14px Helvetica";
-    c.cc.textAlign = "center";
-    let t = c.ii+' "'+c.it+'" by '+c.ia;
-    c.cc.fillText(t.toUpperCase(), 0, 5);
-    c.cc.restore();
   }
   
   function drawCanvasCopyright(c) {

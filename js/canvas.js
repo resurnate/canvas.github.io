@@ -1,5 +1,6 @@
 
 const FONT_FAMILY_COMIC = 'Comic Sans MS';
+const FONT_FAMILY_HELVETICA = 'Helvetica';
 const FONT_STYLE_ITALIC = 'italic';
 const FONT_WEIGHT_BOLD = 'bold'
 const FONT_COLOR_BLACK = 'black';
@@ -9,6 +10,55 @@ const CANVAS_ROWS = 2;
 const PANEL_PADDING = 10;
 const PANEL_WIDTH = 630;
 const PANEL_HEIGHT = 630;
+
+//
+// A T T R I B U T I O N
+//
+
+const ATTRIBUTION_FONT_SIZE = 14;
+const ATTRIBUTION_FONT = ATTRIBUTION_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
+const ATTRIBUTION_OFFSETS = { x : 0, y : -2 };
+
+/**
+ * Prepare attribution.
+ * @param i All input
+ */
+function prepareAttribution(i) {
+    let ii = i.id;
+    let it = i.title;
+    let ia = i.author;
+    let rt = ii+' "'+it+'" by '+ia;
+    return {
+        t : rt,
+        c : FONT_COLOR_BLACK,
+        f : ATTRIBUTION_FONT,
+        a : FONT_ALIGN_CENTER
+    };
+}
+
+/**
+ * Draw attribution.
+ * @param c Prepared canvas
+ * @param a Prepared attribution
+ */
+function drawAttribution(c,a) {
+
+    // Offset
+    let o = ATTRIBUTION_OFFSETS;
+    let x = o.x;
+    let y = (ATTRIBUTION_FONT_SIZE / 2) + o.y;
+
+    // Draw
+    c.cc.save();
+    c.cc.translate((c.cw / 2), ((c.ph / 2) + c.ph));
+    c.cc.rotate((3 * Math.PI) / 2);
+    c.cc.fillStyle = a.c;
+    c.cc.font = a.f;
+    c.cc.textAlign = a.a;
+    c.cc.fillText(a.t.toUpperCase(), x, y);
+    c.cc.restore();
+
+}
 
 //
 // B U B B L E S
@@ -54,8 +104,8 @@ const BUBBLE_OFFSETS = [
  * @param l Offset label
  */
 function parsePanelBubbleOffset(l) {
-    var r;
-    for (var o of BUBBLE_OFFSETS) {
+    let r;
+    for (let o of BUBBLE_OFFSETS) {
         if (o.l === l) {
             r = o;
             break;
@@ -70,8 +120,8 @@ function parsePanelBubbleOffset(l) {
  * @param i    Bubble position
  */
 function parsePanelBubble(ibbs,i) {
-    var r;
-    for (var ibb of ibbs) {
+    let r;
+    for (let ibb of ibbs) {
         if ((ibb.position - 1) === i) {
             r = ibb;
             break;
@@ -88,7 +138,7 @@ function parsePanelBubble(ibbs,i) {
 function preparePanelBubbles(p,ibbs) {
     let r = [];
     let is = Number(p.image.charAt(p.image.length - 1));
-    for (var i = 0; i < is; i++) {
+    for (let i = 0; i < is; i++) {
         let ibb = parsePanelBubble(ibbs,i);
         r.push(preparePanelBubble(p,ibb));
     }
@@ -101,10 +151,10 @@ function preparePanelBubbles(p,ibbs) {
  * @param ibb Bubble input
  */
 function preparePanelBubble(p,ibb) {
-    var ri;
-    var rt = [];
+    let ri;
+    let rt = [];
     if (ibb !== undefined) { // Has bubble
-        ri = preparePanelBubbleImage(p,ibb);
+        ri = preparePanelBubbleImage(p);
         rt = preparePanelBubbleText(ibb);
     }
     return {
@@ -116,9 +166,8 @@ function preparePanelBubble(p,ibb) {
 /**
  * Prepare all bubble image from panel input.
  * @param p   Prepared panel
- * @param ibb Bubble input
  */
-function preparePanelBubbleImage(p,ibb) {
+function preparePanelBubbleImage(p) {
     return {
         l : p.image
     }
@@ -130,7 +179,7 @@ function preparePanelBubbleImage(p,ibb) {
  */
 function preparePanelBubbleText(ibb) {
     let r = [];
-    for (l of ibb.text) {
+    for (let l of ibb.text) {
         r.push(preparePanelBubbleTextLine(l));
     }
     return r;
@@ -155,7 +204,7 @@ function preparePanelBubbleTextLine(l) {
  * @param p Prepared panel
  */
 function drawPanelBubbles(c,p) {
-    for (var i = 0; i < p.bbs.length; i++) {
+    for (let i = 0; i < p.bbs.length; i++) {
         let bb = p.bbs[i];
         let o = parsePanelBubbleOffset(bb.i.l);
         drawPanelBubble(c,p,bb,i,o);
@@ -210,7 +259,7 @@ function drawPanelBubbleText(c,bg,bb,o) {
 
     // Offset (leveraging panel background)
     let x = bg.ux + (bg.w / 2) + o.x;
-    var y = bg.uy + (bg.h / 2) - (Math.floor(bb.t.length / 2) * BUBBLE_FONT_SIZE);
+    let y = bg.uy + (bg.h / 2) - (Math.floor(bb.t.length / 2) * BUBBLE_FONT_SIZE);
     // Recenter if even number of lines
     if ((bb.t.length % 2) === 0) { y += (BUBBLE_FONT_SIZE / 2); }
     y += o.y;
@@ -248,8 +297,8 @@ const CAPTION_OFFSETS = {
  * @param i    Caption position
  */
 function parsePanelCaption(icps,i) {
-    var r;
-    for (var icp of icps) {
+    let r;
+    for (let icp of icps) {
         if ((icp.position - 1) === i) {
             r = icp;
             break;
@@ -265,7 +314,7 @@ function parsePanelCaption(icps,i) {
  */
 function preparePanelCaptions(p, icps) {
     let r = [];
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         let icp = parsePanelCaption(icps,i);
         r.push(preparePanelCaption(p,icp,i));
     }
@@ -280,7 +329,7 @@ function preparePanelCaptions(p, icps) {
  */
 function preparePanelCaption(p,icp,i) {
     let rb = preparePanelCaptionBox(p,i);
-    var rt = [];
+    let rt = [];
     if (icp !== undefined) { // Has caption
         rt = preparePanelCaptionText(icp);
     }
@@ -296,17 +345,14 @@ function preparePanelCaption(p,icp,i) {
  * @param i Caption position index
  */
 function preparePanelCaptionBox(p,i) {
-    var rx = p.x;
-    var ry = p.y;
-    var rc = CAPTION_BOX_COLORS[i];
+    let rx = p.x;
+    let ry = p.y;
+    let rc = CAPTION_BOX_COLORS[i];
     if (i === 0) {        // Upper-left
-        rx = p.x;
         ry = p.y;
     } else if (i === 1) { // Upper-right
         rx = p.x + p.p + CAPTION_WIDTH;
-        ry = p.y;
     } else if (i === 2) { // Lower-left
-        rx = p.x;
         ry = p.y + p.h - CAPTION_HEIGHT;
     } else {                // Lower-right
         rx = p.x + p.p + CAPTION_WIDTH;
@@ -327,7 +373,7 @@ function preparePanelCaptionBox(p,i) {
  */
 function preparePanelCaptionText(icp) {
     let r = [];
-    for (var i = 0; i < icp.text.length; i++) {
+    for (let i = 0; i < icp.text.length; i++) {
         let p = icp.position;
         let l = icp.text[i];
         let rl = preparePanelCaptionTextLine(p,l,i);
@@ -343,7 +389,7 @@ function preparePanelCaptionText(icp) {
  * @param i Line index
  */
 function preparePanelCaptionTextLine(p,l,i) {
-    var rf = CAPTION_FONT;
+    let rf = CAPTION_FONT;
     if (p < 3) {
         rf = FONT_STYLE_ITALIC+' '+FONT_WEIGHT_BOLD+' '+CAPTION_FONT;
     } else if (i > 0) {
@@ -363,7 +409,7 @@ function preparePanelCaptionTextLine(p,l,i) {
  * @param p Prepared panel
  */
 function drawPanelCaptions(c,p) {
-    for (var i = 0; i < p.cts.length; i++) {
+    for (let i = 0; i < p.cts.length; i++) {
         // Draw iff caption contains text
         let cp = p.cts[i];
         if (cp.t.length > 0) {
@@ -405,7 +451,7 @@ function drawPanelCaptionText(c,cp) {
 
     // Offset (leveraging caption box)
     let x = cp.b.x + (cp.b.w / 2) + CAPTION_OFFSETS.t.x;
-    var y = cp.b.y + (cp.b.h / 2) - (Math.floor(cp.t.length / 2) * CAPTION_FONT_SIZE);
+    let y = cp.b.y + (cp.b.h / 2) - (Math.floor(cp.t.length / 2) * CAPTION_FONT_SIZE);
     // Recenter if even number of lines
     if ((cp.t.length % 2) === 0) { y += (CAPTION_FONT_SIZE / 2); }
     y += CAPTION_OFFSETS.t.y;
@@ -432,8 +478,8 @@ function drawPanelCaptionText(c,cp) {
  */
 function drawPanelText(c,t) {
     // For each line of text...
-    var y = t.y;
-    for (var l of t.ls) {
+    let y = t.y;
+    for (let l of t.ls) {
         drawPanelTextLine(c,l,t.x,y);
         y += t.s;
     }
