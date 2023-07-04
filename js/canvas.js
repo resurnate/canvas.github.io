@@ -36,15 +36,14 @@ function parsePanelBubble(ibbs,i) {
 /**
  * Prepare all bubbles in panel.
  * @param p    Prepared panel
- * @param pi   Panel position
  * @param ibbs All panel bubble input
  */
-function preparePanelBubbles(p,pi,ibbs) {
+function preparePanelBubbles(p,ibbs) {
     let r = [];
     let is = Number(p.image.charAt(p.image.length - 1));
     for (var i = 0; i < is; i++) {
         let ibb = parsePanelBubble(ibbs,i);
-        r.push(preparePanelBubble(p,pi,ibb,i));
+        r.push(preparePanelBubble(p,ibb));
     }
     return r;
 }
@@ -52,39 +51,30 @@ function preparePanelBubbles(p,pi,ibbs) {
 /**
  * Prepare bubble box and text from panel input.
  * @param p   Prepared panel
- * @param pi  Panel position
  * @param ibb Bubble input
- * @param bi  Bubble position
  */
-function preparePanelBubble(p,pi,ibb,bi) {
-    var rb;
+function preparePanelBubble(p,ibb) {
+    var ri;
     var rt = [];
     if (ibb !== undefined) { // Has bubble
-        rb = preparePanelBubbleImage(ibb);
+        ri = preparePanelBubbleImage(p,ibb);
         rt = preparePanelBubbleText(ibb);
     }
-    // return {
-    //     b : rb,
-    //     t : rt
-    // }
     return {
-        p  : bi,
-        in : p.image,
-        ii : imgs[pi],
-        t  : rt
+        i : ri,
+        t : rt
     }
 }
 
 /**
  * Prepare all bubble image from panel input.
+ * @param p   Prepared panel
  * @param ibb Bubble input
  */
-function preparePanelBubbleImage(ibb) {
-    let r = [];
-    for (l of ibb.text) {
-        r.push(preparePanelBubbleTextLine(l));
+function preparePanelBubbleImage(p,ibb) {
+    return {
+        l : p.image
     }
-    return r;
 }
 
 /**
@@ -230,7 +220,7 @@ function preparePanelCaptionText(icp) {
  */
 function preparePanelCaptionTextLine(p,l,i) {
     var rf = CAPTION_FONT;
-    if (p.position < 3) {
+    if (p < 3) {
         rf = FONT_STYLE_ITALIC+' '+FONT_WEIGHT_BOLD+' '+CAPTION_FONT;
     } else if (i > 0) {
         rf = FONT_STYLE_ITALIC+' '+CAPTION_FONT;

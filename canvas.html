@@ -359,20 +359,8 @@
     p.bg = bg;
 
     // Bubbles
-    // let bbs = [];
-    // let bbc = Number(ip.image.charAt(ip.image.length - 1));
-    // for (var bi = 0; bi < bbc; bi++) {
-    //   var bbt = preparePanelBubble(ip.bubbles,bi);
-    //   let bb = {
-    //     p  : bi,
-    //     in : ip.image,
-    //     ii : imgs[ii],
-    //     t  : bbt
-    //   };
-    //   bbs.push(bb);
-    // }
     p.bbi = ip.image;
-    p.bbs = preparePanelBubbles(ip,ii,ip.bubbles);
+    p.bbs = preparePanelBubbles(ip,ip.bubbles);
 
     // Captions
     p.cts = preparePanelCaptions(p,ip.captions);
@@ -449,7 +437,7 @@
       // Offset
       var o;
       for (var bo of BUBBLE_OFFSETS) {
-        if (bo.l === b.in) {
+        if (bo.l === b.i.l) {
           o = bo;
           break;
         }
