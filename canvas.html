@@ -19,8 +19,6 @@
 
     var input;
     var imageURLs = [];
-    var imgs = [];
-    var imagesOK = 0;
 
     function loadJson() {
       let url = document.getElementById("url");
@@ -71,8 +69,6 @@
       let server = document.getElementById("server");
       let url = server.value;
       imageUrls = [];
-      imgs = [];
-      imagesOK = 0;
       for (p of i.panels) {
         r.push(url+'/img/'+p.image+'.png');
       }

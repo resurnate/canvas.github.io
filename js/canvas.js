@@ -205,7 +205,6 @@ function preparePanel(x,y,ip,ppi,i) {
         i   : ppi,
         bg  : rbg,
         bbi : rbbi,
-        bi  : ip.image,
         bbs : rbbs,
         cts : rcts
     };
@@ -375,7 +374,7 @@ function preparePanelBubble(p,ibb) {
     let ri;
     let rt = [];
     if (ibb !== undefined) { // Has bubble
-        ri = preparePanelBubbleImage(p);
+        ri = preparePanelBubbleImage();
         rt = preparePanelBubbleText(ibb);
     }
     return {
@@ -386,12 +385,11 @@ function preparePanelBubble(p,ibb) {
 
 /**
  * Prepare all bubble image from panel input.
- * @param p   Prepared panel
  */
-function preparePanelBubbleImage(p) {
+function preparePanelBubbleImage() {
     return {
-        l : p.image
-    }
+        // Placeholder for future!
+    };
 }
 
 /**
@@ -427,7 +425,7 @@ function preparePanelBubbleTextLine(l) {
 function drawPanelBubbles(c,p) {
     for (let i = 0; i < p.bbs.length; i++) {
         let bb = p.bbs[i];
-        let o = parsePanelBubbleOffset(bb.i.l);
+        let o = parsePanelBubbleOffset(p.bbi);
         drawPanelBubble(c,p,bb,i,o);
     }
 }
