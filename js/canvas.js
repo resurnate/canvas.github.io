@@ -16,6 +16,53 @@ const PANEL_HEIGHT = 630;
 
 const BUBBLE_FONT_SIZE = 30;
 const BUBBLE_FONT = BUBBLE_FONT_SIZE+'px '+FONT_FAMILY_COMIC;
+const BUBBLE_OFFSETS = [
+    {
+        l : "speech1",
+        i : { w : 0, h : -150, x : 0, y : 100 },
+        t : [
+            { x : 0, y : 10 }
+        ]
+    },
+    {
+        l : "speech3",
+        i : { w : -20, h : -180, x : 12, y : 100 },
+        t : [
+            { x : 135, y : -103 },
+            { x : -140, y : -38 },
+            { x : -8, y : 121 }
+        ]
+    },
+    {
+        l : "thought1",
+        i : { w : -25, h : -120, x : 10, y : 110 },
+        t : [
+            { x : 0, y : -2 }
+        ]
+    },
+    {
+        l : "burst1",
+        i : { w : 20, h : -140, x : -10, y : 70 },
+        t : [
+            { x : 0, y : 10 }
+        ]
+    }
+];
+
+/**
+ * Parse all offsets and return offset matching label.
+ * @param l Offset label
+ */
+function parsePanelBubbleOffset(l) {
+    var r;
+    for (var o of BUBBLE_OFFSETS) {
+        if (o.l === l) {
+            r = o;
+            break;
+        }
+    }
+    return r;
+}
 
 /**
  * Parse all input and return bubble matching position.
@@ -100,6 +147,83 @@ function preparePanelBubbleTextLine(l) {
         f : BUBBLE_FONT,
         a : FONT_ALIGN_CENTER
     };
+}
+
+/**
+ * Draw all bubbles in panel.
+ * @param c Prepared canvas
+ * @param p Prepared panel
+ */
+function drawPanelBubbles(c,p) {
+    for (var i = 0; i < p.bbs.length; i++) {
+        let bb = p.bbs[i];
+        let o = parsePanelBubbleOffset(bb.i.l);
+        drawPanelBubble(c,p,bb,i,o);
+    }
+}
+
+/**
+ * Draw bubble image and text in panel.
+ * @param c  Prepared canvas
+ * @param p  Prepared panel
+ * @param bb Prepared bubble
+ * @param i  Bubble position
+ * @param o  Offset
+ */
+function drawPanelBubble(c,p,bb,i,o) {
+    // Draw image (once)
+    if (i === 0) {
+        drawPanelBubbleImage(c,p,bb,o.i);
+    }
+    // Draw text
+    drawPanelBubbleText(c,p.bg,bb,o.t[i]);
+}
+
+/**
+ * Draw bubble image in panel.
+ * @param c  Prepared canvas
+ * @param p  Prepared panel
+ * @param bb Prepared bubble
+ * @param o  Offset
+ */
+function drawPanelBubbleImage(c,p,bb,o) {
+
+    // Offset (leveraging panel background)
+    let w = p.bg.w + o.w;
+    let h = p.bg.h + o.h;
+    let x = p.bg.ux + o.x;
+    let y = p.bg.uy + o.y;
+
+    // Draw
+    c.cc.drawImage(p.i, x, y, w, h);
+
+}
+
+/**
+ * Draw bubble text in panel.
+ * @param c  Prepared canvas
+ * @param bg Prepared background
+ * @param bb Prepared bubble
+ * @param o  Offset
+ */
+function drawPanelBubbleText(c,bg,bb,o) {
+
+    // Offset (leveraging panel background)
+    let x = bg.ux + (bg.w / 2) + o.x;
+    var y = bg.uy + (bg.h / 2) - (Math.floor(bb.t.length / 2) * BUBBLE_FONT_SIZE);
+    // Recenter if even number of lines
+    if ((bb.t.length % 2) === 0) { y += (BUBBLE_FONT_SIZE / 2); }
+    y += o.y;
+
+    // Draw
+    let t = {
+        x  : x,
+        y  : y,
+        s  : BUBBLE_FONT_SIZE,
+        ls : bb.t
+    };
+    drawPanelText(c,t);
+
 }
 
 //
@@ -279,7 +403,7 @@ function drawPanelCaptionBox(c,cp) {
  */
 function drawPanelCaptionText(c,cp) {
 
-    // Offset
+    // Offset (leveraging caption box)
     let x = cp.b.x + (cp.b.w / 2) + CAPTION_OFFSETS.t.x;
     var y = cp.b.y + (cp.b.h / 2) - (Math.floor(cp.t.length / 2) * CAPTION_FONT_SIZE);
     // Recenter if even number of lines

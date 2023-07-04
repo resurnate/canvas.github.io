@@ -106,39 +106,6 @@
   }
 
   // const CANVAS_ELEMENT = document.getElementById("canvas");
-// XXX: This should be read in from a v1 file appropriately!
-  const BUBBLE_OFFSETS = [
-    {
-      l : "speech1",
-      i : { w : 0, h : -150, x : 0, y : 100 },
-      t : [
-        { x : 0, y : -15 }
-      ]
-    },
-    {
-      l : "speech3",
-      i : { w : -20, h : -180, x : 12, y : 100 },
-      t : [
-        { x : 135, y : -110 },
-        { x : -140, y : -49 },
-        { x : -8, y : 110 }
-      ]
-    },
-    {
-      l : "thought1",
-      i : { w : -25, h : -120, x : 10, y : 110 },
-      t : [
-        { x : 0, y : -40 }
-      ]
-    },
-    {
-      l : "burst1",
-      i : { w : 20, h : -140, x : -10, y : 70 },
-      t : [
-        { x : 0, y : 10 }
-      ]
-    }
-  ];
 
   var input;
   var imageURLs = [];
@@ -428,79 +395,6 @@
     c.cc.fillStyle = g;
     c.cc.fillRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
     c.cc.strokeRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
-
-  }
-
-  function drawPanelBubbles(c,p) {
-    for (var bi = 0; bi < p.bbs.length; bi++) {
-      var b = p.bbs[bi];
-      // Offset
-      var o;
-      for (var bo of BUBBLE_OFFSETS) {
-        if (bo.l === b.i.l) {
-          o = bo;
-          break;
-        }
-      }
-      // Draw
-      drawPanelBubble(c,p,o,bi);
-    }
-  }
-
-  function drawPanelBubble(c,p,o,i) {
-
-    // Draw image (once)
-    if (i === 0) {
-      drawPanelBubbleImage(c,p,o);
-    }
-
-    // Draw text
-    drawPanelBubbleText(c,p,o,i);
-
-  }
-
-  function drawPanelBubbleImage(c,p,o) {
-
-    // Offset
-    let io = o.i;
-    let iw = p.bg.w + io.w;
-    var ih = p.bg.h + io.h;
-    let ix = p.bg.ux + io.x;
-    let iy = p.bg.uy + io.y;
-
-    // Draw
-    c.cc.drawImage(p.i, ix, iy, iw, ih);
-
-  }
-  
-  function drawPanelBubbleText(c,p,o,i) {
-
-    // Offset
-    let io = o.i;
-    let iw = p.bg.w + io.w;
-    var ih = p.bg.h + io.h;
-    let ix = p.bg.ux + io.x;
-    let iy = p.bg.uy + io.y;
-    let to = o.t[i];
-    let tls = p.bbs[i].t;
-    let tf = 30;
-    let tx = ix + (iw / 2) + to.x;
-    var ty = iy + (ih / 2) + to.y;
-    ty = ty - (Math.floor(tls.length / 2) * tf);
-    // Recenter if even number of lines
-    if ((tls.length % 2) === 0) { ty += (tf / 2); }
-    
-    // Draw
-    let t = {
-      x  : tx,
-      y  : ty,
-      c  : "black",
-      f  : "30px Comic Sans MS",
-      a  : "center",
-      s  : tf,
-      ls : tls
-    };
-    drawPanelText(c,t);
 
   }
 
