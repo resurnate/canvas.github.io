@@ -210,7 +210,8 @@
     drawAttribution(c,a);
 
     // Draw copyright
-    drawCanvasCopyright(c);
+    let cp = prepareCopyright();
+    drawCopyright(c,cp);
 
   }
 
@@ -258,8 +259,7 @@
       ph  : PANEL_HEIGHT,
       caw : CAPTION_WIDTH,
       cah : CAPTION_HEIGHT,
-      iv  : input.version,
-      ic  : input.copyright
+      iv  : input.version
     };
   }
 
@@ -336,18 +336,6 @@
   function drawCanvas(c) {
     c.ce.width = c.cw;
     c.ce.height = c.ch;
-  }
-  
-  function drawCanvasCopyright(c) {
-    c.cc.save();
-    c.cc.translate((c.cw / 2), (c.ph / 2));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = "black";
-    c.cc.font = "14px Helvetica";
-    c.cc.textAlign = "center";
-    let t = c.ic;
-    c.cc.fillText('\u00A9'+' '+t.toUpperCase(), 0, 5);
-    c.cc.restore();
   }
 
   function drawPanels(c,ps) {

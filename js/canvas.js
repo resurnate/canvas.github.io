@@ -12,6 +12,53 @@ const PANEL_WIDTH = 630;
 const PANEL_HEIGHT = 630;
 
 //
+// C O P Y R I G H T
+//
+
+const COPYRIGHT = 'resurnate.com';
+const COPYRIGHT_FONT_SIZE = 14;
+const COPYRIGHT_FONT = COPYRIGHT_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
+const COPYRIGHT_OFFSETS = { x : 0, y : -2 };
+
+/**
+ * Prepare copyright.
+ */
+function prepareCopyright() {
+    let dy = new Date().getFullYear();
+    let rt = '\u00A9'+' '+dy+' '+COPYRIGHT;
+    return {
+        t : rt,
+        c : FONT_COLOR_BLACK,
+        f : COPYRIGHT_FONT,
+        a : FONT_ALIGN_CENTER
+    };
+}
+
+/**
+ * Draw copyright.
+ * @param c  Prepared canvas
+ * @param cp Prepared copyright
+ */
+function drawCopyright(c,cp) {
+
+    // Offset
+    let o = COPYRIGHT_OFFSETS;
+    let x = o.x;
+    let y = (ATTRIBUTION_FONT_SIZE / 2) + o.y;
+
+    // Draw
+    c.cc.save();
+    c.cc.translate((c.cw / 2), (c.ph / 2));
+    c.cc.rotate((3 * Math.PI) / 2);
+    c.cc.fillStyle = cp.c;
+    c.cc.font = cp.f;
+    c.cc.textAlign = cp.a;
+    c.cc.fillText(cp.t.toUpperCase(), x, y);
+    c.cc.restore();
+
+}
+
+//
 // A T T R I B U T I O N
 //
 
@@ -293,14 +340,14 @@ const CAPTION_OFFSETS = {
 
 /**
  * Parse all input and return caption matching position.
- * @param icps All caption input
+ * @param icts All caption input
  * @param i    Caption position
  */
-function parsePanelCaption(icps,i) {
+function parsePanelCaption(icts,i) {
     let r;
-    for (let icp of icps) {
-        if ((icp.position - 1) === i) {
-            r = icp;
+    for (let ict of icts) {
+        if ((ict.position - 1) === i) {
+            r = ict;
             break;
         }
     }
@@ -310,13 +357,13 @@ function parsePanelCaption(icps,i) {
 /**
  * Prepare all captions in panel.
  * @param p    Prepared panel
- * @param icps All panel caption input
+ * @param icts All panel caption input
  */
-function preparePanelCaptions(p, icps) {
+function preparePanelCaptions(p, icts) {
     let r = [];
     for (let i = 0; i < 4; i++) {
-        let icp = parsePanelCaption(icps,i);
-        r.push(preparePanelCaption(p,icp,i));
+        let ict = parsePanelCaption(icts,i);
+        r.push(preparePanelCaption(p,ict,i));
     }
     return r;
 }
@@ -324,14 +371,14 @@ function preparePanelCaptions(p, icps) {
 /**
  * Prepare caption box and text from panel input.
  * @param p   Prepared panel
- * @param icp Caption input
+ * @param ict Caption input
  * @param i   Caption position index
  */
-function preparePanelCaption(p,icp,i) {
+function preparePanelCaption(p,ict,i) {
     let rb = preparePanelCaptionBox(p,i);
     let rt = [];
-    if (icp !== undefined) { // Has caption
-        rt = preparePanelCaptionText(icp);
+    if (ict !== undefined) { // Has caption
+        rt = preparePanelCaptionText(ict);
     }
     return {
         b : rb,
@@ -369,13 +416,13 @@ function preparePanelCaptionBox(p,i) {
 
 /**
  * Prepare all caption text lines from panel input.
- * @param icp Caption input
+ * @param ict Caption input
  */
-function preparePanelCaptionText(icp) {
+function preparePanelCaptionText(ict) {
     let r = [];
-    for (let i = 0; i < icp.text.length; i++) {
-        let p = icp.position;
-        let l = icp.text[i];
+    for (let i = 0; i < ict.text.length; i++) {
+        let p = ict.position;
+        let l = ict.text[i];
         let rl = preparePanelCaptionTextLine(p,l,i);
         r.push(rl);
     }
@@ -411,9 +458,9 @@ function preparePanelCaptionTextLine(p,l,i) {
 function drawPanelCaptions(c,p) {
     for (let i = 0; i < p.cts.length; i++) {
         // Draw iff caption contains text
-        let cp = p.cts[i];
-        if (cp.t.length > 0) {
-            drawPanelCaption(c,cp);
+        let ct = p.cts[i];
+        if (ct.t.length > 0) {
+            drawPanelCaption(c,ct);
         }
     }
 }
@@ -421,39 +468,39 @@ function drawPanelCaptions(c,p) {
 /**
  * Draw caption box and text in panel.
  * @param c  Prepared canvas
- * @param cp Prepared caption
+ * @param ct Prepared caption
  */
-function drawPanelCaption(c,cp) {
+function drawPanelCaption(c,ct) {
     // Draw box
-    drawPanelCaptionBox(c,cp);
+    drawPanelCaptionBox(c,ct);
     // Draw text
-    drawPanelCaptionText(c,cp);
+    drawPanelCaptionText(c,ct);
 }
 
 /**
  * Draw caption box in panel.
  * @param c  Prepared canvas
- * @param cp Prepared caption
+ * @param ct Prepared caption
  */
-function drawPanelCaptionBox(c,cp) {
-    c.cc.fillStyle = cp.b.c;
-    c.cc.fillRect(cp.b.x,cp.b.y,cp.b.w,cp.b.h);
+function drawPanelCaptionBox(c,ct) {
+    c.cc.fillStyle = ct.b.c;
+    c.cc.fillRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
     c.cc.strokeStyle = CAPTION_BORDER_STYLE;
-    c.cc.strokeRect(cp.b.x,cp.b.y,cp.b.w,cp.b.h);
+    c.cc.strokeRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
 }
 
 /**
  * Draw caption text in panel.
  * @param c  Prepared canvas
- * @param cp Prepared caption
+ * @param ct Prepared caption
  */
-function drawPanelCaptionText(c,cp) {
+function drawPanelCaptionText(c,ct) {
 
     // Offset (leveraging caption box)
-    let x = cp.b.x + (cp.b.w / 2) + CAPTION_OFFSETS.t.x;
-    let y = cp.b.y + (cp.b.h / 2) - (Math.floor(cp.t.length / 2) * CAPTION_FONT_SIZE);
+    let x = ct.b.x + (ct.b.w / 2) + CAPTION_OFFSETS.t.x;
+    let y = ct.b.y + (ct.b.h / 2) - (Math.floor(ct.t.length / 2) * CAPTION_FONT_SIZE);
     // Recenter if even number of lines
-    if ((cp.t.length % 2) === 0) { y += (CAPTION_FONT_SIZE / 2); }
+    if ((ct.t.length % 2) === 0) { y += (CAPTION_FONT_SIZE / 2); }
     y += CAPTION_OFFSETS.t.y;
 
     // Draw
@@ -461,7 +508,7 @@ function drawPanelCaptionText(c,cp) {
         x  : x,
         y  : y,
         s  : CAPTION_FONT_SIZE,
-        ls : cp.t
+        ls : ct.t
     };
     drawPanelText(c,t);
 
