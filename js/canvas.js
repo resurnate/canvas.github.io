@@ -12,6 +12,43 @@ const FONT_ALIGN_CENTER = 'center';
 
 const CANVAS_ROWS = 2;
 
+/**
+ * Prepare canvas from input.
+ * @param c Canvas context
+ * @param i All input
+ */
+function prepareCanvas(c,i) {
+    let rx = CANVAS_ROWS;
+    let ry = Math.ceil(input.panels.length / rx);
+    let rw = (rx * PANEL_WIDTH) + ((rx - 1) * PANEL_PADDING);
+    let rh = (ry * PANEL_HEIGHT) + ((ry - 1) * PANEL_PADDING);
+    let rcp = prepareCopyright();
+    let ra = prepareAttribution(i);
+    let rps = preparePanels(rx,ry,i.panels);
+    return {
+        c  : c,
+        x  : rx,
+        y  : ry,
+        w  : rw,
+        h  : rh,
+        v  : i.version,
+        cp : rcp,
+        a  : ra,
+        ps : rps
+    };
+}
+
+/**
+ * Draw canvas.
+ * @param c
+ */
+function drawCanvas(c) {
+    // Order is important to ensure attribution and copyright aren't overridden!
+    drawPanels(c,c.ps);
+    drawAttribution(c,c.a);
+    drawCopyright(c,c.cp);
+}
+
 //
 // C O P Y R I G H T
 //
@@ -22,7 +59,7 @@ const COPYRIGHT_FONT = COPYRIGHT_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
 const COPYRIGHT_OFFSETS = { x : 0, y : -2 };
 
 /**
- * Prepare copyright.
+ * Prepare copyright in canvas.
  */
 function prepareCopyright() {
     let dy = new Date().getFullYear();
@@ -48,14 +85,14 @@ function drawCopyright(c,cp) {
     let y = (ATTRIBUTION_FONT_SIZE / 2) + o.y;
 
     // Draw
-    c.cc.save();
-    c.cc.translate((c.cw / 2), (c.ph / 2));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = cp.c;
-    c.cc.font = cp.f;
-    c.cc.textAlign = cp.a;
-    c.cc.fillText(cp.t.toUpperCase(), x, y);
-    c.cc.restore();
+    c.c.save();
+    c.c.translate((c.w / 2), (PANEL_HEIGHT / 2));
+    c.c.rotate((3 * Math.PI) / 2);
+    c.c.fillStyle = cp.c;
+    c.c.font = cp.f;
+    c.c.textAlign = cp.a;
+    c.c.fillText(cp.t.toUpperCase(), x, y);
+    c.c.restore();
 
 }
 
@@ -68,7 +105,7 @@ const ATTRIBUTION_FONT = ATTRIBUTION_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
 const ATTRIBUTION_OFFSETS = { x : 0, y : -2 };
 
 /**
- * Prepare attribution from input.
+ * Prepare attribution in canvas from input.
  * @param i All input
  */
 function prepareAttribution(i) {
@@ -97,14 +134,14 @@ function drawAttribution(c,a) {
     let y = (ATTRIBUTION_FONT_SIZE / 2) + o.y;
 
     // Draw
-    c.cc.save();
-    c.cc.translate((c.cw / 2), ((c.ph / 2) + c.ph));
-    c.cc.rotate((3 * Math.PI) / 2);
-    c.cc.fillStyle = a.c;
-    c.cc.font = a.f;
-    c.cc.textAlign = a.a;
-    c.cc.fillText(a.t.toUpperCase(), x, y);
-    c.cc.restore();
+    c.c.save();
+    c.c.translate((c.w / 2), ((PANEL_HEIGHT / 2) + PANEL_HEIGHT));
+    c.c.rotate((3 * Math.PI) / 2);
+    c.c.fillStyle = a.c;
+    c.c.font = a.f;
+    c.c.textAlign = a.a;
+    c.c.fillText(a.t.toUpperCase(), x, y);
+    c.c.restore();
 
 }
 
@@ -120,14 +157,15 @@ const PANEL_BACKGROUND_COLORS = [ "#B3B3B3", "#F7F7F7" ];
 
 /**
  * Prepare all panels in canvas from input.
- * @param c   Prepared canvas
+ * @param x   X-coordinate (relative to canvas)
+ * @param y   Y-coordinate (relative to canvas)
  * @param ips All panel input
  */
-function preparePanels(c,ips) {
+function preparePanels(x,y,ips) {
     let r = [];
     for (let i = 0; i < ips.length; i++) {
         let ip = ips[i];
-        let rp = preparePanel(c,ip,i);
+        let rp = preparePanel(x,y,ip,i);
         r.push(rp);
     }
     return r;
@@ -135,20 +173,21 @@ function preparePanels(c,ips) {
 
 /**
  * Prepare panel background, bubbles and captions in canvas from input.
- * @param c  Prepared canvas
+ * @param x  X-coordinate (relative to canvas)
+ * @param y  Y-coordinate (relative to canvas)
  * @param ip Panel input
  * @param i  Panel position
  */
-function preparePanel(c,ip,i) {
+function preparePanel(x,y,ip,i) {
 
     // Coordinates
     let rx = 0; // Upper-left x-coordinate
     let ry = 0; // Upper-left y-coordinate
-    if ((i % c.cx) !== 0) {
+    if ((i % x) !== 0) {
         rx += PANEL_PADDING + PANEL_WIDTH;
     }
     if (i > 1) {
-        ry = (PANEL_PADDING + PANEL_HEIGHT) * Math.floor(i / c.cx);
+        ry = (PANEL_PADDING + PANEL_HEIGHT) * Math.floor(i / x);
     }
 
     // Components
@@ -226,15 +265,15 @@ function drawPanel(c,p) {
 function drawPanelBackground(c,bg) {
 
     // Gradient
-    let g = c.cc.createLinearGradient(bg.ux, bg.uy, bg.ux, bg.ly);
+    let g = c.c.createLinearGradient(bg.ux, bg.uy, bg.ux, bg.ly);
     g.addColorStop(0, PANEL_BACKGROUND_COLORS[0]);
     g.addColorStop(1, PANEL_BACKGROUND_COLORS[1]);
 
     // Draw
-    c.cc.fillStyle = g;
-    c.cc.fillRect(bg.ux,bg.uy,bg.w,bg.h);
-    c.cc.strokeStyle = PANEL_BORDER_STYLE;
-    c.cc.strokeRect(bg.ux,bg.uy,bg.w,bg.h);
+    c.c.fillStyle = g;
+    c.c.fillRect(bg.ux,bg.uy,bg.w,bg.h);
+    c.c.strokeStyle = PANEL_BORDER_STYLE;
+    c.c.strokeRect(bg.ux,bg.uy,bg.w,bg.h);
 
 }
 
@@ -422,7 +461,7 @@ function drawPanelBubbleImage(c,p,bb,o) {
     let y = p.bg.uy + o.y;
 
     // Draw
-    c.cc.drawImage(p.i, x, y, w, h);
+    c.c.drawImage(p.i, x, y, w, h);
 
 }
 
@@ -613,10 +652,10 @@ function drawPanelCaption(c,ct) {
  * @param ct Prepared caption
  */
 function drawPanelCaptionBox(c,ct) {
-    c.cc.fillStyle = ct.b.c;
-    c.cc.fillRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
-    c.cc.strokeStyle = CAPTION_BORDER_STYLE;
-    c.cc.strokeRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
+    c.c.fillStyle = ct.b.c;
+    c.c.fillRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
+    c.c.strokeStyle = CAPTION_BORDER_STYLE;
+    c.c.strokeRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
 }
 
 /**
@@ -670,8 +709,8 @@ function drawPanelText(c,t) {
  * @param y Y-coordinate (relative to canvas)
  */
 function drawPanelTextLine(c,l,x,y) {
-    c.cc.fillStyle = l.c;
-    c.cc.font = l.f;
-    c.cc.textAlign = l.a;
-    c.cc.fillText(l.t.toUpperCase(), x, y);
+    c.c.fillStyle = l.c;
+    c.c.font = l.f;
+    c.c.textAlign = l.a;
+    c.c.fillText(l.t.toUpperCase(), x, y);
 }

@@ -5,6 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resurnate Canvas</title>
   <script type="text/javascript" src="/js/canvas.js"></script>
+  <script>
+
+    function preparePage() {
+      // var viewportHeight = window.height();
+      // let url = document.getElementById("url");
+      let textarea = document.getElementById("textarea");
+      textarea.rows = 100;
+    }
+
+    // const CANVAS_ELEMENT = document.getElementById("canvas");
+
+    var input;
+    var imageURLs = [];
+    var imgs = [];
+    var imagesOK = 0;
+
+    function loadJson() {
+      let url = document.getElementById("url");
+      fetchJson(url.value)
+              .then((result) => {
+                let textarea = document.getElementById("textarea");
+                textarea.value = result;
+                textarea.rows = 50;
+              })
+              .catch((err) => {
+                alert("Failed to load JSON file");
+              });
+    }
+
+    function fetchJson(url) {
+      return new Promise(function (resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", () => {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            let result = xhr.responseText;
+            resolve(result);
+          } else if (xhr.readyState === 4) {
+            reject(oopsMessage);
+          }
+        });
+        xhr.open('GET', url);
+        xhr.send();
+      });
+    }
+
+    function generate() {
+      let preview = document.getElementById("preview");
+      preview.innerHTML = "Generating strip preview...";
+      // let canvas = document.getElementById("canvas");
+      // let ctx = canvas.getContext("2d")
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let textarea = document.getElementById("textarea");
+      let json = textarea.value;
+      input = JSON.parse(json);
+      imageURLs = prepareImages(input);
+      loadImages(_prepareAndDrawCanvas);
+      preview.innerHTML = "Strip Preview"
+
+    }
+
+    function prepareImages(i) {
+      let r = [];
+      let server = document.getElementById("server");
+      let url = server.value;
+      imageUrls = [];
+      imgs = [];
+      imagesOK = 0;
+      for (p of i.panels) {
+        r.push(url+'/img/'+p.image+'.png');
+      }
+      return r;
+    }
+
+    function loadImages(callback) {
+      var a = true;
+      for (var i = 0; i < imageURLs.length; i++) {
+        let img = new Image();
+        imgs.push(img);
+        img.onload = function() {
+          imagesOK++;
+          if (imagesOK >= imageURLs.length) {
+            callback();
+          }
+        };
+        img.onerror=function() {
+          if (a) {
+            alert("Failed to load image: " + imageURLs[i]);
+            a = false;
+          }
+        }
+        img.src = imageURLs[i];
+      }
+    }
+
+    function _prepareAndDrawCanvas() {
+      let r = _prepareCanvas(input);
+      _drawCanvas(r);
+    }
+
+    function _prepareCanvas(i) {
+      let re = document.createElement('canvas');
+      let rc = prepareCanvas(re.getContext("2d"),i);
+      return {
+        e : re,
+        c : rc
+      };
+    }
+
+    function _drawCanvas(r) {
+      r.e.id     = 'canvas';
+      r.e.width  = r.c.w;
+      r.e.height = r.c.h;
+      let blahblah = document.getElementById("blahblah");
+      blahblah.appendChild(r.e);
+      drawCanvas(r.c);
+    }
+
+  </script>
+
   <style>
 
     input[type=text] {
@@ -95,180 +214,6 @@
     <div id="blahblah"></div>
   </div>
 </div>
-
-<script>
-
-  function preparePage() {
-    // var viewportHeight = window.height();
-    // let url = document.getElementById("url");
-    let textarea = document.getElementById("textarea");
-    textarea.rows = 100;
-  }
-
-  // const CANVAS_ELEMENT = document.getElementById("canvas");
-
-  var input;
-  var imageURLs = [];
-  var imgs = [];
-  var imagesOK = 0;
-
-  function loadJson() {
-    let url = document.getElementById("url");
-    fetchJson(url.value)
-      .then((result) => {
-        let textarea = document.getElementById("textarea");
-        textarea.value = result;
-        textarea.rows = 50;
-      })
-      .catch((err) => {
-        alert("Failed to load JSON file");
-      });
-  }
-              
-  function fetchJson(url) {
-    return new Promise(function (resolve, reject) {
-      let xhr = new XMLHttpRequest();
-      xhr.addEventListener("readystatechange", () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          let result = xhr.responseText;
-          resolve(result);
-        } else if (xhr.readyState === 4) {
-          reject(oopsMessage);
-        }
-      });
-      xhr.open('GET', url);
-      xhr.send();
-    });
-  }
-
-  function generate() {
-    let preview = document.getElementById("preview");
-    preview.innerHTML = "Generating strip preview...";
-    // let canvas = document.getElementById("canvas");
-    // let ctx = canvas.getContext("2d")
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let textarea = document.getElementById("textarea");
-    let json = textarea.value;
-    input = JSON.parse(json);
-    imageURLs = prepareImages(input);
-    loadImages(prepareAndDrawCanvas);
-    preview.innerHTML = "Strip Preview"
-
-  }
-
-  function prepareImages(i) {
-    let r = [];
-    let server = document.getElementById("server");
-    let url = server.value;
-    imageUrls = [];
-    imgs = [];
-    imagesOK = 0;
-    for (p of i.panels) {
-      r.push(url+'/img/'+p.image+'.png');
-    }
-    return r;
-  }
-
-  function loadImages(callback) {
-    var a = true;
-    for (var i = 0; i < imageURLs.length; i++) {
-      let img = new Image();
-      imgs.push(img);
-      img.onload = function() { 
-        imagesOK++; 
-        if (imagesOK >= imageURLs.length) {
-          callback();
-        }
-      };
-      img.onerror=function() {
-        if (a) {
-          alert("Failed to load image: " + imageURLs[i]);
-          a = false;
-        }
-      }
-      img.src = imageURLs[i];
-    }
-  }
-
-  function prepareAndDrawCanvas() {
-
-    // Prepare and draw canvas
-    let c = prepareCanvas();
-    drawCanvas(c);
-  
-    // Prepare and draw panels
-    let ps = preparePanels(c,input.panels);
-    drawPanels(c,ps);
-
-    //
-    // Order is important to ensure attribution
-    // and copyright aren't overridden!
-    //
-
-    // Prepare and draw attribution
-    let a = prepareAttribution(input);
-    drawAttribution(c,a);
-
-    // Draw copyright
-    let cp = prepareCopyright();
-    drawCopyright(c,cp);
-
-  }
-
-  function prepareCanvas() {
-    let cx = CANVAS_ROWS;
-    let cy = Math.ceil(input.panels.length / cx);
-    let cw = (cx * PANEL_WIDTH) + ((cx - 1) * PANEL_PADDING);
-    let ch = (cy * PANEL_HEIGHT) + ((cy - 1) * PANEL_PADDING);
-
-    let canvas = document.createElement('canvas');
-    canvas.id     = "canvas";
-    canvas.width  = cw;
-    canvas.height = ch;
-
-
-    canvas.onwheel =function(){
-      window.addEventListener('DOMMouseScroll', wheel, true);
-    }
-
-
-    let ctx = canvas.getContext("2d");
-    // let scale = 0.50;
-    // ctx.scale(scale,scale);
-
-    let blahblah = document.getElementById("blahblah");
-    blahblah.appendChild(canvas);
-
-
-
-
-    // canvas.style.zIndex   = 8;
-    // canvas.style.position = "absolute";
-    // canvas.style.border   = "1px solid";
-
-
-    return {
-      ce  : canvas, // CANVAS_ELEMENT,
-      cc  : ctx, // canvas.getContext("2d"), // CANVAS_ELEMENT.getContext("2d"),
-      cx  : cx,
-      cy  : cy,
-      cw  : cw, // (cx * PANEL_WIDTH) + ((cx - 1) * PANEL_PADDING),
-      ch  : ch, // (cy * PANEL_HEIGHT) + ((cy - 1) * PANEL_PADDING),
-      pp  : PANEL_PADDING,
-      pw  : PANEL_WIDTH,
-      ph  : PANEL_HEIGHT,
-      caw : CAPTION_WIDTH,
-      cah : CAPTION_HEIGHT,
-      iv  : input.version
-    };
-  }
-
-  function drawCanvas(c) {
-    c.ce.width = c.cw;
-    c.ce.height = c.ch;
-  }
-
-</script>
 
 </body>
 </html>
