@@ -375,12 +375,7 @@
     p.bbs = bbs;
 
     // Captions
-    let cts = [];
-    for (var cti = 0; cti < 4; cti++) {
-      let ct = preparePanelCaptionBox(p,ip.captions,cti);
-      cts.push(ct);
-    }
-    p.cts = cts;
+    p.cts = preparePanelCaptions(p,ip.captions);
 
     return p;
   }
@@ -408,15 +403,6 @@
         }
         break;
       }
-    }
-    return r;
-  }
-
-  function prepareCaption(icps,ci) {
-    var r = [];
-    let icp = parsePanelCaption(icps,ci);
-    if (icp !== undefined) {
-      r = preparePanelCaptionText(icp);
     }
     return r;
   }
