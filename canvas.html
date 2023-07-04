@@ -359,52 +359,25 @@
     p.bg = bg;
 
     // Bubbles
-    let bbs = [];
-    let bbc = Number(ip.image.charAt(ip.image.length - 1));
-    for (var bi = 0; bi < bbc; bi++) {
-      var bbt = prepareBubble(ip,bi);
-      let bb = {
-        p  : bi,
-        in : ip.image,
-        ii : imgs[ii],
-        t  : bbt
-      };
-      bbs.push(bb);
-    }
+    // let bbs = [];
+    // let bbc = Number(ip.image.charAt(ip.image.length - 1));
+    // for (var bi = 0; bi < bbc; bi++) {
+    //   var bbt = preparePanelBubble(ip.bubbles,bi);
+    //   let bb = {
+    //     p  : bi,
+    //     in : ip.image,
+    //     ii : imgs[ii],
+    //     t  : bbt
+    //   };
+    //   bbs.push(bb);
+    // }
     p.bbi = ip.image;
-    p.bbs = bbs;
+    p.bbs = preparePanelBubbles(ip,ii,ip.bubbles);
 
     // Captions
     p.cts = preparePanelCaptions(p,ip.captions);
 
     return p;
-  }
-
-  function prepareBubble(i,bi) {
-    return prepareBubbleText(i,bi);
-  }
-
-  function prepareBubbleText(i,bi) {
-    let r = [];
-    for (ib of i.bubbles) {
-      if ((ib.position - 1) === bi) {
-        for (ibt of ib.text) {
-          let lt = ibt;
-          let lc = "black";
-          let lf = "30px Comic Sans MS";
-          let la = "center";
-          let l = {
-            t : lt,
-            c : lc,
-            f : lf,
-            a : la
-          };
-          r.push(l);
-        }
-        break;
-      }
-    }
-    return r;
   }
 
   function drawCanvas(c) {
