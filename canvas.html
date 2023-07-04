@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resurnate Canvas</title>
+  <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/canvas.js"></script>
   <script>
 
@@ -60,7 +61,7 @@
       let json = textarea.value;
       input = JSON.parse(json);
       imageURLs = prepareImages(input);
-      loadImages(_prepareAndDrawCanvas);
+      loadImages(imageURLs,_loadedImages,_loadImagesError);
       preview.innerHTML = "Strip Preview"
 
     }
@@ -78,35 +79,22 @@
       return r;
     }
 
-    function loadImages(callback) {
-      var a = true;
-      for (var i = 0; i < imageURLs.length; i++) {
-        let img = new Image();
-        imgs.push(img);
-        img.onload = function() {
-          imagesOK++;
-          if (imagesOK >= imageURLs.length) {
-            callback();
-          }
-        };
-        img.onerror=function() {
-          if (a) {
-            alert("Failed to load image: " + imageURLs[i]);
-            a = false;
-          }
-        }
-        img.src = imageURLs[i];
-      }
+    function _loadedImages(ppis) {
+      _prepareAndDrawCanvas(input,ppis);
     }
 
-    function _prepareAndDrawCanvas() {
-      let r = _prepareCanvas(input);
+    function _loadImagesError(u) {
+      alert('Failed to load one or more images: ' + u);
+    }
+
+    function _prepareAndDrawCanvas(i,ppis) {
+      let r = _prepareCanvas(i,ppis);
       _drawCanvas(r);
     }
 
-    function _prepareCanvas(i) {
+    function _prepareCanvas(i,ppis) {
       let re = document.createElement('canvas');
-      let rc = prepareCanvas(re.getContext("2d"),i);
+      let rc = prepareCanvas(re.getContext('2d'),i,ppis);
       return {
         e : re,
         c : rc

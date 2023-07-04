@@ -14,17 +14,18 @@ const CANVAS_ROWS = 2;
 
 /**
  * Prepare canvas from input.
- * @param c Canvas context
- * @param i All input
+ * @param c    Canvas context
+ * @param i    All input
+ * @param ppis Preloaded panel images
  */
-function prepareCanvas(c,i) {
+function prepareCanvas(c,i,ppis) {
     let rx = CANVAS_ROWS;
     let ry = Math.ceil(input.panels.length / rx);
     let rw = (rx * PANEL_WIDTH) + ((rx - 1) * PANEL_PADDING);
     let rh = (ry * PANEL_HEIGHT) + ((ry - 1) * PANEL_PADDING);
     let rcp = prepareCopyright();
     let ra = prepareAttribution(i);
-    let rps = preparePanels(rx,ry,i.panels);
+    let rps = preparePanels(rx,ry,i.panels,ppis);
     return {
         c  : c,
         x  : rx,
@@ -157,15 +158,17 @@ const PANEL_BACKGROUND_COLORS = [ "#B3B3B3", "#F7F7F7" ];
 
 /**
  * Prepare all panels in canvas from input.
- * @param x   X-coordinate (relative to canvas)
- * @param y   Y-coordinate (relative to canvas)
- * @param ips All panel input
+ * @param x    X-coordinate (relative to canvas)
+ * @param y    Y-coordinate (relative to canvas)
+ * @param ips  All panel input
+ * @param ppis Preloaded panel images
  */
-function preparePanels(x,y,ips) {
+function preparePanels(x,y,ips,ppis) {
     let r = [];
     for (let i = 0; i < ips.length; i++) {
         let ip = ips[i];
-        let rp = preparePanel(x,y,ip,i);
+        let ppi = ppis[i];
+        let rp = preparePanel(x,y,ip,ppi,i);
         r.push(rp);
     }
     return r;
@@ -173,12 +176,13 @@ function preparePanels(x,y,ips) {
 
 /**
  * Prepare panel background, bubbles and captions in canvas from input.
- * @param x  X-coordinate (relative to canvas)
- * @param y  Y-coordinate (relative to canvas)
- * @param ip Panel input
- * @param i  Panel position
+ * @param x   X-coordinate (relative to canvas)
+ * @param y   Y-coordinate (relative to canvas)
+ * @param ip  Panel input
+ * @param ppi Preloaded panel image
+ * @param i   Panel position
  */
-function preparePanel(x,y,ip,i) {
+function preparePanel(x,y,ip,ppi,i) {
 
     // Coordinates
     let rx = 0; // Upper-left x-coordinate
@@ -198,7 +202,7 @@ function preparePanel(x,y,ip,i) {
     return {
         x   : rx,
         y   : ry,
-        i   : imgs[i],
+        i   : ppi,
         bg  : rbg,
         bbi : rbbi,
         bi  : ip.image,
