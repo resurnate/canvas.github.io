@@ -36,7 +36,7 @@ function prepareCopyright() {
 }
 
 /**
- * Draw copyright.
+ * Draw copyright in canvas.
  * @param c  Prepared canvas
  * @param cp Prepared copyright
  */
@@ -68,7 +68,7 @@ const ATTRIBUTION_FONT = ATTRIBUTION_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
 const ATTRIBUTION_OFFSETS = { x : 0, y : -2 };
 
 /**
- * Prepare attribution.
+ * Prepare attribution from input.
  * @param i All input
  */
 function prepareAttribution(i) {
@@ -85,7 +85,7 @@ function prepareAttribution(i) {
 }
 
 /**
- * Draw attribution.
+ * Draw attribution in canvas.
  * @param c Prepared canvas
  * @param a Prepared attribution
  */
@@ -135,6 +135,36 @@ function preparePanelBackground(p) {
         lx : rux + rw, // Lower-right
         ly : ruy + rh
     };
+}
+
+
+/**
+ * Draw all panels in canvas.
+ * @param c  Prepared canvas
+ * @param ps Prepared panels
+ */
+function drawPanels(c,ps) {
+    for (let i = 0; i < ps.length; i++) {
+        let p = ps[i];
+        drawPanel(c,p);
+    }
+}
+
+/**
+ * Draw panel background, bubbles and captions in canvas.
+ * @param c Prepared canvas
+ * @param p Prepared panel
+ */
+function drawPanel(c,p) {
+    drawPanelBackground(c,p.bg);
+    if (p.bbi.startsWith("burst")) {
+        // Bubble on top of captions - bursting!
+        drawPanelCaptions(c,p);
+        drawPanelBubbles(c,p);
+    } else {
+        drawPanelBubbles(c,p);
+        drawPanelCaptions(c,p);
+    }
 }
 
 /**

@@ -326,25 +326,6 @@
     c.ce.height = c.ch;
   }
 
-  function drawPanels(c,ps) {
-    for (var pi = 0; pi < ps.length; pi++) {
-      let p = ps[pi];
-      drawPanel(c,p);
-    }
-  }
-
-  function drawPanel(c,p) {
-    drawPanelBackground(c,p.bg);
-    if (p.bbi.startsWith("burst")) {
-      // Bubble on top of captions - bursting!
-      drawPanelCaptions(c,p);
-      drawPanelBubbles(c,p);
-    } else {
-      drawPanelBubbles(c,p);
-      drawPanelCaptions(c,p);
-    }
-  }
-
 </script>
 
 </body>
