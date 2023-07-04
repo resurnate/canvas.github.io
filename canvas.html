@@ -309,19 +309,7 @@
     };
 
     // Background
-    let bgw = p.w - (p.p * 2);
-    let bgh = p.h - (p.p * 2);
-    let bgux = p.x + p.p;
-    let bguy = p.y + p.p;
-    let bg = {
-      w  : bgw,
-      h  : bgh,
-      ux : bgux,       // Upper-left
-      uy : bguy,
-      lx : bgux + bgw, // Lower-right
-      ly : bguy + bgh
-    };
-    p.bg = bg;
+    p.bg = preparePanelBackground(p);
 
     // Bubbles
     p.bbi = ip.image;
@@ -346,7 +334,7 @@
   }
 
   function drawPanel(c,p) {
-    drawPanelBackground(c,p);
+    drawPanelBackground(c,p.bg);
     if (p.bbi.startsWith("burst")) {
       // Bubble on top of captions - bursting!
       drawPanelCaptions(c,p);
@@ -355,21 +343,6 @@
       drawPanelBubbles(c,p);
       drawPanelCaptions(c,p);
     }
-  }
-
-  function drawPanelBackground(c,p) {
-
-    // Background
-    let g = c.cc.createLinearGradient(p.bg.ux, p.bg.uy, p.bg.ux, p.bg.ly);
-    g.addColorStop(0, "#B3B3B3");
-    g.addColorStop(1, "#F7F7F7");
-    c.cc.strokeStyle = "#666666";
-    
-    // Draw
-    c.cc.fillStyle = g;
-    c.cc.fillRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
-    c.cc.strokeRect(p.bg.ux,p.bg.uy,p.bg.w,p.bg.h);
-
   }
 
 </script>

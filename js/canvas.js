@@ -6,10 +6,11 @@ const FONT_WEIGHT_BOLD = 'bold'
 const FONT_COLOR_BLACK = 'black';
 const FONT_ALIGN_CENTER = 'center';
 
+//
+// C A N V A S
+//
+
 const CANVAS_ROWS = 2;
-const PANEL_PADDING = 10;
-const PANEL_WIDTH = 630;
-const PANEL_HEIGHT = 630;
 
 //
 // C O P Y R I G H T
@@ -104,6 +105,55 @@ function drawAttribution(c,a) {
     c.cc.textAlign = a.a;
     c.cc.fillText(a.t.toUpperCase(), x, y);
     c.cc.restore();
+
+}
+
+//
+// P A N E L S
+//
+
+const PANEL_PADDING = 10;
+const PANEL_WIDTH = 630;
+const PANEL_HEIGHT = 630;
+const PANEL_BORDER_STYLE = '#666666';
+const PANEL_BACKGROUND_COLORS = [ "#B3B3B3", "#F7F7F7" ];
+
+/**
+ * Prepare background in panel.
+ * @param p Prepared panel
+ */
+function preparePanelBackground(p) {
+    let rw = p.w - (p.p * 2);
+    let rh = p.h - (p.p * 2);
+    let rux = p.x + p.p;
+    let ruy = p.y + p.p;
+    return {
+        w  : rw,
+        h  : rh,
+        ux : rux,       // Upper-left
+        uy : ruy,
+        lx : rux + rw, // Lower-right
+        ly : ruy + rh
+    };
+}
+
+/**
+ * Draw background in panel.
+ * @param c  Prepared canvas
+ * @param bg Prepared background
+ */
+function drawPanelBackground(c,bg) {
+
+    // Gradient
+    let g = c.cc.createLinearGradient(bg.ux, bg.uy, bg.ux, bg.ly);
+    g.addColorStop(0, PANEL_BACKGROUND_COLORS[0]);
+    g.addColorStop(1, PANEL_BACKGROUND_COLORS[1]);
+
+    // Draw
+    c.cc.fillStyle = g;
+    c.cc.fillRect(bg.ux,bg.uy,bg.w,bg.h);
+    c.cc.strokeStyle = PANEL_BORDER_STYLE;
+    c.cc.strokeRect(bg.ux,bg.uy,bg.w,bg.h);
 
 }
 
@@ -329,9 +379,7 @@ function drawPanelBubbleText(c,bg,bb,o) {
 const CAPTION_WIDTH = (PANEL_WIDTH - PANEL_PADDING) / 2;
 const CAPTION_HEIGHT = 90;
 const CAPTION_BORDER_STYLE = '#666666';
-const CAPTION_BOX_COLORS = [
-    '#FFFF88', '#FFFFCC', '#CCE5FF','#DAE8FC'
-];
+const CAPTION_BOX_COLORS = [ '#FFFF88', '#FFFFCC', '#CCE5FF','#DAE8FC' ];
 const CAPTION_FONT_SIZE = 27;
 const CAPTION_FONT = CAPTION_FONT_SIZE+'px '+FONT_FAMILY_COMIC;
 const CAPTION_OFFSETS = {
