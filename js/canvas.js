@@ -119,14 +119,66 @@ const PANEL_BORDER_STYLE = '#666666';
 const PANEL_BACKGROUND_COLORS = [ "#B3B3B3", "#F7F7F7" ];
 
 /**
- * Prepare background in panel.
- * @param p Prepared panel
+ * Prepare all panels in canvas from input.
+ * @param c   Prepared canvas
+ * @param ips All panel input
  */
-function preparePanelBackground(p) {
-    let rw = p.w - (p.p * 2);
-    let rh = p.h - (p.p * 2);
-    let rux = p.x + p.p;
-    let ruy = p.y + p.p;
+function preparePanels(c,ips) {
+    let r = [];
+    for (let i = 0; i < ips.length; i++) {
+        let ip = ips[i];
+        let rp = preparePanel(c,ip,i);
+        r.push(rp);
+    }
+    return r;
+}
+
+/**
+ * Prepare panel background, bubbles and captions in canvas from input.
+ * @param c  Prepared canvas
+ * @param ip Panel input
+ * @param i  Panel position
+ */
+function preparePanel(c,ip,i) {
+
+    // Coordinates
+    let rx = 0; // Upper-left x-coordinate
+    let ry = 0; // Upper-left y-coordinate
+    if ((i % c.cx) !== 0) {
+        rx += PANEL_PADDING + PANEL_WIDTH;
+    }
+    if (i > 1) {
+        ry = (PANEL_PADDING + PANEL_HEIGHT) * Math.floor(i / c.cx);
+    }
+
+    // Components
+    let rbg = preparePanelBackground(rx,ry);
+    let rbbi = ip.image;
+    let rbbs = preparePanelBubbles(ip,ip.bubbles);
+    let rcts = preparePanelCaptions(rx,ry,ip.captions);
+    return {
+        x   : rx,
+        y   : ry,
+        i   : imgs[i],
+        bg  : rbg,
+        bbi : rbbi,
+        bi  : ip.image,
+        bbs : rbbs,
+        cts : rcts
+    };
+
+}
+
+/**
+ * Prepare background in panel.
+ * @param x X-coordinate (relative to panel)
+ * @param y Y-coordinate (relative to panel)
+ */
+function preparePanelBackground(x,y) {
+    let rw = PANEL_WIDTH - (PANEL_PADDING * 2);
+    let rh = PANEL_HEIGHT - (PANEL_PADDING * 2);
+    let rux = x + PANEL_PADDING;
+    let ruy = y + PANEL_PADDING;
     return {
         w  : rw,
         h  : rh,
@@ -136,7 +188,6 @@ function preparePanelBackground(p) {
         ly : ruy + rh
     };
 }
-
 
 /**
  * Draw all panels in canvas.
@@ -434,26 +485,28 @@ function parsePanelCaption(icts,i) {
 
 /**
  * Prepare all captions in panel.
- * @param p    Prepared panel
+ * @param x    X-coordinate (relative to panel)
+ * @param y    Y-coordinate (relative to panel)
  * @param icts All panel caption input
  */
-function preparePanelCaptions(p, icts) {
+function preparePanelCaptions(x,y,icts) {
     let r = [];
     for (let i = 0; i < 4; i++) {
         let ict = parsePanelCaption(icts,i);
-        r.push(preparePanelCaption(p,ict,i));
+        r.push(preparePanelCaption(x,y,ict,i));
     }
     return r;
 }
 
 /**
  * Prepare caption box and text from panel input.
- * @param p   Prepared panel
+ * @param x   X-coordinate (relative to panel)
+ * @param y   Y-coordinate (relative to panel)
  * @param ict Caption input
  * @param i   Caption position index
  */
-function preparePanelCaption(p,ict,i) {
-    let rb = preparePanelCaptionBox(p,i);
+function preparePanelCaption(x,y,ict,i) {
+    let rb = preparePanelCaptionBox(x,y,i);
     let rt = [];
     if (ict !== undefined) { // Has caption
         rt = preparePanelCaptionText(ict);
@@ -466,26 +519,25 @@ function preparePanelCaption(p,ict,i) {
 
 /**
  * Prepare caption box from panel input.
- * @param p Prepared panel
+ * @param x X-coordinate (relative to panel)
+ * @param y Y-coordinate (relative to panel)
  * @param i Caption position index
  */
-function preparePanelCaptionBox(p,i) {
-    let rx = p.x;
-    let ry = p.y;
+function preparePanelCaptionBox(x,y,i) {
+    let rx = x;
+    let ry = y;
     let rc = CAPTION_BOX_COLORS[i];
     if (i === 0) {        // Upper-left
-        ry = p.y;
+        ry = y;
     } else if (i === 1) { // Upper-right
-        rx = p.x + p.p + CAPTION_WIDTH;
+        rx = x + PANEL_PADDING + CAPTION_WIDTH;
     } else if (i === 2) { // Lower-left
-        ry = p.y + p.h - CAPTION_HEIGHT;
+        ry = y + PANEL_HEIGHT - CAPTION_HEIGHT;
     } else {                // Lower-right
-        rx = p.x + p.p + CAPTION_WIDTH;
-        ry = p.y + p.h - CAPTION_HEIGHT;
+        rx = x + PANEL_PADDING + CAPTION_WIDTH;
+        ry = y + PANEL_HEIGHT - CAPTION_HEIGHT;
     }
     return {
-        w: CAPTION_WIDTH,
-        h: CAPTION_HEIGHT,
         x: rx,
         y: ry,
         c: rc
@@ -562,9 +614,9 @@ function drawPanelCaption(c,ct) {
  */
 function drawPanelCaptionBox(c,ct) {
     c.cc.fillStyle = ct.b.c;
-    c.cc.fillRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
+    c.cc.fillRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
     c.cc.strokeStyle = CAPTION_BORDER_STYLE;
-    c.cc.strokeRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
+    c.cc.strokeRect(ct.b.x,ct.b.y,CAPTION_WIDTH,CAPTION_HEIGHT);
 }
 
 /**
@@ -575,8 +627,8 @@ function drawPanelCaptionBox(c,ct) {
 function drawPanelCaptionText(c,ct) {
 
     // Offset (leveraging caption box)
-    let x = ct.b.x + (ct.b.w / 2) + CAPTION_OFFSETS.t.x;
-    let y = ct.b.y + (ct.b.h / 2) - (Math.floor(ct.t.length / 2) * CAPTION_FONT_SIZE);
+    let x = ct.b.x + (CAPTION_WIDTH / 2) + CAPTION_OFFSETS.t.x;
+    let y = ct.b.y + (CAPTION_HEIGHT / 2) - (Math.floor(ct.t.length / 2) * CAPTION_FONT_SIZE);
     // Recenter if even number of lines
     if ((ct.t.length % 2) === 0) { y += (CAPTION_FONT_SIZE / 2); }
     y += CAPTION_OFFSETS.t.y;

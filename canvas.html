@@ -197,7 +197,7 @@
     drawCanvas(c);
   
     // Prepare and draw panels
-    let ps = preparePanels(c);
+    let ps = preparePanels(c,input.panels);
     drawPanels(c,ps);
 
     //
@@ -261,64 +261,6 @@
       cah : CAPTION_HEIGHT,
       iv  : input.version
     };
-  }
-
-  function preparePanels(c) {
-    let r = [];
-    var x = 0;
-    var y = 0;
-    for (var i = 0; i < input.panels.length; i++) {
-      // Upper-left x-coordinate
-      if ((i % c.cx) === 0) {
-        x = 0;
-      } else {
-        x += c.pp + c.pw;
-      }
-      // Upper-left y-coordinate
-      if (i > 1) {
-        if ((i % c.cx) === 0) {
-          y += c.pp + c.ph;
-        }
-      }
-      // Prepare panel
-      var p = preparePanel(c,x,y,i);
-      r.push(p);
-    }
-    return r;
-  }
-
-  /**
-     c  = Canvas
-     x  = Panel upper-left corner x-coordinate
-     y  = Panel upper-left corner y-coordinate
-     ip = Panel input
-     ii = Panel input index
-   */
-  function preparePanel(c,x,y,ii) {
-   let ip = input.panels[ii];
-
-    // Panel
-    let p = {
-      p  : PANEL_PADDING,
-      w  : PANEL_WIDTH,
-      h  : PANEL_HEIGHT,
-      x  : x,
-      y  : y,
-      i  : imgs[ii],
-      bi : ip.image
-    };
-
-    // Background
-    p.bg = preparePanelBackground(p);
-
-    // Bubbles
-    p.bbi = ip.image;
-    p.bbs = preparePanelBubbles(ip,ip.bubbles);
-
-    // Captions
-    p.cts = preparePanelCaptions(p,ip.captions);
-
-    return p;
   }
 
   function drawCanvas(c) {
