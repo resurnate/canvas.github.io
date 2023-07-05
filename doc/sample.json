@@ -6,15 +6,6 @@
   "panels": [
     {
       "image": "thought1",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Motivated)"
-          ]
-        }
-      ],
       "bubbles": [
         {
           "position": 1,
@@ -25,10 +16,27 @@
             "times before..."
           ]
         }
+      ],
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Motivated)"
+          ]
+        }
       ]
     },
     {
       "image": "thought1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Awesome! Moving on."
+          ]
+        }
+      ],
       "captions": [
         {
           "position": 1,
@@ -43,18 +51,21 @@
             "(Chuffed)"
           ]
         }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Awesome! Moving on."
-          ]
-        }
       ]
     },
     {
       "image": "speech1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Oh by the way, I knocked",
+            "out some of the usual",
+            "stuff in the project",
+            "yesterday."
+          ]
+        }
+      ],
       "captions": [
         {
           "position": 1,
@@ -70,30 +81,10 @@
             "(Casually)"
           ]
         }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Oh by the way, I knocked",
-            "out some of the usual",
-            "stuff in the project",
-            "yesterday."
-          ]
-        }
       ]
     },
     {
       "image": "speech3",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Team",
-            "(Swarm of hornets)"
-          ]
-        }
-      ],
       "bubbles": [
         {
           "position": 1,
@@ -118,19 +109,19 @@
             "the backlog!"
           ]
         }
-      ]
-    },
-    {
-      "image": "thought1",
+      ],
       "captions": [
         {
           "position": 3,
           "text": [
-            "Me",
-            "(Bewildered)"
+            "Team",
+            "(Swarm of hornets)"
           ]
         }
-      ],
+      ]
+    },
+    {
+      "image": "thought1",
       "bubbles": [
         {
           "position": 1,
@@ -139,10 +130,34 @@
             "but fuck it..."
           ]
         }
+      ],
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Bewildered)"
+          ]
+        }
       ]
     },
     {
       "image": "burst1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Countless",
+            "back-and-forths",
+            "defending some",
+            "inane industry-standard",
+            "thing to people, because...",
+            "arrrrggghh",
+            "what the living",
+            "fuck!"
+          ]
+        }
+      ],
       "captions": [
         {
           "position": 1,
@@ -164,25 +179,20 @@
             "(Contrary)"
           ]
         }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "Countless",
-            "back-and-forths",
-            "defending some",
-            "inane industry-standard",
-            "thing to people, because...",
-            "arrrrggghh",
-            "what the living",
-            "fuck!"
-          ]
-        }
       ]
     },
     {
       "image": "speech1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "We should setup",
+            "a meeting",
+            "to discuss further."
+          ]
+        }
+      ],
       "captions": [
         {
           "position": 1,
@@ -198,29 +208,10 @@
             "(Conceited)"
           ]
         }
-      ],
-      "bubbles": [
-        {
-          "position": 1,
-          "text": [
-            "We should setup",
-            "a meeting",
-            "to discuss further."
-          ]
-        }
       ]
     },
     {
       "image": "thought1",
-      "captions": [
-        {
-          "position": 3,
-          "text": [
-            "Me",
-            "(Dying on sword)"
-          ]
-        }
-      ],
       "bubbles": [
         {
           "position": 1,
@@ -229,6 +220,15 @@
             "will I",
             "ever",
             "learn!"
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "position": 3,
+          "text": [
+            "Me",
+            "(Dying on sword)"
           ]
         }
       ]
