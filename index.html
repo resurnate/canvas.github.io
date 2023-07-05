@@ -11,91 +11,98 @@
         const SERVER_ELEMENT = 'server';
         const FILE_ELEMENT = 'file';
         const CONTENT_ELEMENT = 'content';
+        const PREVIEW_ELEMENT = 'preview';
         const CANVAS_ELEMENT = 'canvas';
+        const CANVAS_CONTEXT = '2d';
+        const IMAGE_PATHNAME = '/img/';
+        const IMAGE_SUFFIX = '.png';
+        const SAMPLE_PATHNAME = '/doc/sample.json';
 
-        function preparePage() {
+        let input;
+
+        function initPage() {
             let server = document.getElementById(SERVER_ELEMENT);
             server.value = window.location.origin;
             let file = document.getElementById(FILE_ELEMENT);
-            file.value = server.value+'/doc/sample.json';
+            file.value = server.value+SAMPLE_PATHNAME;
             let content = document.getElementById(CONTENT_ELEMENT);
             content.value = '';
-            loadJson();
+            loadFile();
         }
 
-        function loadJson() {
+        function loadFile() {
             let url = document.getElementById(FILE_ELEMENT);
             fetchJson(url.value)
                 .then((result) => {
                     let content = document.getElementById(CONTENT_ELEMENT);
                     content.value = result;
                 })
-                .catch((err) => {
+                .catch(() => {
                     alert("Failed to load file: " + url.value);
                 });
         }
 
-        function generate() {
-            // Remove previous content
-            let placeholder = document.getElementById("placeholder");
+        function preview() {
+            // Remove previous preview
+            let preview = document.getElementById(PREVIEW_ELEMENT);
             let canvas = document.getElementById(CANVAS_ELEMENT);
-            if ((canvas !== undefined) && (canvas !== null)) {
-                placeholder.removeChild(canvas);
+            if (canvas !== null) {
+                preview.removeChild(canvas);
             }
-            // Create new content
+            // Preload images and generate canvas
             let content = document.getElementById(CONTENT_ELEMENT);
-            let json = JSON.parse(content.value);
-            let imageURLs = prepareImages(json);
-            loadImages(imageURLs,_loadedImages,_loadImagesError);
+            input = JSON.parse(content.value);
+            let imageURLs = prepareImages();
+            loadImages(imageURLs,generate,loadError);
         }
 
-        function prepareImages(i) {
-            let r = [];
+        function prepareImages() {
+            let result = [];
             let server = document.getElementById(SERVER_ELEMENT);
-            let url = server.value;
-            for (p of i.panels) {
-                r.push(url+'/img/'+p.image+'.png');
+            let origin = server.value;
+            for (let panel of input.panels) {
+                let url = origin + IMAGE_PATHNAME + panel.image + IMAGE_SUFFIX;
+                result.push(url);
             }
-            return r;
+            return result;
         }
 
-        function _loadedImages(ppis) {
-            let content = document.getElementById(CONTENT_ELEMENT);
-            let json = JSON.parse(content.value);
-            _prepareAndDrawCanvas(json,ppis);
+        function generate(images) {
+            prepareAndDrawCanvas(images);
         }
 
-        function _loadImagesError(u) {
-            alert('Failed to load one or more images: ' + u);
+        function loadError(url) {
+            alert('Failed to load one or more images: ' + url);
         }
 
-        function _prepareAndDrawCanvas(i,ppis) {
-            let r = _prepareCanvas(i,ppis);
-            _drawCanvas(r);
+        function prepareAndDrawCanvas(images) {
+            let prepared = _prepareCanvas(images);
+            _drawCanvas(prepared);
         }
 
-        function _prepareCanvas(i,ppis) {
-            let re = document.createElement('canvas');
-            let rc = prepareCanvas(re.getContext('2d'),i,ppis);
+        function _prepareCanvas(images) {
+            let canvas = document.createElement(CANVAS_ELEMENT);
+            let context = canvas.getContext(CANVAS_CONTEXT);
+            let filtered = prepareCanvas(context,input,images);
             return {
-                e : re,
-                c : rc
+                canvas   : canvas,
+                filtered : filtered
             };
         }
 
-        function _drawCanvas(r) {
-            r.e.id     = 'canvas';
-            r.e.width  = r.c.w;
-            r.e.height = r.c.h;
-            let placeholder = document.getElementById("placeholder");
-            placeholder.appendChild(r.e);
-            drawCanvas(r.c);
+        function _drawCanvas(prepared) {
+            prepared.canvas.id     = CANVAS_ELEMENT;
+            prepared.canvas.width  = prepared.filtered.w;
+            prepared.canvas.height = prepared.filtered.h;
+            let preview = document.getElementById(PREVIEW_ELEMENT);
+            preview.appendChild(prepared.canvas);
+            drawCanvas(prepared.filtered);
         }
 
     </script>
 
 </head>
-<body onload="preparePage();">
+<body onload="initPage();">
 
 <div class="header">
     <h1 class="title">Resurnate Canvas</h1>
@@ -111,48 +118,49 @@
 
 <h2>Content</h2>
 <p>
-    <input class="button" type="button" value="LOAD" onclick="loadJson()">
-    <input id="myBtn" class="button" type="button" value="PREVIEW" onclick="generate()">
-    <input class="button" type="button" value="RESET" onclick="preparePage()">
+    <input class="button" type="button" value="LOAD" onclick="loadFile()">
+    <input id="button" class="button" type="button" value="PREVIEW">
+    <input class="button" type="button" value="RESET" onclick="initPage()">
 </p>
 <label for="content">Load input file or copy and paste</label>
 <textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
 
-<!-- The Modal -->
-<div id="myModal" class="modal">
+<!-- Modal -->
+<div id="modal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <div id="placeholder"></div>
+        <div id="preview"></div>
     </div>
 </div>
 
 <script>
-    // Get the modal
-    var modal = document.getElementById("myModal");
 
-    // Get the button that opens the modal
-    var btn = document.getElementById("myBtn");
+    const MODAL_ELEMENT = 'modal';
+    const BUTTON_ELEMENT = 'button';
+    const CLOSE_ELEMENT = 'close';
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
+    let modal = document.getElementById(MODAL_ELEMENT);
+    let btn = document.getElementById(BUTTON_ELEMENT);
+    let span = document.getElementsByClassName(CLOSE_ELEMENT)[0];
 
-    // When the user clicks the button, open the modal
+    // Open modal and preview
     btn.onclick = function() {
         modal.style.display = "block";
-        generate();
+        preview();
     }
 
-    // When the user clicks on <span> (x), close the modal
+    // When <span> (x) clicked, close modal
     span.onclick = function() {
         modal.style.display = "none";
     }
 
-    // When the user clicks anywhere outside of the modal, close it
+    // When anywhere outside modal clicked, close it
     window.onclick = function(event) {
         if (event.target === modal) {
             modal.style.display = "none";
         }
     }
+
 </script>
 </body>
 </html>
