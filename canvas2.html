@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resurnate Canvas</title>
+  <link rel="stylesheet" href="/css/main.css">
   <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/canvas.js"></script>
   <script type="text/javascript">
@@ -11,15 +12,8 @@
     const SERVER_ELEMENT = 'server';
     const FILE_ELEMENT = 'file';
     const CONTENT_ELEMENT = 'content';
+    const CANVAS_ELEMENT = 'canvas';
 
-    function preparePage() {
-      // var viewportHeight = window.height();
-      // let url = document.getElementById(FILE_ELEMENT);
-      let content = document.getElementById(CONTENT_ELEMENT);
-      content.rows = 100;
-    }
-
-    // const CANVAS_ELEMENT = document.getElementById("canvas");
     function loadJson() {
       let url = document.getElementById(FILE_ELEMENT);
       fetchJson(url.value)
@@ -34,18 +28,17 @@
     }
 
     function generate() {
-console.log("Generating...");
-      let preview = document.getElementById("preview");
-      preview.innerHTML = "Generating strip preview...";
-      // let canvas = document.getElementById("canvas");
-      // let ctx = canvas.getContext("2d")
-      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Remove previous content
+      let placeholder = document.getElementById("placeholder");
+      let canvas = document.getElementById(CANVAS_ELEMENT);
+      if ((canvas !== undefined) && (canvas !== null)) {
+        placeholder.removeChild(canvas);
+      }
+      // Create new content
       let content = document.getElementById(CONTENT_ELEMENT);
       let json = JSON.parse(content.value);
       let imageURLs = prepareImages(json);
       loadImages(imageURLs,_loadedImages,_loadImagesError);
-      preview.innerHTML = "Strip Preview"
-
     }
 
     function prepareImages(i) {
@@ -76,7 +69,6 @@ console.log("Generating...");
     function _prepareCanvas(i,ppis) {
       let re = document.createElement('canvas');
       let rc = prepareCanvas(re.getContext('2d'),i,ppis);
-      // rc.scale(.5,.5);
       return {
         e : re,
         c : rc
@@ -85,232 +77,38 @@ console.log("Generating...");
 
     function _drawCanvas(r) {
       r.e.id     = 'canvas';
-
-      let bingo = document.getElementById("bingo");
-
-console.log(r.c.w + ' ' + r.c.h);
-console.log(modal);
-console.log(window.innerHeight);
-// modal.height = "2700px";
       r.e.width  = r.c.w;
       r.e.height = r.c.h;
-      let blahblah = document.getElementById("blahblah");
-      blahblah.appendChild(r.e);
+      let placeholder = document.getElementById("placeholder");
+      placeholder.appendChild(r.e);
       drawCanvas(r.c);
-let vvvv = document.getElementById("canvas");
-console.log(vvvv.width + ' ' + vvvv.height);
     }
 
   </script>
-  <style>
-    body {font-family: Arial, Helvetica, sans-serif;}
 
-    /*!* The Modal (background) *!*/
-    /*.modal {*/
-    /*  display: none; !* Hidden by default *!*/
-    /*  position: fixed; !* Stay in place *!*/
-    /*  z-index: 1; !* Sit on top *!*/
-    /*  !*padding-top: 100px; !* Location of the box *!*!*/
-    /*  padding-top: 10px; !* Location of the box *!*/
-    /*  left: 0;*/
-    /*  top: 0;*/
-    /*  width: 100%; !* Full width *!*/
-    /*  height: 100%; !* Full height *!*/
-    /*  overflow: auto; !* Enable scroll if needed *!*/
-    /*  background-color: rgb(0,0,0); !* Fallback color *!*/
-    /*  background-color: rgba(0,0,0,0.4); !* Black w/ opacity *!*/
-    /*}*/
-
-    /*!* Modal Content *!*/
-    /*.modal-content {*/
-    /*  background-color: #fefefe;*/
-    /*  margin: auto;*/
-    /*  padding: 20px;*/
-    /*  border: 1px solid #888;*/
-    /*  width: 80%;*/
-    /*  !*height: 100%;*!*/
-    /*  !*max-height: 100%; !* Full height *!*!*/
-    /*  text-align: center;*/
-    /*}*/
-
-    /*.modal-content canvas {*/
-    /*  width: 100%;*/
-    /*  !*overflow:visible !important;*!*/
-    /*  !*position: absolute;*!*/
-    /*  !*left: 0;*!*/
-    /*  !*top: 0;*!*/
-
-    /*}*/
-    /*!* The Close Button *!*/
-    /*.close {*/
-    /*  color: #aaaaaa;*/
-    /*  float: right;*/
-    /*  font-size: 28px;*/
-    /*  font-weight: bold;*/
-    /*}*/
-
-    /*.close:hover,*/
-    /*.close:focus {*/
-    /*  color: #000;*/
-    /*  text-decoration: none;*/
-    /*  cursor: pointer;*/
-    /*}*/
-
-    /* The Modal (background) */
-    .modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1; /* Sit on top */
-      /*padding-top: 100px; !* Location of the box *!*/
-      padding-top: 10px;
-      left: 0;
-      top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgb(0,0,0); /* Fallback color */
-      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-
-    /* Modal Content */
-    .modal-content {
-      background-color: #fefefe;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-    }
-
-    .modal-content canvas {
-      width: 100%;
-      /*overflow:visible !important;*/
-      /*position: absolute;*/
-      /*left: 0;*/
-      /*top: 0;*/
-    }
-
-    /* The Close Button */
-    .close {
-      color: #aaaaaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: #000;
-      text-decoration: none;
-      cursor: pointer;
-    }
-  </style>
-  <style>
-
-    input[type=text] {
-      width: 100%;
-      /*padding: 5%;*/
-    }
-
-    textarea {
-      width: 100%;
-    }
-
-    /*.split {*/
-    /*  height: 100%;*/
-    /*  position: fixed;*/
-    /*  top: 0;*/
-    /*  overflow-x: hidden;*/
-    /*  padding-top: 20px;*/
-    /*}*/
-
-    /*.left {*/
-    /*  width: 25%;*/
-    /*  left: 0;*/
-    /*  background-color: #41b6e6;*/
-    /*}*/
-
-    /*.right {*/
-    /*  width: 75%;*/
-    /*  right: 0;*/
-    /*  background-color: #ffffff;*/
-    /*  !*margin-left: 10px;*!*/
-    /*}*/
-
-    /*.centered {*/
-    /*  !*position: absolute;*!*/
-    /*  !*top: 50%;*!*/
-    /*  !*left: 50%;*!*/
-    /*  !*transform: translate(-50%, -50%);*!*/
-    /*  text-align: center;*/
-    /*}*/
-
-    /*.centered canvas {*/
-    /*  width: 65%;*/
-    /*}*/
-
-    .button {
-      background-color: #003087;
-      border: none;
-      color: white;
-      padding: 10px;
-      text-align: center;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
-      margin: 4px 2px;
-      cursor: pointer;
-      /*width: 90px;*/
-      /*height: 35px;*/
-    }
-
-  </style>
 </head>
-<body onload="preparePage();">
+<body>
 
-
-<!--<div class="split left">-->
-<!--  <div class="centered">-->
-    <div style="margin-left: 5px; margin-right: 15px">
-      <h2>Resurnate Canvas</h2>
-      <h3 style="text-align: left">Server</h3>
-      <input id="server" type="text" name="server" value="https://canvas.resurnate.com">
-      <h3 style="text-align: left">File</h3>
-      <input id="file" type="text" name="file" value="https://canvas.resurnate.com/doc/sample.json">
-      <p>
-        <input class="button" type="button" value="LOAD" onclick="loadJson()">
-        <input class="button" type="button" value="PREVIEW" onclick="generate()">
-        <input class="button" type="button" value="RESET" onclick="reset()">
-      </p>
-      <h3 style="text-align: left">Content</h3>
-      <textarea id="content" name="content" placeholder="Copy and paste your strip JSON formatted content here!" rows="50"></textarea>
-    </div>
-<!--  </div>-->
-<!--</div>-->
-
-
-<!--<div class="split right">-->
-<!--  <div class="centered">-->
-    <h2 id="preview">LOAD then click PREVIEW</h2>
-<!--    <div id="blahblah"></div>-->
-<!--  </div>-->
-<!--</div>-->
-
-<!-- Trigger/Open The Modal -->
-<button id="myBtn">Open Modal</button>
+  <h1>Resurnate Canvas</h1>
+<h2>Server</h2>
+<input id="server" type="text" name="server" value="https://canvas.resurnate.com">
+<h3>File</h3>
+<input id="file" type="text" name="file" value="https://canvas.resurnate.com/doc/sample.json">
+<p>
+  <input class="button" type="button" value="LOAD" onclick="loadJson()">
+  <input id="myBtn" class="button" type="button" value="PREVIEW" onclick="generate()">
+  <input class="button" type="button" value="RESET" onclick="reset()">
+</p>
+<h2>Content</h2>
+<textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
 
 <!-- The Modal -->
 <div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div id="bingo" class="modal-content">
+  <div class="modal-content">
     <span class="close">&times;</span>
-<!--    <p>Some text in the Modal..</p>-->
-    <div id="blahblah"></div>
-<!--    <p>Some text in the Modal..</p>-->
+    <div id="placeholder"></div>
   </div>
-
 </div>
-
 
 <script>
   // Get the modal
@@ -335,7 +133,7 @@ console.log(vvvv.width + ' ' + vvvv.height);
 
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function(event) {
-    if (event.target == modal) {
+    if (event.target === modal) {
       modal.style.display = "none";
     }
   }
