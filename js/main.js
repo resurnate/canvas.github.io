@@ -1,4 +1,19 @@
 
+function fetchJson(url) {
+    return new Promise(function (resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                resolve(xhr.responseText);
+            } else if (xhr.readyState === 4) {
+                reject(xhr.status);
+            }
+        });
+        xhr.open('GET', url);
+        xhr.send();
+    });
+}
+
 function loadImages(urls,callbackOk,callbackErr) {
     let r = [];
     let rl= 0;     // Images loaded

@@ -20,7 +20,7 @@ const CANVAS_ROWS = 2;
  */
 function prepareCanvas(c,i,ppis) {
     let rx = CANVAS_ROWS;
-    let ry = Math.ceil(input.panels.length / rx);
+    let ry = Math.ceil(i.panels.length / rx);
     let rw = (rx * PANEL_WIDTH) + ((rx - 1) * PANEL_PADDING);
     let rh = (ry * PANEL_HEIGHT) + ((ry - 1) * PANEL_PADDING);
     let rcp = prepareCopyright();

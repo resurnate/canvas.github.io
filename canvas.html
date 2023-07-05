@@ -6,47 +6,31 @@
   <title>Resurnate Canvas</title>
   <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/canvas.js"></script>
-  <script>
+  <script type="text/javascript">
+
+    const SERVER_ELEMENT = 'server';
+    const FILE_ELEMENT = 'file';
+    const CONTENT_ELEMENT = 'content';
 
     function preparePage() {
       // var viewportHeight = window.height();
-      // let url = document.getElementById("url");
-      let textarea = document.getElementById("textarea");
-      textarea.rows = 100;
+      // let url = document.getElementById(FILE_ELEMENT);
+      let content = document.getElementById(CONTENT_ELEMENT);
+      content.rows = 100;
     }
 
     // const CANVAS_ELEMENT = document.getElementById("canvas");
-
-    var input;
-    var imageURLs = [];
-
     function loadJson() {
-      let url = document.getElementById("url");
+      let url = document.getElementById(FILE_ELEMENT);
       fetchJson(url.value)
               .then((result) => {
-                let textarea = document.getElementById("textarea");
-                textarea.value = result;
-                textarea.rows = 50;
+                let content = document.getElementById(CONTENT_ELEMENT);
+                content.value = result;
+                content.rows = 50;
               })
               .catch((err) => {
-                alert("Failed to load JSON file");
+                alert("Failed to load file: " + url.value);
               });
-    }
-
-    function fetchJson(url) {
-      return new Promise(function (resolve, reject) {
-        let xhr = new XMLHttpRequest();
-        xhr.addEventListener("readystatechange", () => {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            let result = xhr.responseText;
-            resolve(result);
-          } else if (xhr.readyState === 4) {
-            reject(oopsMessage);
-          }
-        });
-        xhr.open('GET', url);
-        xhr.send();
-      });
     }
 
     function generate() {
@@ -55,10 +39,9 @@
       // let canvas = document.getElementById("canvas");
       // let ctx = canvas.getContext("2d")
       // ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let textarea = document.getElementById("textarea");
-      let json = textarea.value;
-      input = JSON.parse(json);
-      imageURLs = prepareImages(input);
+      let content = document.getElementById(CONTENT_ELEMENT);
+      let json = JSON.parse(content.value);
+      let imageURLs = prepareImages(json);
       loadImages(imageURLs,_loadedImages,_loadImagesError);
       preview.innerHTML = "Strip Preview"
 
@@ -66,9 +49,8 @@
 
     function prepareImages(i) {
       let r = [];
-      let server = document.getElementById("server");
+      let server = document.getElementById(SERVER_ELEMENT);
       let url = server.value;
-      imageUrls = [];
       for (p of i.panels) {
         r.push(url+'/img/'+p.image+'.png');
       }
@@ -76,7 +58,9 @@
     }
 
     function _loadedImages(ppis) {
-      _prepareAndDrawCanvas(input,ppis);
+      let content = document.getElementById(CONTENT_ELEMENT);
+      let json = JSON.parse(content.value);
+      _prepareAndDrawCanvas(json,ppis);
     }
 
     function _loadImagesError(u) {
@@ -179,14 +163,14 @@
       <h3 style="text-align: left">Server</h3>
       <input id="server" type="text" name="server" value="https://canvas.resurnate.com">
       <h3 style="text-align: left">File</h3>
-      <input id="url" type="text" name="url" value="https://canvas.resurnate.com/doc/sample.json">
+      <input id="file" type="text" name="file" value="https://canvas.resurnate.com/doc/sample.json">
       <p>
         <input class="button" type="button" value="LOAD" onclick="loadJson()">
         <input class="button" type="button" value="PREVIEW" onclick="generate()">
         <input class="button" type="button" value="RESET" onclick="reset()">
       </p>
       <h3 style="text-align: left">Content</h3>
-      <textarea id="textarea" name="textarea" placeholder="Copy and paste your strip JSON formatted content here!" rows="50"></textarea>
+      <textarea id="content" name="content" placeholder="Copy and paste your strip JSON formatted content here!" rows="50"></textarea>
     </div>
   </div>
 </div>
