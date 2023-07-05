@@ -14,13 +14,22 @@
     const CONTENT_ELEMENT = 'content';
     const CANVAS_ELEMENT = 'canvas';
 
+    function preparePage() {
+      let server = document.getElementById(SERVER_ELEMENT);
+      server.value = window.location.origin;
+      let file = document.getElementById(FILE_ELEMENT);
+      file.value = server.value+'/doc/sample.json';
+      let content = document.getElementById(CONTENT_ELEMENT);
+      content.value = '';
+      loadJson();
+    }
+
     function loadJson() {
       let url = document.getElementById(FILE_ELEMENT);
       fetchJson(url.value)
               .then((result) => {
                 let content = document.getElementById(CONTENT_ELEMENT);
                 content.value = result;
-                content.rows = 50;
               })
               .catch((err) => {
                 alert("Failed to load file: " + url.value);
@@ -87,17 +96,17 @@
   </script>
 
 </head>
-<body>
+<body onload="preparePage();">
 
   <h1>Resurnate Canvas</h1>
 <h2>Server</h2>
-<input id="server" type="text" name="server" value="https://canvas.resurnate.com">
+<input id="server" type="text" name="server">
 <h3>File</h3>
-<input id="file" type="text" name="file" value="https://canvas.resurnate.com/doc/sample.json">
+<input id="file" type="text" name="file">
 <p>
   <input class="button" type="button" value="LOAD" onclick="loadJson()">
   <input id="myBtn" class="button" type="button" value="PREVIEW" onclick="generate()">
-  <input class="button" type="button" value="RESET" onclick="reset()">
+  <input class="button" type="button" value="RESET" onclick="preparePage()">
 </p>
 <h2>Content</h2>
 <textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
