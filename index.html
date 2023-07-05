@@ -2,13 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Canvas: Home</title>
+    <title>Canvas: Home</title>  <title>Resurnate Canvas</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/js/canvas.js"></script>
+    <script type="text/javascript">
+
+        const SERVER_ELEMENT = 'server';
+        const FILE_ELEMENT = 'file';
+        const CONTENT_ELEMENT = 'content';
+        const CANVAS_ELEMENT = 'canvas';
+
+        function preparePage() {
+            let server = document.getElementById(SERVER_ELEMENT);
+            server.value = window.location.origin;
+            let file = document.getElementById(FILE_ELEMENT);
+            file.value = server.value+'/doc/sample.json';
+            let content = document.getElementById(CONTENT_ELEMENT);
+            content.value = '';
+            loadJson();
+        }
+
+        function loadJson() {
+            let url = document.getElementById(FILE_ELEMENT);
+            fetchJson(url.value)
+                .then((result) => {
+                    let content = document.getElementById(CONTENT_ELEMENT);
+                    content.value = result;
+                })
+                .catch((err) => {
+                    alert("Failed to load file: " + url.value);
+                });
+        }
+
+        function generate() {
+            // Remove previous content
+            let placeholder = document.getElementById("placeholder");
+            let canvas = document.getElementById(CANVAS_ELEMENT);
+            if ((canvas !== undefined) && (canvas !== null)) {
+                placeholder.removeChild(canvas);
+            }
+            // Create new content
+            let content = document.getElementById(CONTENT_ELEMENT);
+            let json = JSON.parse(content.value);
+            let imageURLs = prepareImages(json);
+            loadImages(imageURLs,_loadedImages,_loadImagesError);
+        }
+
+        function prepareImages(i) {
+            let r = [];
+            let server = document.getElementById(SERVER_ELEMENT);
+            let url = server.value;
+            for (p of i.panels) {
+                r.push(url+'/img/'+p.image+'.png');
+            }
+            return r;
+        }
+
+        function _loadedImages(ppis) {
+            let content = document.getElementById(CONTENT_ELEMENT);
+            let json = JSON.parse(content.value);
+            _prepareAndDrawCanvas(json,ppis);
+        }
+
+        function _loadImagesError(u) {
+            alert('Failed to load one or more images: ' + u);
+        }
+
+        function _prepareAndDrawCanvas(i,ppis) {
+            let r = _prepareCanvas(i,ppis);
+            _drawCanvas(r);
+        }
+
+        function _prepareCanvas(i,ppis) {
+            let re = document.createElement('canvas');
+            let rc = prepareCanvas(re.getContext('2d'),i,ppis);
+            return {
+                e : re,
+                c : rc
+            };
+        }
+
+        function _drawCanvas(r) {
+            r.e.id     = 'canvas';
+            r.e.width  = r.c.w;
+            r.e.height = r.c.h;
+            let placeholder = document.getElementById("placeholder");
+            placeholder.appendChild(r.e);
+            drawCanvas(r.c);
+        }
+
+    </script>
+
 </head>
-<body>
+<body onload="preparePage();">
 
-  <h1>Canvas: Home</h1>
+<div class="header">
+    <h1 class="title">Resurnate Canvas</h1>
+</div>
 
-  <p>Placeholder for canvas project.</p>
-  
+<h2>Server</h2>
+<label for="server">Server origin</label>
+<input id="server" type="text" name="server">
+
+<h2>File</h2>
+<label for="file">Input file location</label>
+<input id="file" type="text" name="file">
+
+<h2>Content</h2>
+<p>
+    <input class="button" type="button" value="LOAD" onclick="loadJson()">
+    <input id="myBtn" class="button" type="button" value="PREVIEW" onclick="generate()">
+    <input class="button" type="button" value="RESET" onclick="preparePage()">
+</p>
+<label for="content">Load input file or copy and paste</label>
+<textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="placeholder"></div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+        generate();
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>

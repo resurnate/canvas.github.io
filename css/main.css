@@ -5,6 +5,20 @@ body {
     padding: 10px;
 }
 
+/* Header */
+h1 {
+    color: white;
+}
+.header {
+    background: #41b6e6;
+    padding: 30px;
+    text-align: center;
+}
+.title {
+    font-size: 60px;
+    text-shadow: 3px 3px #003087;
+}
+
 input[type=text] {
     width: 100%;
 }
@@ -13,8 +27,12 @@ textarea {
     width: 100%;
 }
 
+label {
+    font-style: italic;
+}
+
 .button {
-    background-color: #003087;
+    background-color: #41b6e6;
     border: none;
     color: white;
     padding: 10px;
