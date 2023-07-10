@@ -41,11 +41,12 @@ function prepareCanvas(c,i,ppis) {
 
 /**
  * Draw canvas.
- * @param c
+ * @param c Prepared canvas
+ * @param g Grid toggle
  */
-function drawCanvas(c) {
+function drawCanvas(c,g) {
     // Order is important to ensure attribution and copyright aren't overridden!
-    drawPanels(c,c.ps);
+    drawPanels(c,c.ps,g);
     drawAttribution(c,c.a);
     drawCopyright(c,c.cp);
 }
@@ -103,7 +104,7 @@ function drawCopyright(c,cp) {
 
 const ATTRIBUTION_FONT_SIZE = 14;
 const ATTRIBUTION_FONT = ATTRIBUTION_FONT_SIZE+'px '+FONT_FAMILY_HELVETICA;
-const ATTRIBUTION_OFFSETS = { x : 0, y : -2 };
+const ATTRIBUTION_OFFSETS = { x : -11, y : -2 };
 
 /**
  * Prepare attribution in canvas from input.
@@ -235,11 +236,12 @@ function preparePanelBackground(x,y) {
  * Draw all panels in canvas.
  * @param c  Prepared canvas
  * @param ps Prepared panels
+ * @param g  Grid toggle
  */
-function drawPanels(c,ps) {
+function drawPanels(c,ps,g) {
     for (let i = 0; i < ps.length; i++) {
         let p = ps[i];
-        drawPanel(c,p);
+        drawPanel(c,p,g);
     }
 }
 
@@ -247,8 +249,9 @@ function drawPanels(c,ps) {
  * Draw panel background, bubbles and captions in canvas.
  * @param c Prepared canvas
  * @param p Prepared panel
+ * @param g Grid toggle
  */
-function drawPanel(c,p) {
+function drawPanel(c,p,g) {
     drawPanelBackground(c,p.bg);
     if (p.bbi.startsWith("burst")) {
         // Bubble on top of captions - bursting!
@@ -257,6 +260,9 @@ function drawPanel(c,p) {
     } else {
         drawPanelBubbles(c,p);
         drawPanelCaptions(c,p);
+    }
+    if (g) {
+        drawPanelGrid(c,p);
     }
 }
 
@@ -289,7 +295,7 @@ const BUBBLE_FONT = BUBBLE_FONT_SIZE+'px '+FONT_FAMILY_COMIC;
 const BUBBLE_OFFSETS = [
     {
         l : "speech1",
-        i : { w : 0, h : -150, x : 0, y : 100 },
+        i : { w : 0, h : -150, x : 2, y : 100 },
         t : [
             { x : 0, y : 10 }
         ]
@@ -298,14 +304,14 @@ const BUBBLE_OFFSETS = [
         l : "speech3",
         i : { w : -20, h : -180, x : 12, y : 100 },
         t : [
-            { x : 135, y : -103 },
-            { x : -140, y : -38 },
-            { x : -8, y : 121 }
+            { x : 138, y : -103 },
+            { x : -138, y : -39 },
+            { x : -5, y : 121 }
         ]
     },
     {
         l : "whisper1",
-        i : { w : 0, h : -150, x : 0, y : 100 },
+        i : { w : 0, h : -150, x : 2, y : 100 },
         t : [
             { x : 0, y : 10 }
         ]
@@ -314,23 +320,23 @@ const BUBBLE_OFFSETS = [
         l : "whisper3",
         i : { w : -20, h : -180, x : 12, y : 100 },
         t : [
-            { x : 135, y : -103 },
-            { x : -140, y : -38 },
-            { x : -8, y : 121 }
+            { x : 138, y : -103 },
+            { x : -138, y : -39 },
+            { x : -5, y : 121 }
         ]
     },
     {
         l : "thought1",
         i : { w : -25, h : -120, x : 10, y : 110 },
         t : [
-            { x : 0, y : -2 }
+            { x : 0, y : 11 }
         ]
     },
     {
         l : "thought3",
         i : { w : -20, h : -180, x : 12, y : 120 },
         t : [
-            { x : 148, y : -84 },
+            { x : 147, y : -84 },
             { x : -142, y : -31 },
             { x : 3, y : 118 }
         ]
@@ -339,7 +345,7 @@ const BUBBLE_OFFSETS = [
         l : "burst1",
         i : { w : 20, h : -140, x : -10, y : 70 },
         t : [
-            { x : 0, y : 10 }
+            { x : 0, y : 11 }
         ]
     },
     {
@@ -717,6 +723,46 @@ function drawPanelCaptionText(c,ct) {
     };
     drawPanelText(c,t);
 
+}
+
+//
+// G R I D
+//
+
+const GRID_SPACING = 10;
+const GRID_CENTER_COLOR = '#99FF99';
+
+/**
+ * Draw grid in panel.
+ * @param c Prepared canvas
+ * @param p Prepared panel
+ */
+function drawPanelGrid(c,p) {
+    let ux = p.x;
+    let uy = p.y;
+    let lx = ux + PANEL_WIDTH;
+    let ly = uy + PANEL_HEIGHT;
+    // Vertical
+    for (let x = ux; x <= lx; x += GRID_SPACING) {
+        c.c.beginPath();
+        c.c.moveTo(x, uy);
+        c.c.lineTo(x, ly);
+        c.c.stroke();
+        c.c.closePath();
+    }
+    // Horizontal
+    for (let y = uy; y <= ly; y += GRID_SPACING) {
+        c.c.beginPath();
+        c.c.moveTo(ux, y);
+        c.c.lineTo(lx, y);
+        c.c.stroke();
+        c.c.closePath();
+    }
+    // Center
+    let cx = ux + (PANEL_WIDTH / 2) - (GRID_SPACING / 2);
+    let cy = uy + (PANEL_HEIGHT / 2) - (GRID_SPACING / 2);
+    c.c.fillStyle = GRID_CENTER_COLOR;
+    c.c.fillRect(cx, cy, GRID_SPACING, GRID_SPACING);
 }
 
 //

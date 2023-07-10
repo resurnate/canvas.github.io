@@ -11,6 +11,7 @@
         const SERVER_ELEMENT = 'server';
         const FILE_ELEMENT = 'file';
         const CONTENT_ELEMENT = 'content';
+        const GRID_ELEMENT = 'grid';
         const PREVIEW_ELEMENT = 'preview';
         const CANVAS_ELEMENT = 'canvas';
         const CANVAS_CONTEXT = '2d';
@@ -27,6 +28,8 @@
             file.value = server.value+SAMPLE_PATHNAME;
             let content = document.getElementById(CONTENT_ELEMENT);
             content.value = '';
+            let grid = document.getElementById(GRID_ELEMENT);
+            grid.checked = false;
             loadFile();
         }
 
@@ -96,7 +99,8 @@
             prepared.canvas.height = prepared.filtered.h;
             let preview = document.getElementById(PREVIEW_ELEMENT);
             preview.appendChild(prepared.canvas);
-            drawCanvas(prepared.filtered);
+            let grid = document.getElementById(GRID_ELEMENT);
+            drawCanvas(prepared.filtered,grid.checked);
         }
 
     </script>
@@ -122,6 +126,10 @@
     <input id="button" class="button" type="button" value="PREVIEW">
     <input class="button" type="button" value="RESET" onclick="initPage()">
 </p>
+<div style="float: right">
+    <label for="grid">Show Grid</label>
+    <input id="grid" type="checkbox">
+</div>
 <label for="content">Load input file or copy and paste</label>
 <textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
 
