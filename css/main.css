@@ -56,7 +56,7 @@ td {
 td:first-child {
     font-weight: bold;
     text-align: center;
-    width: 10%;
+    width: 15%;
 }
 
 td ul {
@@ -125,6 +125,12 @@ label {
 
 #footer .copyright {
     font-weight: bold;
+}
+
+.line {
+    background-color: #003087;
+    margin: 0 0 5px;
+    height: 10px;
 }
 
 .button {
