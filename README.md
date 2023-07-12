@@ -137,33 +137,7 @@ The following JSON metadata will create the four (4) panel comic strip below.
 
 ![Sample](./doc/snippet.png)
 
-## Components
-
-- The strip will have 2 panels per row, with a minimum of 2 rows of panels; hence, a minimum of 4 panels total.
-- If there is an uneven number of panels, only the last row will have a single panel.
-- Each panel consists of the following components that will contain text:
-
-| Component | Description                                                                        |
-|-----------|------------------------------------------------------------------------------------|
-| Captions  | These are the rectangular boxes in yellow and blue, which can appear in any corner |
-| Bubbles   | These are the speech, whisper, thought, burst and so on bubbles                    |
-
-- Each panel will have a background image, which includes empty bubbles.
-- It is the responsibility of the tool to draw the text for all components.
-- On the first row between the two panels, the `copyright` text is drawn.
-- On the second row between the the two panels, the `attribution` text is drawn.
-
-## Panel Attributes
-
-- The `image` attribute is used to determine the background image and the number of bubbles to fill with text.
-- It is formatted as `<type><bubbles>`.
-- For example, `speech3`.
-- Each `bubbles` attribute aligns with the number of bubbles in the background image.
-- The bubble `position` aligns from top (or highest) bubble to bottom (lowest).
-- Each `captions` attribute aligns with a corner of the panel.
-- The caption `position` aligns to upper-left (1), upper-right (2), lower-left(3) or lower-right(4).
-- A caption with no text will not be drawn.
-- Each `text` attribute is drawn on a separate line.
+A full sample with the [JSON](./doc/sample.json) input data and generated [image](./doc/sample.png) is provided.
 
 ## Local Content Creation
 
@@ -176,5 +150,3 @@ Once installed, simply navigate to the project via the terminal and run the foll
 Your website should now be accessible via the browser at http://localhost:3000/.
 Any changes to the project will be automatically synced by the web server.
 One simply needs to refresh the page in the browser.
-
-Now go create something that ***RESURNATES*** with you!

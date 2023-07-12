@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:url" content="https://canvas.resurnate.com/help.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Resurnate Canvas Help">
+    <meta property="og:description" content="The Canvas tool enables a content provider to create a comic strip for Resurnate.com.">
     <title>Canvas Help</title>
     <link rel="stylesheet" href="/css/main.css">
 </head>
@@ -15,7 +20,7 @@
 <!-- Menu -->
 <div id="menu">
     <a class="item" href="/">Tool</a>
-    <span style="color: white;">&#10192;</span>
+    <span style="color: white">&#10192;</span>
     <a class="item" href="/help.html">Help</a>
 </div>
 
@@ -34,7 +39,6 @@
 </blockquote>
 
 <!-- Input -->
-<div class="help-content">
 <h2>Input</h2>
 <ul>
     <li>This tool accepts the following input:</li>
@@ -72,12 +76,13 @@
             <br>
             Content can be created as follows:
             <br>
-            <br>
-            <ul>
-                <li>Loaded from input file;</li>
-                <li>Copy and paste from an external editor; or</li>
-                <li>Edited directly in text area.</li>
-            </ul>
+            <div class="revert">
+                <ul>
+                    <li>Loaded from input file;</li>
+                    <li>Copy and paste from an external editor; or</li>
+                    <li>Edited directly in text area.</li>
+                </ul>
+            </div>
             <blockquote>
                 We recommend using an external JSON tool such as <a href="https://codebeautify.org/jsonviewer" target="_blank" rel="noopener noreferrer">Code Beautify JSON Viewer</a>, which can help validate and beautify the input data.
             </blockquote>
@@ -96,10 +101,8 @@
         </td>
     </tr>
 </table>
-</div>
 
 <!-- Buttons -->
-<div class="help-content">
 <h2>Buttons</h2>
 <ul>
     <li>This tool supports the following buttons:</li>
@@ -129,10 +132,8 @@
         </td>
     </tr>
 </table>
-</div>
 
 <!-- Content -->
-<div class="help-content">
 <h2>Content</h2>
 <ul>
     <li>The input value of the <b>Content</b> text area is JSON-formatted data that has the following structure:</li>
@@ -203,10 +204,8 @@
         </td>
     </tr>
 </table>
-</div>
 
 <!-- Panels -->
-<div class="help-content">
 <h2>Panels</h2>
 <ul>
     <li>Each panel contains speech bubbles and captions with text.</li>
@@ -221,13 +220,13 @@
   "image": "thought1",
   "bubbles": [
     {
-      <i><b>... (Bubble attribute values)</b></i>
+      <i><b>... (Bubble 1 attributes)</b></i>
     },
     <i><b>...   (More bubbles)</b></i>
   ],
   "captions": [
     {
-      <i><b>... (Caption attribute values)</b></i>
+      <i><b>... (Caption 1 attributes)</b></i>
     },
     <i><b>...   (More captions)</b></i>
   ]
@@ -241,11 +240,11 @@
 <br>
 <table>
     <tr>
-        <th class="help-content-col1-th">Attribute</th>
+        <th>Attribute</th>
         <th>Description</th>
     </tr>
     <tr>
-        <td class="help-content-col1-td">image</td>
+        <td>image</td>
         <td>
             Determines the background image and the number of bubbles to fill with text.
             <br>
@@ -288,24 +287,22 @@
         </td>
     </tr>
     <tr>
-        <td class="help-content-col1-td">bubbles</td>
+        <td>bubbles</td>
         <td>
             One or more bubble attributes, which should align with the number of bubbles in the background image.
             <blockquote>More details below.</blockquote>
         </td>
     </tr>
     <tr>
-        <td class="help-content-col1-td">captions</td>
+        <td>captions</td>
         <td>
-            Up to 4 caption attributes, drawn in the appropriate corner or the panel based on position.
+            Up to 4 caption attributes, drawn in an appropriate corner of the panel based on position.
             <blockquote>More details below.</blockquote>
         </td>
     </tr>
 </table>
-</div>
 
 <!-- Bubbles -->
-<div class="help-content">
 <h2>Bubbles</h2>
 <ul>
     <li>Every panel must define an appropriate number of bubbles, as indicated by the panel background image.</li>
@@ -333,11 +330,11 @@
 <br>
 <table>
     <tr>
-        <th class="help-content-col1-th">Attribute</th>
+        <th>Attribute</th>
         <th>Description</th>
     </tr>
     <tr>
-        <td class="help-content-col1-td">position</td>
+        <td>position</td>
         <td>
             Numbered position of bubble.
             <br>
@@ -345,19 +342,18 @@
         </td>
     </tr>
     <tr>
-        <td class="help-content-col1-td">text</td>
+        <td>text</td>
         <td>
             Lines of text separated by a comma.
         </td>
     </tr>
 </table>
-</div>
 
 <!-- Captions -->
-<div class="help-content">
 <h2>Captions</h2>
 <ul>
     <li>Every panel can optionally create up to 4 captions to provide context to the reader.</li>
+    <li>They are the rectangular boxes in yellow or blue, which can appear in any corner.</li>
     <li>Each caption defines the following attributes:</li>
 </ul>
 <br>
@@ -379,21 +375,23 @@
 <br>
 <table>
     <tr>
-        <th class="help-content-col1-th">Attribute</th>
+        <th>Attribute</th>
         <th>Description</th>
     </tr>
     <tr>
-        <td class="help-content-col1-td">position</td>
+        <td>position</td>
         <td>
             Numbered position of caption.
             <br>
             Each number corresponds to the following positions:
-            <ol>
-                <li>Upper left corner</li>
-                <li>Upper right corner</li>
-                <li>Lower left corner</li>
-                <li>Lower right corner</li>
-            </ol>
+            <div class="revert">
+                <ol>
+                    <li>Upper left corner</li>
+                    <li>Upper right corner</li>
+                    <li>Lower left corner</li>
+                    <li>Lower right corner</li>
+                </ol>
+            </div>
             The upper captions are used to convey location in place or time.
             For example, "During the next standup" or "20 minutes later".
             <br>
@@ -402,14 +400,22 @@
         </td>
     </tr>
     <tr>
-        <td class="help-content-col1-td">text</td>
+        <td>text</td>
         <td>
             Lines of text separated by a comma.
             <blockquote>A caption with no text will NOT be displayed.</blockquote>
         </td>
     </tr>
 </table>
-</div>
+
+<!-- Miscellaneous -->
+<h2>Miscellaneous</h2>
+<ul>
+    <li>On the first row of the strip between the two panels, the <b>copyright</b> text is automatically generated and drawn.</li>
+    <li>The content provider cannot override the <b>copyright</b> text.</li>
+    <li>On the second row between the two panels, the <b>attribution</b> text is automatically generated and drawn.</li>
+    <li>The <b>attribution</b> text leverages the <b>id</b>, <b>title</b> and <b>author</b> attributes.</li>
+</ul>
 
 <!-- Footer -->
 <br>
