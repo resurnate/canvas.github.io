@@ -56,7 +56,7 @@ td {
 td:first-child {
     font-weight: bold;
     text-align: center;
-    width: 15%;
+    width: 10%;
 }
 
 input[type=text] {
@@ -160,14 +160,17 @@ label {
     border: none;
 }
 
+.images td {
+    font-weight: bold;
+    text-align: center;
+}
+
 .images tr:nth-child(odd) {
     background-color: revert;
 }
 
-.images td:nth-child(odd) {
-    font-weight: bold;
-    text-align: center;
-    vertical-align: middle;
+.images td:first-child {
+    width: revert;
 }
 
 .images img {
