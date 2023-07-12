@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Canvas: Home</title>  <title>Resurnate Canvas</title>
+    <title>Canvas Tool</title>
     <link rel="stylesheet" href="/css/main.css">
-    <script type="text/javascript" src="/js/main.js"></script>
-    <script type="text/javascript" src="/js/canvas.js"></script>
     <script type="text/javascript">
 
         const SERVER_ELEMENT = 'server';
@@ -108,18 +106,35 @@
 </head>
 <body onload="initPage();">
 
-<div class="header">
-    <h1 class="title">Resurnate Canvas</h1>
+<!-- Header -->
+<div id="header">
+    <h1 class="title"><a href="/">Resurnate</a></h1>
 </div>
 
+<!-- Menu -->
+<div id="menu">
+    <a class="item" href="/">Tool</a>
+    <span style="color: white;">&#10192;</span>
+    <a class="item" href="/help.html">Help</a>
+</div>
+
+<!-- Title -->
+<h1>Canvas Tool</h1>
+<ul>
+    <li>This tool enables a content provider to create a comic strip for <a href="https://resurnate.com" target="_blank">Resurnate.com</a>.</li>
+</ul>
+
+<!-- Server -->
 <h2>Server</h2>
 <label for="server">Server origin</label>
 <input id="server" type="text" name="server">
 
+<!-- File -->
 <h2>File</h2>
 <label for="file">Input file location</label>
 <input id="file" type="text" name="file">
 
+<!-- Content -->
 <h2>Content</h2>
 <p>
     <input class="button" type="button" value="LOAD" onclick="loadFile()">
@@ -132,6 +147,14 @@
 </div>
 <label for="content">Load input file or copy and paste</label>
 <textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
+
+<!-- Footer -->
+<br>
+<br>
+<div id="footer">
+    <p><a href="/privacy.html">Privacy</a></p>
+    <p class="copyright">&#169; 2023 resurnate.com</p>
+</div>
 
 <!-- Modal -->
 <div id="modal" class="modal">
@@ -170,5 +193,7 @@
     }
 
 </script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/canvas.js"></script>
 </body>
 </html>
