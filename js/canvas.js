@@ -10,7 +10,7 @@ const FONT_ALIGN_CENTER = 'center';
 // C A N V A S
 //
 
-const CANVAS_ROWS = 2;
+const CANVAS_COLUMNS = 2;
 
 /**
  * Prepare canvas from input.
@@ -19,10 +19,15 @@ const CANVAS_ROWS = 2;
  * @param ppis Preloaded panel images
  */
 function prepareCanvas(c,i,ppis) {
-    let rx = CANVAS_ROWS;
-    let ry = Math.ceil(i.panels.length / rx);
-    let rw = (rx * PANEL_WIDTH) + ((rx - 1) * PANEL_PADDING);
-    let rh = (ry * PANEL_HEIGHT) + ((ry - 1) * PANEL_PADDING);
+    let rx, rw, ry, rh = 0;
+    if (i.panels.length === 1) {
+        rx = 1;
+    } else {
+        rx = CANVAS_COLUMNS;
+    }
+    rw =  (rx * PANEL_WIDTH) + ((rx - 1) * PANEL_PADDING);
+    ry = Math.ceil(i.panels.length / CANVAS_COLUMNS);
+    rh = (ry * PANEL_HEIGHT) + ((ry - 1) * PANEL_PADDING);
     let rcp = prepareCopyright();
     let ra = prepareAttribution(i);
     let rps = preparePanels(rx,ry,i.panels,ppis);
@@ -47,8 +52,12 @@ function prepareCanvas(c,i,ppis) {
 function drawCanvas(c,g) {
     // Order is important to ensure attribution and copyright aren't overridden!
     drawPanels(c,c.ps,g);
-    drawAttribution(c,c.a);
-    drawCopyright(c,c.cp);
+    if (c.y > 1) {
+        drawAttribution(c,c.a);
+    }
+    if (c.x > 1) {
+        drawCopyright(c,c.cp);
+    }
 }
 
 //
@@ -292,6 +301,10 @@ function drawPanelBackground(c,bg) {
 
 const BUBBLE_FONT_SIZE = 30;
 const BUBBLE_FONT = BUBBLE_FONT_SIZE+'px '+FONT_FAMILY_COMIC;
+const BUBBLE_LABELS = [
+    'speech1','speech3','whisper1','whisper3',
+    'thought1','thought3','burst1','burst3'
+];
 const BUBBLE_OFFSETS = [
     {
         l : "speech1",
@@ -397,7 +410,7 @@ function parsePanelBubble(ibbs,i) {
  */
 function preparePanelBubbles(p,ibbs) {
     let r = [];
-    let is = Number(p.image.charAt(p.image.length - 1));
+    let is = parsePanelBubbleCount(p.image);
     for (let i = 0; i < is; i++) {
         let ibb = parsePanelBubble(ibbs,i);
         r.push(preparePanelBubble(p,ibb));
@@ -768,6 +781,27 @@ function drawPanelGrid(c,p) {
 //
 // M I S C E L L A N E O U S
 //
+
+/**
+ * Parse number of bubbles in panel.
+ * @param l Bubble image label
+ */
+function parsePanelBubbleCount(l) {
+    return Number(l.charAt(l.length - 1));
+}
+
+/**
+ * Parse all text lines in panel bubble or caption.
+ * @param t Text
+ */
+function parsePanelText(t) {
+    let r = [];
+    let tt = t.trim();
+    if (tt.length > 0) {
+        r = tt.split('\n');
+    }
+    return r;
+}
 
 /**
  * Draw all text lines in panel bubble or caption.

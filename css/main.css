@@ -217,3 +217,53 @@ label {
     cursor: pointer;
     text-decoration: none;
 }
+
+.wizard-sections {
+}
+
+.wizard-section {
+    background-color: #EEEEEE;
+    display: block;
+    margin: 10px;
+    padding: 10px;
+}
+
+.wizard-header {
+    background-color: #D3D3D3;
+    border: 1px solid #898d8d;
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.wizard-panel {
+    display: grid;
+    gap: 10px;
+    grid-template-areas:
+        "action action"
+        "input peek";
+    grid-template-columns: 1fr 1fr;
+}
+
+.wizard-action {
+    grid-area: action;
+    padding-top: 10px;
+}
+
+.wizard-input {
+    background-color: #FFFFCC;
+    border: 1px solid #898d8d;
+    grid-area: input;
+    padding: 20px;
+}
+
+.wizard-peek {
+    align-items: center;
+    background-color: white;
+    border: 1px solid #898d8d;
+    display: flex;
+    grid-area: peek;
+    justify-content: center;
+    padding: 20px;
+}

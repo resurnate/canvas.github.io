@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:url" content="https://canvas.resurnate.com/index.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Resurnate Canvas Wizard">
+  <meta property="og:description" content="The Canvas tool enables a content provider to create a comic strip for Resurnate.com.">
+  <title>Canvas Wizard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <script type="text/javascript">
+
+    let peekPanelId = '';
+
+    function _initPage() {
+      peekPanelId = '';
+      let panelsElement = document.getElementById('panel-sections');
+      for (let i = 1; i <= 4; i++) {
+        _initPanelSection(i,panelsElement);
+      }
+    }
+
+    function _initPanelSection(panelPosition,panelsElement) {
+      let panelId = 'p' + panelPosition;
+      // Create section
+      let sectionElement = document.createElement('section');
+      sectionElement.id = panelId + '-section';
+      sectionElement.className = 'wizard-section';
+      panelsElement.appendChild(sectionElement);
+      // Create section header
+      let headerElement = document.createElement('div');
+      headerElement.id = panelId + '-header';
+      headerElement.className = 'wizard-header';
+      sectionElement.appendChild(headerElement);
+      let anchorElement = document.createElement('a');
+      anchorElement.href = 'javascript:';
+      anchorElement.text = 'Panel '+panelPosition;
+      let onclick = 'toggleElement("'+panelId+'-content")';
+      anchorElement.setAttribute('onclick',onclick);
+      headerElement.appendChild(anchorElement);
+      // Create section content
+      let contentElement = document.createElement('div');
+      contentElement.id = panelId + '-content';
+      if (panelPosition !== 1) {
+        contentElement.style = 'display: none';
+      }
+      sectionElement.appendChild(contentElement);
+      _initPanelContent(panelId,contentElement);
+    }
+
+    function _initPanelContent(panelId,contentElement) {
+      let panelElement = document.createElement('div');
+      panelElement.id = panelId + '-panel';
+      panelElement.className = 'wizard-panel';
+      contentElement.appendChild(panelElement);
+      _initPanelAction(panelId,panelElement);
+      _initPanelInput(panelId,panelElement);
+      _initPanelPeek(panelId,panelElement);
+    }
+
+    function _initPanelAction(panelId,panelElement) {
+      let actionElement = document.createElement('div');
+      actionElement.id = panelId + '-action';
+      actionElement.className = 'wizard-action';
+      panelElement.appendChild(actionElement);
+      let buttonElement = document.createElement('input');
+      buttonElement.type = 'button';
+      buttonElement.value = 'PEEK';
+      buttonElement.className = 'button';
+      let onclick = '_peekInit("'+panelId+'")';
+      buttonElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(buttonElement);
+    }
+
+    function _initPanelInput(panelId,panelElement) {
+      let inputElement = document.createElement('div');
+      inputElement.id = panelId + '-input';
+      inputElement.className = 'wizard-input';
+      panelElement.appendChild(inputElement);
+      _initPanelInputBubbleImage(panelId,inputElement);
+      _initPanelInputBubbleText(panelId,inputElement);
+      _initPanelInputCaptionText(panelId,inputElement);
+    }
+
+    function _initPanelInputBubbleImage(panelId,inputElement) {
+      let headerElement = document.createElement('h3');
+      headerElement.innerHTML = 'Bubble Image';
+      inputElement.appendChild(headerElement);
+      let labelFor = panelId+'b';
+      let labelElement = document.createElement('label');
+      labelElement.innerHTML = 'Choose: &nbsp; ';
+      labelElement.htmlFor = labelFor;
+      inputElement.appendChild(labelElement);
+      let selectElement = document.createElement('select');
+      selectElement.id = labelFor;
+      selectElement.name = labelFor;
+      inputElement.appendChild(selectElement);
+      for (let label of BUBBLE_LABELS) {
+        let optionElement = document.createElement('option');
+        optionElement.value = label;
+        optionElement.text = label;
+        selectElement.appendChild(optionElement);
+      }
+    }
+
+    function _initPanelInputBubbleText(panelId,inputElement) {
+      let headerElement = document.createElement('h3');
+      headerElement.innerHTML = 'Bubble Text';
+      inputElement.appendChild(headerElement);
+      for (let i = 1; i <= 3; i++) {
+        let labelFor = panelId+'b'+i;
+        let labelElement = document.createElement('label');
+        let labelHtml = i;
+        if (i === 1) {
+          labelHtml = labelHtml+' (Top)';
+        } else if (i === 3) {
+          labelHtml = labelHtml+' (Bottom)';
+        } else {
+          labelHtml = labelHtml+' (Between)';
+        }
+        labelElement.innerHTML = labelHtml;
+        labelElement.htmlFor = labelFor;
+        inputElement.appendChild(labelElement);
+        let textareaElement = document.createElement('textarea');
+        textareaElement.id = labelFor;
+        textareaElement.name = labelFor;
+        textareaElement.value = i;
+        textareaElement.rows = 3;
+        inputElement.appendChild(textareaElement);
+      }
+    }
+
+    function _initPanelInputCaptionText(panelId,inputElement) {
+      let headerElement = document.createElement('h3');
+      headerElement.innerHTML = 'Caption Text';
+      inputElement.appendChild(headerElement);
+      for (let i = 1; i <= 4; i++) {
+        let labelFor = panelId+'c'+i;
+        let labelElement = document.createElement('label');
+        let labelHtml = i;
+        let textValue = i;
+        if (i === 1) {
+          labelHtml = labelHtml+' (Upper Left)';
+          textValue = 'Where';
+        } else if (i === 2) {
+          labelHtml = labelHtml+' (Upper Right)';
+          textValue = 'When';
+        } else if (i === 3) {
+          labelHtml = labelHtml+' (Lower Left)';
+          textValue = 'From Who\n(Emotion)';
+        } else {
+          labelHtml = labelHtml+' (Lower Right)';
+          textValue = 'To Who\n(Emotion)';
+        }
+        labelElement.innerHTML = labelHtml;
+        labelElement.htmlFor = labelFor;
+        inputElement.appendChild(labelElement);
+        let textareaElement = document.createElement('textarea');
+        textareaElement.id = labelFor;
+        textareaElement.name = labelFor;
+        textareaElement.value = textValue;
+        textareaElement.rows = 3;
+        inputElement.appendChild(textareaElement);
+      }
+    }
+
+    function _initPanelPeek(panelId,panelElement) {
+      let peekElement = document.createElement('div');
+      peekElement.id = panelId + '-peek';
+      peekElement.className = 'wizard-peek';
+      panelElement.appendChild(peekElement);
+    }
+
+    function _peekInit(panelId) {
+      let imageElement = panelId+'b';
+      let imageLabel = document.getElementById(imageElement).value;
+      let imageLabels = [ imageLabel ];
+      let imageURLs = prepareImages(window.location.origin,imageLabels);
+      peekPanelId = panelId;
+      loadImages(imageURLs,_peekAtPanel,_loadError);
+    }
+
+    function _peekAtPanel(images) {
+      // Remove previous peek
+      let peekElement = document.getElementById(peekPanelId+'-peek');
+      let canvasElement =  document.getElementById(peekPanelId+'canvas');
+      if (canvasElement !== null) {
+        peekElement.removeChild(canvasElement);
+      }
+      _peekParsePrepareAndDraw(images);
+    }
+
+    function _loadError(url) {
+      alert('Failed to load one or more images: ' + url);
+      peekPanelId = '';
+    }
+
+    function _peekParsePrepareAndDraw(images) {
+      let pi = _peekParse(peekPanelId);
+      let input = {
+        version: '1',
+        id: 'N/A',
+        title: 'N/A',
+        author: 'N/A',
+        panels: [ pi ]
+      };
+      let prepared = _canvasPrepare(input,images);
+      _canvasDraw(peekPanelId,prepared);
+    }
+
+    function _peekParse(panelId) {
+      // Parse image
+      let ebl = panelId+'b';
+      let bl = document.getElementById(ebl).value;
+      let bc = parsePanelBubbleCount(bl);
+      // Parse bubbles
+      let bs = [];
+      for (let i = 0; i < bc; i++) {
+        let bp = i + 1;
+        let ebts = ebl+bp;
+        let bts = document.getElementById(ebts).value;
+        let b = {
+          position: bp,
+          text: parsePanelText(bts)
+        };
+        bs.push(b);
+      }
+      // Parse captions
+      let ecl = panelId+'c';
+      let cs = [];
+      for (let i = 0; i < 4; i++) {
+        let cp = i + 1;
+        let ects = ecl+cp;
+        let cts = document.getElementById(ects).value;
+        let c = {
+          position: cp,
+          text: parsePanelText(cts)
+        };
+        cs.push(c);
+      }
+      // Return
+      return {
+        image: bl,
+        bubbles: bs,
+        captions: cs
+      };
+    }
+
+    function _canvasPrepare(input,images) {
+      let canvas = document.createElement('canvas');
+      let context = canvas.getContext('2d');
+      let filtered = prepareCanvas(context,input,images);
+      return {
+        canvas   : canvas,
+        filtered : filtered
+      };
+    }
+
+    function _canvasDraw(panelId,prepared) {
+      prepared.canvas.id     = panelId+'canvas';
+      prepared.canvas.width  = prepared.filtered.w;
+      prepared.canvas.height = prepared.filtered.h;
+      prepared.canvas.style = "width: 100%";
+      let peek = document.getElementById(panelId+'-peek');
+      peek.appendChild(prepared.canvas);
+      drawCanvas(prepared.filtered,false);
+    }
+
+  </script>
+</head>
+<body onload="_initPage();">
+
+<!-- Header -->
+<div id="header">
+  <h1 class="title"><a href="/">Resurnate</a></h1>
+</div>
+
+<!-- Menu -->
+<div id="menu">
+  <a class="item" href="/">Tool</a>
+  <span style="color: white">&#10192;</span>
+  <a class="item" href="/help.html">Help</a>
+</div>
+
+<!-- Title -->
+<h1>Canvas Wizard</h1>
+<ul>
+  <li>This tool enables a content provider to create a comic strip for <a href="https://resurnate.com" target="_blank">Resurnate.com</a>.</li>
+</ul>
+
+<!-- Panel Sections -->
+<div class="wizard-sections" id="panel-sections">
+</div>
+
+<!-- Footer -->
+<br>
+<p class="line">&nbsp;</p>
+<div id="footer">
+  <p><a href="/privacy.html">Privacy</a></p>
+  <p class="copyright">&#169; 2023 resurnate.com</p>
+</div>
+
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/canvas.js"></script>
+</body>
+</html>

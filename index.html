@@ -18,8 +18,6 @@
         const PREVIEW_ELEMENT = 'preview';
         const CANVAS_ELEMENT = 'canvas';
         const CANVAS_CONTEXT = '2d';
-        const IMAGE_PATHNAME = '/img/';
-        const IMAGE_SUFFIX = '.png';
         const SAMPLE_PATHNAME = '/doc/sample.json';
 
         let input;
@@ -33,6 +31,7 @@
             content.value = '';
             let grid = document.getElementById(GRID_ELEMENT);
             grid.checked = false;
+            input = '';
             loadFile();
         }
 
@@ -58,19 +57,18 @@
             // Preload images and generate canvas
             let content = document.getElementById(CONTENT_ELEMENT);
             input = JSON.parse(content.value);
-            let imageURLs = prepareImages();
+            let imageURLs = parseImages();
             loadImages(imageURLs,generate,loadError);
         }
 
-        function prepareImages() {
-            let result = [];
+        function parseImages() {
             let server = document.getElementById(SERVER_ELEMENT);
             let origin = server.value;
+            let labels = [];
             for (let panel of input.panels) {
-                let url = origin + IMAGE_PATHNAME + panel.image + IMAGE_SUFFIX;
-                result.push(url);
+                labels.push(panel.image);
             }
-            return result;
+            return prepareImages(origin,labels);
         }
 
         function generate(images) {

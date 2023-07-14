@@ -1,4 +1,7 @@
 
+const IMAGE_PATHNAME = '/img/';
+const IMAGE_SUFFIX = '.png';
+
 function fetchJson(url) {
     return new Promise(function (resolve, reject) {
         let xhr = new XMLHttpRequest();
@@ -12,6 +15,15 @@ function fetchJson(url) {
         xhr.open('GET', url);
         xhr.send();
     });
+}
+
+function prepareImages(origin,labels) {
+    let r = [];
+    for (let label of labels) {
+        let ru = origin + IMAGE_PATHNAME + label + IMAGE_SUFFIX;
+        r.push(ru);
+    }
+    return r;
 }
 
 function loadImages(urls,callbackOk,callbackErr) {
@@ -35,5 +47,14 @@ function loadImages(urls,callbackOk,callbackErr) {
             }
         }
         ri.src = ru;
+    }
+}
+
+function toggleElement(id) {
+    let e = document.getElementById(id);
+    if ((e.style.display === '') || (e.style.display === 'block')) {
+        e.style.display = 'none';
+    } else {
+        e.style.display = 'block';
     }
 }
