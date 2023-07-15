@@ -244,7 +244,7 @@ label {
         "action action action action"
         "peek peek peek json"
         "bubble bubble caption caption";
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto auto auto auto;
 }
 
 .wizard-action {
@@ -282,6 +282,7 @@ label {
     border: 1px solid #898d8d;
     display: none;
     grid-area: json;
-    justify-content: center;
+    max-width: 175px;
+    overflow-x: auto;
     padding: 20px;
 }
