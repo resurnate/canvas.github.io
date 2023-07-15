@@ -55,8 +55,10 @@
       panelElement.className = 'wizard-panel';
       contentElement.appendChild(panelElement);
       _initPanelAction(panelId,panelElement);
-      _initPanelInput(panelId,panelElement);
+      _initPanelInputBubble(panelId,panelElement);
+      _initPanelInputCaption(panelId,panelElement);
       _initPanelPeek(panelId,panelElement);
+      _initPanelJson(panelId,panelElement);
     }
 
     function _initPanelAction(panelId,panelElement) {
@@ -64,22 +66,38 @@
       actionElement.id = panelId + '-action';
       actionElement.className = 'wizard-action';
       panelElement.appendChild(actionElement);
-      let buttonElement = document.createElement('input');
-      buttonElement.type = 'button';
-      buttonElement.value = 'PEEK';
-      buttonElement.className = 'button';
+      // Peek
+      let peekElement = document.createElement('input');
+      peekElement.type = 'button';
+      peekElement.value = 'PEEK';
+      peekElement.className = 'button';
       let onclick = '_peekInit("'+panelId+'")';
-      buttonElement.setAttribute('onclick',onclick);
-      actionElement.appendChild(buttonElement);
+      peekElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(peekElement);
+      // Hide
+      let hideElement = document.createElement('input');
+      hideElement.type = 'button';
+      hideElement.value = 'HIDE';
+      hideElement.className = 'button';
+      onclick = '_peekHide("'+panelId+'")';
+      hideElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(hideElement);
     }
 
-    function _initPanelInput(panelId,panelElement) {
+    function _initPanelInputBubble(panelId,panelElement) {
       let inputElement = document.createElement('div');
-      inputElement.id = panelId + '-input';
-      inputElement.className = 'wizard-input';
+      inputElement.id = panelId + '-bubble';
+      inputElement.className = 'wizard-bubble';
       panelElement.appendChild(inputElement);
       _initPanelInputBubbleImage(panelId,inputElement);
       _initPanelInputBubbleText(panelId,inputElement);
+    }
+
+    function _initPanelInputCaption(panelId,panelElement) {
+      let inputElement = document.createElement('div');
+      inputElement.id = panelId + '-caption';
+      inputElement.className = 'wizard-caption';
+      panelElement.appendChild(inputElement);
       _initPanelInputCaptionText(panelId,inputElement);
     }
 
@@ -172,6 +190,13 @@
       panelElement.appendChild(peekElement);
     }
 
+    function _initPanelJson(panelId,panelElement) {
+      let jsonElement = document.createElement('div');
+      jsonElement.id = panelId + '-json';
+      jsonElement.className = 'wizard-json';
+      panelElement.appendChild(jsonElement);
+    }
+
     function _peekInit(panelId) {
       let imageElement = panelId+'b';
       let imageLabel = document.getElementById(imageElement).value;
@@ -181,12 +206,25 @@
       loadImages(imageURLs,_peekAtPanel,_loadError);
     }
 
+    function _peekHide(panelId) {
+      let peekElement = document.getElementById(panelId+'-peek');
+      peekElement.style.display = 'none';
+      let jsonElement = document.getElementById(panelId+'-json');
+      jsonElement.style.display = 'none';
+    }
+
     function _peekAtPanel(images) {
       // Remove previous peek
       let peekElement = document.getElementById(peekPanelId+'-peek');
       let canvasElement =  document.getElementById(peekPanelId+'canvas');
       if (canvasElement !== null) {
         peekElement.removeChild(canvasElement);
+      }
+      // Remove previous JSON
+      let jsonElement = document.getElementById(peekPanelId+'-json');
+      let preElement =  document.getElementById(peekPanelId+'pre');
+      if (preElement !== null) {
+        jsonElement.removeChild(preElement);
       }
       _peekParsePrepareAndDraw(images);
     }
@@ -251,20 +289,30 @@
       let canvas = document.createElement('canvas');
       let context = canvas.getContext('2d');
       let filtered = prepareCanvas(context,input,images);
+      let pre = document.createElement('pre');
+      pre.innerText = JSON.stringify(input.panels[0],null,2);
       return {
         canvas   : canvas,
-        filtered : filtered
+        filtered : filtered,
+        pre      : pre
       };
     }
 
     function _canvasDraw(panelId,prepared) {
+      // Peek
       prepared.canvas.id     = panelId+'canvas';
       prepared.canvas.width  = prepared.filtered.w;
       prepared.canvas.height = prepared.filtered.h;
       prepared.canvas.style = "width: 100%";
       let peek = document.getElementById(panelId+'-peek');
+      peek.style.display = 'flex';
       peek.appendChild(prepared.canvas);
       drawCanvas(prepared.filtered,false);
+      // JSON
+      prepared.pre.id = panelId+'pre';
+      let json = document.getElementById(panelId+'-json');
+      json.style.display = 'flex';
+      json.appendChild(prepared.pre);
     }
 
   </script>

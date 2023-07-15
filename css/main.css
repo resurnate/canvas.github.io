@@ -241,9 +241,10 @@ label {
     display: grid;
     gap: 10px;
     grid-template-areas:
-        "action action"
-        "input peek";
-    grid-template-columns: 1fr 1fr;
+        "action action action action"
+        "peek peek peek json"
+        "bubble bubble caption caption";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .wizard-action {
@@ -251,10 +252,17 @@ label {
     padding-top: 10px;
 }
 
-.wizard-input {
+.wizard-bubble {
     background-color: #FFFFCC;
     border: 1px solid #898d8d;
-    grid-area: input;
+    grid-area: bubble;
+    padding: 20px;
+}
+
+.wizard-caption {
+    background-color: #FFFFCC;
+    border: 1px solid #898d8d;
+    grid-area: caption;
     padding: 20px;
 }
 
@@ -262,8 +270,18 @@ label {
     align-items: center;
     background-color: white;
     border: 1px solid #898d8d;
-    display: flex;
+    display: none;
     grid-area: peek;
+    justify-content: center;
+    padding: 20px;
+}
+
+.wizard-json {
+    align-items: center;
+    background-color: white;
+    border: 1px solid #898d8d;
+    display: none;
+    grid-area: json;
     justify-content: center;
     padding: 20px;
 }
