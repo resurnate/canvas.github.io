@@ -74,6 +74,14 @@
       let onclick = '_peekInit("'+panelId+'")';
       peekElement.setAttribute('onclick',onclick);
       actionElement.appendChild(peekElement);
+      // JSON
+      let jsonElement = document.createElement('input');
+      jsonElement.type = 'button';
+      jsonElement.value = 'JSON';
+      jsonElement.className = 'button';
+      onclick = '_peekJson("'+panelId+'")';
+      jsonElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(jsonElement);
       // Hide
       let hideElement = document.createElement('input');
       hideElement.type = 'button';
@@ -206,6 +214,13 @@
       loadImages(imageURLs,_peekAtPanel,_loadError);
     }
 
+    function _peekJson(panelId) {
+      let peekElement = document.getElementById(panelId+'-peek');
+      peekElement.style.display = 'none';
+      let jsonElement = document.getElementById(panelId+'-json');
+      jsonElement.style.display = 'flex';
+    }
+
     function _peekHide(panelId) {
       let peekElement = document.getElementById(panelId+'-peek');
       peekElement.style.display = 'none';
@@ -311,7 +326,7 @@
       // JSON
       prepared.pre.id = panelId+'pre';
       let json = document.getElementById(panelId+'-json');
-      json.style.display = 'flex';
+      json.style.display = 'none';
       json.appendChild(prepared.pre);
     }
 

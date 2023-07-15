@@ -241,10 +241,11 @@ label {
     display: grid;
     gap: 10px;
     grid-template-areas:
-        "action action action action"
-        "peek peek peek json"
-        "bubble bubble caption caption";
-    grid-template-columns: auto auto auto auto;
+        "action action"
+        "peek peek"
+        "json json"
+        "bubble caption";
+    grid-template-columns: auto auto;
 }
 
 .wizard-action {
@@ -276,13 +277,16 @@ label {
     padding: 20px;
 }
 
+.wizard-peek canvas {
+    width: 50% !important;
+}
+
 .wizard-json {
     align-items: center;
     background-color: white;
     border: 1px solid #898d8d;
     display: none;
     grid-area: json;
-    max-width: 175px;
-    overflow-x: auto;
+    justify-content: center;
     padding: 20px;
 }
