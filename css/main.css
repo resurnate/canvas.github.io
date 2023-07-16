@@ -237,6 +237,14 @@ label {
     padding: 10px;
 }
 
+.wizard-header-action {
+    float: right;
+}
+
+.wizard-header-action a {
+    padding-left: 10px;
+}
+
 .wizard-panel {
     display: grid;
     gap: 10px;

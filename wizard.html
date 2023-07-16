@@ -11,42 +11,69 @@
   <link rel="stylesheet" href="/css/main.css">
   <script type="text/javascript">
 
+    let nextPanelId = 1;
     let peekPanelId = '';
 
     function _initPage() {
       peekPanelId = '';
-      let panelsElement = document.getElementById('panel-sections');
-      for (let i = 1; i <= 4; i++) {
-        _initPanelSection(i,panelsElement);
+      let sectionsElement = document.getElementById('panel-sections');
+      for (let i = 0; i < 4; i++) {
+        let sectionElement = _initPanelSection(i === 0);
+        sectionsElement.appendChild(sectionElement);
+        nextPanelId += 1;
       }
     }
 
-    function _initPanelSection(panelPosition,panelsElement) {
-      let panelId = 'p' + panelPosition;
+    function _initPanelSection(panelOpen) {
+      let panelId = 'p' + nextPanelId;
       // Create section
       let sectionElement = document.createElement('section');
       sectionElement.id = panelId + '-section';
       sectionElement.className = 'wizard-section';
-      panelsElement.appendChild(sectionElement);
       // Create section header
       let headerElement = document.createElement('div');
       headerElement.id = panelId + '-header';
       headerElement.className = 'wizard-header';
       sectionElement.appendChild(headerElement);
-      let anchorElement = document.createElement('a');
-      anchorElement.href = 'javascript:';
-      anchorElement.text = 'Panel '+panelPosition;
-      let onclick = 'toggleElement("'+panelId+'-content")';
-      anchorElement.setAttribute('onclick',onclick);
-      headerElement.appendChild(anchorElement);
+      _initPanelHeader(panelId,panelOpen,headerElement);
       // Create section content
       let contentElement = document.createElement('div');
       contentElement.id = panelId + '-content';
-      if (panelPosition !== 1) {
+      if (!panelOpen) {
         contentElement.style = 'display: none';
       }
       sectionElement.appendChild(contentElement);
       _initPanelContent(panelId,contentElement);
+      return sectionElement;
+    }
+
+    function _initPanelHeader(panelId,panelOpen,headerElement) {
+      // Toggle
+      let toggleElement = document.createElement('a');
+      toggleElement.id = panelId + '-toggle';
+      toggleElement.href = 'javascript:';
+      toggleElement.text = _togglePanelText(panelOpen);
+      let onclick = '_togglePanel("'+panelId+'")';
+      toggleElement.setAttribute('onclick',onclick);
+      headerElement.appendChild(toggleElement);
+      // Div
+      let actionElement = document.createElement('a');
+      actionElement.className = 'wizard-header-action';
+      headerElement.appendChild(actionElement);
+      // Add
+      let addElement = document.createElement('a');
+      addElement.href = 'javascript:';
+      addElement.text = String.fromCharCode(0x002B);
+      onclick = '_addPanel("'+panelId+'")';
+      addElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(addElement);
+      // Remove
+      let removeElement = document.createElement('a');
+      removeElement.href = 'javascript:';
+      removeElement.text = String.fromCharCode(0x00D7);
+      onclick = '_removePanel("'+panelId+'")';
+      removeElement.setAttribute('onclick',onclick);
+      actionElement.appendChild(removeElement);
     }
 
     function _initPanelContent(panelId,contentElement) {
@@ -203,6 +230,62 @@
       jsonElement.id = panelId + '-json';
       jsonElement.className = 'wizard-json';
       panelElement.appendChild(jsonElement);
+    }
+
+    function _togglePanel(panelId) {
+      // Content
+      let elementId = panelId+'-content';
+      let open = toggleElement(elementId);
+      // Header
+      let element = document.getElementById(panelId+'-toggle');
+      element.text = _togglePanelText(open);
+    }
+
+    function _togglePanelText(open) {
+      let charCode = open ? 0x21F1 : 0x21F2;
+      let direction = String.fromCharCode(charCode);
+      return direction + ' Panel';
+    }
+
+    function _addPanel(panelId) {
+      let sectionsElement = document.getElementById('panel-sections');
+      // Find next sibling
+      let sectionId = panelId + '-section';
+      let siblingElement;
+      let found = false;
+      for (let childElement of sectionsElement.childNodes) {
+        if (childElement.id !== undefined) {
+          if (childElement.id === sectionId) {
+            found = true;
+          } else if (found) {
+            siblingElement = childElement;
+            break;
+          }
+        }
+      }
+      // Insert before sibling
+      let sectionElement = _initPanelSection(true);
+      if (siblingElement === undefined) {
+        // Last panel section
+        sectionsElement.appendChild(sectionElement);
+      } else {
+        sectionsElement.insertBefore(sectionElement, siblingElement);
+      }
+      nextPanelId += 1;
+    }
+
+    function _removePanel(panelId) {
+      let sectionsElement = document.getElementById('panel-sections');
+      // Find next sibling
+      let sectionId = panelId + '-section';
+      for (let childElement of sectionsElement.childNodes) {
+        if (childElement.id !== undefined) {
+          if (childElement.id === sectionId) {
+            childElement.remove();
+            break;
+          }
+        }
+      }
     }
 
     function _peekInit(panelId) {
