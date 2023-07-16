@@ -245,6 +245,14 @@ label {
     padding-left: 10px;
 }
 
+.wizard-attribution {
+    padding-right: 10px;
+}
+
+.wizard-attribution-group {
+    padding-top: 10px;
+}
+
 .wizard-panel {
     display: grid;
     gap: 10px;

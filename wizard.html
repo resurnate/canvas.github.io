@@ -17,11 +17,96 @@
     function _initPage() {
       peekPanelId = '';
       let sectionsElement = document.getElementById('panel-sections');
+      // Attribution
+      let sectionElement = _initAttributionSection();
+      sectionsElement.appendChild(sectionElement);
+      // Panels
       for (let i = 0; i < 4; i++) {
-        let sectionElement = _initPanelSection(i === 0);
+        sectionElement = _initPanelSection(i === 0);
         sectionsElement.appendChild(sectionElement);
         nextPanelId += 1;
       }
+    }
+
+    function _initAttributionSection() {
+      // Create section
+      let sectionElement = document.createElement('section');
+      sectionElement.id = 'attribution-section';
+      sectionElement.className = 'wizard-section';
+      // Create section header
+      let headerElement = document.createElement('div');
+      headerElement.id = 'attribution-header';
+      headerElement.className = 'wizard-header';
+      sectionElement.appendChild(headerElement);
+      _initAttributionHeader(headerElement);
+      // Create section content
+      let contentElement = document.createElement('div');
+      contentElement.id = 'attribution-content';
+      sectionElement.appendChild(contentElement);
+      _initAttributionContent(contentElement);
+      return sectionElement;
+    }
+
+    function _initAttributionHeader(headerElement) {
+      // Toggle
+      let toggleElement = document.createElement('a');
+      toggleElement.id = 'attribution-toggle';
+      toggleElement.href = 'javascript:';
+      toggleElement.text = _toggleAttributionText(true);
+      let onclick = '_toggleAttribution()';
+      toggleElement.setAttribute('onclick',onclick);
+      headerElement.appendChild(toggleElement);
+    }
+
+    function _initAttributionContent(contentElement) {
+      // Layout
+      let layoutElement = document.createElement('div');
+      layoutElement.id = 'attribution-layout';
+      layoutElement.className = 'wizard-attribution';
+      contentElement.appendChild(layoutElement);
+      // Title
+      let divElement = document.createElement('div');
+      divElement.className = 'wizard-attribution-group';
+      layoutElement.appendChild(divElement);
+      let labelElement = document.createElement('label');
+      labelElement.innerHTML = 'Strip title';
+      labelElement.htmlFor = 'attribution-title';
+      divElement.appendChild(labelElement);
+      let titleElement = document.createElement('input');
+      labelElement.id = 'attribution-title';
+      titleElement.type = 'text';
+      titleElement.name = 'attribution-title';
+      titleElement.value = 'Something catchy';
+      divElement.appendChild(titleElement);
+      // Author
+      divElement = document.createElement('div');
+      divElement.className = 'wizard-attribution-group';
+      layoutElement.appendChild(divElement);
+      labelElement = document.createElement('label');
+      labelElement.innerHTML = 'Strip author';
+      labelElement.htmlFor = 'attribution-author';
+      divElement.appendChild(labelElement);
+      let authorElement = document.createElement('input');
+      authorElement.id = 'author-title';
+      authorElement.type = 'text';
+      authorElement.name = 'author-title';
+      authorElement.value = 'Pen name';
+      divElement.appendChild(authorElement);
+    }
+
+    function _toggleAttribution() {
+      // Content
+      let elementId = 'attribution-content';
+      let open = toggleElement(elementId);
+      // Header
+      let element = document.getElementById('attribution-toggle');
+      element.text = _toggleAttributionText(open);
+    }
+
+    function _toggleAttributionText(open) {
+      let charCode = open ? 0x21F1 : 0x21F2;
+      let direction = String.fromCharCode(charCode);
+      return direction + ' Attribution';
     }
 
     function _initPanelSection(panelOpen) {
