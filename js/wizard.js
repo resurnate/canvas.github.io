@@ -22,9 +22,15 @@ const ELEMENT_PANEL_PREFIX = 'p';
 const ELEMENT_PANEL_SECTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'section';
 const ELEMENT_PANEL_SECTION_HEADER_SUFFIX = ELEMENT_PANEL_DELIMITER+'header';
 const ELEMENT_PANEL_SECTION_CONTENT_SUFFIX = ELEMENT_PANEL_DELIMITER+'content';
-const ELEMENT_ATTRIBUTION_TOGGLE_SUFFIX = ELEMENT_PANEL_DELIMITER+'toggle';
+const ELEMENT_PANEL_TOGGLE_SUFFIX = ELEMENT_PANEL_DELIMITER+'toggle';
+const ELEMENT_PANEL_LAYOUT_SUFFIX = ELEMENT_PANEL_DELIMITER+'panel';
+const ELEMENT_PANEL_AREA_ACTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'action';
+const ELEMENT_PANEL_AREA_BUBBLE_SUFFIX = ELEMENT_PANEL_DELIMITER+'bubble';
 const ELEMENT_BUBBLE_PREFIX = 'b';
+const ELEMENT_PANEL_AREA_CAPTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'caption';
 const ELEMENT_CAPTION_PREFIX = 'c';
+const ELEMENT_PANEL_AREA_PEEK_SUFFIX = ELEMENT_PANEL_DELIMITER+'peek';
+const ELEMENT_PANEL_AREA_JSON_SUFFIX = ELEMENT_PANEL_DELIMITER+'json';
 
 function _initPage() {
     nextPanelId = 1;
@@ -100,7 +106,7 @@ function _initAttributionAction(layoutElement) {
     previewElement.type = 'button';
     previewElement.value = 'PREVIEW';
     previewElement.className = 'button';
-    let onclick = '_preview()';
+    let onclick = '_actionPreview()';
     previewElement.setAttribute('onclick', onclick);
     areaElement.appendChild(previewElement);
 }
@@ -149,7 +155,7 @@ function _initPanelSection(panelOpen) {
     // Create header
     _initPanelHeader(sectionElement,panelId,panelOpen);
     // Create content
-    _initPanelContent(panelId,sectionElement,panelOpen);
+    _initPanelContent(sectionElement,panelId,panelOpen);
     return sectionElement;
 }
 
@@ -162,7 +168,7 @@ function _initPanelHeader(sectionElement,panelId,panelOpen) {
     let toggleLabel = 'Panel';
     let toggleContent = panelId + ELEMENT_PANEL_SECTION_CONTENT_SUFFIX;
     let toggleElement = document.createElement('a');
-    toggleElement.id = panelId + ELEMENT_ATTRIBUTION_TOGGLE_SUFFIX;
+    toggleElement.id = panelId + ELEMENT_PANEL_TOGGLE_SUFFIX;
     toggleElement.href = 'javascript:';
     toggleElement.text = _uiToggleText(panelOpen,toggleLabel);
     let onclick = '_uiToggle("'+
@@ -191,9 +197,191 @@ function _initPanelHeader(sectionElement,panelId,panelOpen) {
     actionElement.appendChild(removeElement);
 }
 
+function _initPanelContent(sectionElement,panelId,panelOpen) {
+    let contentElement = document.createElement('div');
+    contentElement.id = panelId + ELEMENT_PANEL_SECTION_CONTENT_SUFFIX;
+    if (!panelOpen) {
+        contentElement.style = 'display: none';
+    }
+    sectionElement.appendChild(contentElement);
+    // Layout
+    let layoutElement = document.createElement('div');
+    layoutElement.id = panelId + ELEMENT_PANEL_LAYOUT_SUFFIX;
+    layoutElement.className = 'wizard-panel';
+    contentElement.appendChild(layoutElement);
+    // Area: Action
+    _initPanelAction(panelId,layoutElement);
+    // Area: Bubble
+    _initPanelInputBubble(panelId,layoutElement);
+    // Area: Caption
+    _initPanelInputCaption(panelId,layoutElement);
+    // Area: Peek
+    _initPanelPeek(panelId,layoutElement);
+    // Area: JSON
+    _initPanelJson(panelId,layoutElement);
+}
+
+function _initPanelAction(panelId,layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = panelId + ELEMENT_PANEL_AREA_ACTION_SUFFIX;
+    areaElement.className = 'wizard-action';
+    layoutElement.appendChild(areaElement);
+    // Peek
+    let peekElement = document.createElement('input');
+    peekElement.type = 'button';
+    peekElement.value = 'PEEK';
+    peekElement.className = 'button';
+    let onclick = '_peekInit("'+panelId+'")';
+    peekElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(peekElement);
+    // JSON
+    let jsonElement = document.createElement('input');
+    jsonElement.type = 'button';
+    jsonElement.value = 'JSON';
+    jsonElement.className = 'button';
+    onclick = '_peekJson("'+panelId+'")';
+    jsonElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(jsonElement);
+    // Hide
+    let hideElement = document.createElement('input');
+    hideElement.type = 'button';
+    hideElement.value = 'HIDE';
+    hideElement.className = 'button';
+    onclick = '_peekHide("'+panelId+'")';
+    hideElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(hideElement);
+}
+
+function _initPanelInputBubble(panelId,layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = panelId + ELEMENT_PANEL_AREA_BUBBLE_SUFFIX;
+    areaElement.className = 'wizard-bubble';
+    layoutElement.appendChild(areaElement);
+    _initPanelInputBubbleImage(panelId,areaElement);
+    _initPanelInputBubbleText(panelId,areaElement);
+}
+
+function _initPanelInputBubbleImage(panelId,areaElement) {
+    let headerElement = document.createElement('h3');
+    headerElement.innerHTML = 'Bubble Image';
+    areaElement.appendChild(headerElement);
+    let labelFor = panelId + ELEMENT_BUBBLE_PREFIX;
+    let labelElement = document.createElement('label');
+    labelElement.innerHTML = 'Choose: &nbsp; ';
+    labelElement.htmlFor = labelFor;
+    areaElement.appendChild(labelElement);
+    let selectElement = document.createElement('select');
+    selectElement.id = labelFor;
+    selectElement.name = labelFor;
+    areaElement.appendChild(selectElement);
+    for (let label of BUBBLE_LABELS) {
+        let optionElement = document.createElement('option');
+        optionElement.value = label;
+        optionElement.text = label;
+        selectElement.appendChild(optionElement);
+    }
+}
+
+function _initPanelInputBubbleText(panelId,areaElement) {
+    let headerElement = document.createElement('h3');
+    headerElement.innerHTML = 'Bubble Text';
+    areaElement.appendChild(headerElement);
+    for (let i = 1; i <= 3; i++) {
+        let labelFor = panelId + ELEMENT_BUBBLE_PREFIX + i;
+        let labelElement = document.createElement('label');
+        let labelHtml = i;
+        if (i === 1) {
+            labelHtml = labelHtml+' (Top)';
+        } else if (i === 3) {
+            labelHtml = labelHtml+' (Bottom)';
+        } else {
+            labelHtml = labelHtml+' (Between)';
+        }
+        labelElement.innerHTML = labelHtml;
+        labelElement.htmlFor = labelFor;
+        areaElement.appendChild(labelElement);
+        let textareaElement = document.createElement('textarea');
+        textareaElement.id = labelFor;
+        textareaElement.name = labelFor;
+        textareaElement.value = i;
+        textareaElement.rows = 3;
+        areaElement.appendChild(textareaElement);
+    }
+}
+
+function _initPanelInputCaption(panelId,layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = panelId + ELEMENT_PANEL_AREA_CAPTION_SUFFIX;
+    areaElement.className = 'wizard-caption';
+    layoutElement.appendChild(areaElement);
+    _initPanelInputCaptionText(panelId,areaElement);
+}
+
+
+function _initPanelInputCaptionText(panelId,areaElement) {
+    let headerElement = document.createElement('h3');
+    headerElement.innerHTML = 'Caption Text';
+    areaElement.appendChild(headerElement);
+    for (let i = 1; i <= 4; i++) {
+        let labelFor = panelId + ELEMENT_CAPTION_PREFIX + i;
+        let labelElement = document.createElement('label');
+        let labelHtml = i;
+        let textValue = i;
+        if (i === 1) {
+            labelHtml = labelHtml+' (Upper Left)';
+            textValue = 'Where';
+        } else if (i === 2) {
+            labelHtml = labelHtml+' (Upper Right)';
+            textValue = 'When';
+        } else if (i === 3) {
+            labelHtml = labelHtml+' (Lower Left)';
+            textValue = 'From Who\n(Emotion)';
+        } else {
+            labelHtml = labelHtml+' (Lower Right)';
+            textValue = 'To Who\n(Emotion)';
+        }
+        labelElement.innerHTML = labelHtml;
+        labelElement.htmlFor = labelFor;
+        areaElement.appendChild(labelElement);
+        let textareaElement = document.createElement('textarea');
+        textareaElement.id = labelFor;
+        textareaElement.name = labelFor;
+        textareaElement.value = textValue;
+        textareaElement.rows = 3;
+        areaElement.appendChild(textareaElement);
+    }
+}
+
+function _initPanelPeek(panelId,layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = panelId + ELEMENT_PANEL_AREA_PEEK_SUFFIX;
+    areaElement.className = 'wizard-peek';
+    layoutElement.appendChild(areaElement);
+}
+
+function _initPanelJson(panelId,layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = panelId + ELEMENT_PANEL_AREA_JSON_SUFFIX;
+    areaElement.className = 'wizard-json';
+    layoutElement.appendChild(areaElement);
+}
+
 //
 // I N P U T
 //
+
+let input;
+
+function _inputPreview() {
+    input = _inputAttribution();
+    input.panels = _inputPanels();
+}
+
+function _inputPeek(panelId) {
+    input = _inputAttribution();
+    input.panels = [];
+    input.panels.push(_inputPanel(panelId));
+}
 
 function _inputAttribution() {
     let r = {};
@@ -313,4 +501,76 @@ function _uiPanelRemove(panelId) {
             }
         }
     }
+}
+
+//
+// A C T I O N
+//
+
+const ELEMENT_PREVIEW = 'preview';
+const ELEMENT_PREVIEW_CANVAS = 'canvas';
+const ELEMENT_PREVIEW_MODAL = 'modal';
+const ELEMENT_PEEK_CANVAS_SUFFIX = ELEMENT_PANEL_DELIMITER+'canvas';
+const ELEMENT_PEEK_PRE_SUFFIX = ELEMENT_PANEL_DELIMITER+'pre';
+
+function _actionPreview() {
+    // Remove previous
+    let canvasElement = document.getElementById(ELEMENT_PREVIEW_CANVAS);
+    if (canvasElement !== null) {
+        let previewElement = document.getElementById(ELEMENT_PREVIEW);
+        previewElement.removeChild(canvas);
+    }
+    // Parse input, preload images and draw
+    _inputPreview();
+    let imageURLs = _miscPrepareImages(input);
+    loadImages(imageURLs,_drawPreview,_miscLoadImagesError);
+}
+
+function _drawPreview(images) {
+    // Prepare
+    let canvasElement = document.createElement('canvas');
+    let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
+    let canvasPrepared = prepareCanvas(canvasContext,input,images);
+    // Draw
+    canvasElement.id = ELEMENT_PREVIEW_CANVAS;
+    canvasElement.width = canvasPrepared.w;
+    canvasElement.height = canvasPrepared.h;
+    let previewElement = document.getElementById(ELEMENT_PREVIEW);
+    previewElement.appendChild(canvasElement);
+    let modalElement = document.getElementById(ELEMENT_PREVIEW_MODAL);
+    modalElement.style.display = "block";
+    drawCanvas(canvasPrepared, false);
+}
+
+// XXX: Up-To-Here!
+// function _actionPeek(panelId) {
+//     // Remove previous
+//     let canvasElement =  document.getElementById(panelId+ELEMENT_PEEK_CANVAS_SUFFIX);
+//     if (canvasElement !== null) {
+//         let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
+//         peekElement.removeChild(canvasElement);
+//     }
+//     let preElement =  document.getElementById(panelId+ELEMENT_PEEK_PRE_SUFFIX);
+//     if (preElement !== null) {
+//         let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
+//         jsonElement.removeChild(preElement);
+//     }
+//     // Parse input, preload images and draw
+//     _inputPeek(panelId);
+//     let imageURLs = _miscPrepareImages(input);
+//     loadImages(imageURLs,_peekAtPanel,_loadError);
+// }
+
+//
+// M I S C E L L A N E O U S
+//
+
+function _miscPrepareImages(input) {
+    let origin = document.location.origin;
+    let labels = parseImages(input);
+    return prepareImages(origin,labels);
+}
+
+function _miscLoadImagesError(url) {
+    alert('Failed to load one or more images: ' + url);
 }

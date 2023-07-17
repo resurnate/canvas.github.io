@@ -1,6 +1,7 @@
 
 const IMAGE_PATHNAME = '/img/';
 const IMAGE_SUFFIX = '.png';
+const CANVAS_CONTEXT = '2d';
 
 function fetchJson(url) {
     return new Promise(function (resolve, reject) {
@@ -15,6 +16,14 @@ function fetchJson(url) {
         xhr.open('GET', url);
         xhr.send();
     });
+}
+
+function parseImages(input) {
+    let r = [];
+    for (let ip of input.panels) {
+        r.push(ip.image);
+    }
+    return r;
 }
 
 function prepareImages(origin,labels) {
