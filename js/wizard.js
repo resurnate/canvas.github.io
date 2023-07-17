@@ -231,7 +231,7 @@ function _initPanelAction(panelId,layoutElement) {
     peekElement.type = 'button';
     peekElement.value = 'PEEK';
     peekElement.className = 'button';
-    let onclick = '_peekInit("'+panelId+'")';
+    let onclick = '_actionPeek("'+panelId+'")';
     peekElement.setAttribute('onclick',onclick);
     areaElement.appendChild(peekElement);
     // JSON
@@ -239,7 +239,7 @@ function _initPanelAction(panelId,layoutElement) {
     jsonElement.type = 'button';
     jsonElement.value = 'JSON';
     jsonElement.className = 'button';
-    onclick = '_peekJson("'+panelId+'")';
+    onclick = '_actionPeekJson("'+panelId+'")';
     jsonElement.setAttribute('onclick',onclick);
     areaElement.appendChild(jsonElement);
     // Hide
@@ -247,7 +247,7 @@ function _initPanelAction(panelId,layoutElement) {
     hideElement.type = 'button';
     hideElement.value = 'HIDE';
     hideElement.className = 'button';
-    onclick = '_peekHide("'+panelId+'")';
+    onclick = '_actionPeekHide("'+panelId+'")';
     hideElement.setAttribute('onclick',onclick);
     areaElement.appendChild(hideElement);
 }
@@ -542,24 +542,60 @@ function _drawPreview(images) {
     drawCanvas(canvasPrepared, false);
 }
 
-// XXX: Up-To-Here!
-// function _actionPeek(panelId) {
-//     // Remove previous
-//     let canvasElement =  document.getElementById(panelId+ELEMENT_PEEK_CANVAS_SUFFIX);
-//     if (canvasElement !== null) {
-//         let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
-//         peekElement.removeChild(canvasElement);
-//     }
-//     let preElement =  document.getElementById(panelId+ELEMENT_PEEK_PRE_SUFFIX);
-//     if (preElement !== null) {
-//         let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
-//         jsonElement.removeChild(preElement);
-//     }
-//     // Parse input, preload images and draw
-//     _inputPeek(panelId);
-//     let imageURLs = _miscPrepareImages(input);
-//     loadImages(imageURLs,_peekAtPanel,_loadError);
-// }
+function _actionPeek(panelId) {
+    // Remove previous
+    let canvasElement =  document.getElementById(panelId+ELEMENT_PEEK_CANVAS_SUFFIX);
+    if (canvasElement !== null) {
+        let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
+        peekElement.removeChild(canvasElement);
+    }
+    let preElement =  document.getElementById(panelId+ELEMENT_PEEK_PRE_SUFFIX);
+    if (preElement !== null) {
+        let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
+        jsonElement.removeChild(preElement);
+    }
+    // Parse input, preload images and draw
+    _inputPeek(panelId);
+    let imageURLs = _miscPrepareImages(input);
+    peekPanelId = panelId;
+    loadImages(imageURLs,_drawPeek,_miscLoadImagesError);
+}
+
+function _drawPeek(images) {
+    // Prepare
+    let canvasElement = document.createElement('canvas');
+    let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
+    let canvasPrepared = prepareCanvas(canvasContext,input,images);
+    let preElement = document.createElement('pre');
+    // Draw peek
+    canvasElement.id = peekPanelId+ELEMENT_PEEK_CANVAS_SUFFIX;
+    canvasElement.width = canvasPrepared.w;
+    canvasElement.height = canvasPrepared.h;
+    let peekElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
+    peekElement.style.display = 'flex';
+    peekElement.appendChild(canvasElement);
+    drawCanvas(canvasPrepared, false);
+    // Draw JSON (in background)
+    preElement.id = peekPanelId+ELEMENT_PEEK_PRE_SUFFIX;
+    let jsonElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
+    jsonElement.style.display = 'none';
+    jsonElement.appendChild(preElement);
+    preElement.innerText = JSON.stringify(input.panels[0],null,2);
+}
+
+function _actionPeekJson(panelId) {
+    let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
+    peekElement.style.display = 'none';
+    let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
+    jsonElement.style.display = 'flex';
+}
+
+function _actionPeekHide(panelId) {
+    let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
+    peekElement.style.display = 'none';
+    let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
+    jsonElement.style.display = 'none';
+}
 
 //
 // M I S C E L L A N E O U S

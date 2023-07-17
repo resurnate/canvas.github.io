@@ -9,89 +9,6 @@
   <meta property="og:description" content="The Canvas tool enables a content provider to create a comic strip for Resurnate.com.">
   <title>Canvas Wizard</title>
   <link rel="stylesheet" href="/css/main.css">
-  <script type="text/javascript">
-
-    function _peekInit(panelId) {
-      let imageElement = panelId+'b';
-      let imageLabel = document.getElementById(imageElement).value;
-      let imageLabels = [ imageLabel ];
-      let imageURLs = prepareImages(window.location.origin,imageLabels);
-      peekPanelId = panelId;
-      loadImages(imageURLs,_peekAtPanel,_loadError);
-    }
-
-    function _peekJson(panelId) {
-      let peekElement = document.getElementById(panelId+'-peek');
-      peekElement.style.display = 'none';
-      let jsonElement = document.getElementById(panelId+'-json');
-      jsonElement.style.display = 'flex';
-    }
-
-    function _peekHide(panelId) {
-      let peekElement = document.getElementById(panelId+'-peek');
-      peekElement.style.display = 'none';
-      let jsonElement = document.getElementById(panelId+'-json');
-      jsonElement.style.display = 'none';
-    }
-
-    function _peekAtPanel(images) {
-      // Remove previous peek
-      let peekElement = document.getElementById(peekPanelId+'-peek');
-      let canvasElement =  document.getElementById(peekPanelId+'canvas');
-      if (canvasElement !== null) {
-        peekElement.removeChild(canvasElement);
-      }
-      // Remove previous JSON
-      let jsonElement = document.getElementById(peekPanelId+'-json');
-      let preElement =  document.getElementById(peekPanelId+'pre');
-      if (preElement !== null) {
-        jsonElement.removeChild(preElement);
-      }
-      _peekParsePrepareAndDraw(images);
-    }
-
-    function _loadError(url) {
-      alert('Failed to load one or more images: ' + url);
-      peekPanelId = '';
-    }
-
-    function _peekParsePrepareAndDraw(images) {
-      _inputPeek(peekPanelId);
-      let prepared = _canvasPrepare(images);
-      _canvasDraw(peekPanelId,prepared);
-    }
-
-    function _canvasPrepare(images) {
-      let canvas = document.createElement('canvas');
-      let context = canvas.getContext('2d');
-      let filtered = prepareCanvas(context,input,images);
-      let pre = document.createElement('pre');
-      pre.innerText = JSON.stringify(input.panels[0],null,2);
-      return {
-        canvas   : canvas,
-        filtered : filtered,
-        pre      : pre
-      };
-    }
-
-    function _canvasDraw(panelId,prepared) {
-      // Peek
-      prepared.canvas.id     = panelId+'canvas';
-      prepared.canvas.width  = prepared.filtered.w;
-      prepared.canvas.height = prepared.filtered.h;
-      prepared.canvas.style = "width: 100%";
-      let peek = document.getElementById(panelId+'-peek');
-      peek.style.display = 'flex';
-      peek.appendChild(prepared.canvas);
-      drawCanvas(prepared.filtered,false);
-      // JSON
-      prepared.pre.id = panelId+'pre';
-      let json = document.getElementById(panelId+'-json');
-      json.style.display = 'none';
-      json.appendChild(prepared.pre);
-    }
-
-  </script>
 </head>
 <body onload="_initPage();">
 
@@ -136,18 +53,10 @@
 <script>
 
   const MODAL_ELEMENT = 'modal';
-  // const BUTTON_ELEMENT = 'strip-preview';
   const CLOSE_ELEMENT = 'close';
 
   let modal = document.getElementById(MODAL_ELEMENT);
-  // let btn = document.getElementById(BUTTON_ELEMENT);
   let span = document.getElementsByClassName(CLOSE_ELEMENT)[0];
-
-  // // Open modal and preview
-  // btn.onclick = function() {
-  //   modal.style.display = "block";
-  //   preview();
-  // }
 
   // When <span> (x) clicked, close modal
   span.onclick = function() {

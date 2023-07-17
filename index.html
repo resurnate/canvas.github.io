@@ -17,7 +17,6 @@
         const GRID_ELEMENT = 'grid';
         const PREVIEW_ELEMENT = 'preview';
         const CANVAS_ELEMENT = 'canvas';
-        const CANVAS_CONTEXT = '2d';
         const SAMPLE_PATHNAME = '/doc/sample.json';
 
         let input;
@@ -57,11 +56,11 @@
             // Preload images and generate canvas
             let content = document.getElementById(CONTENT_ELEMENT);
             input = JSON.parse(content.value);
-            let imageURLs = parseImages();
+            let imageURLs = _parseImages();
             loadImages(imageURLs,generate,loadError);
         }
 
-        function parseImages() {
+        function _parseImages() {
             let server = document.getElementById(SERVER_ELEMENT);
             let origin = server.value;
             let labels = [];
