@@ -13,12 +13,12 @@ const ELEMENT_ATTRIBUTION_SECTION_CONTENT = 'attribution-content';
 const ELEMENT_ATTRIBUTION_TOGGLE = 'attribution-toggle';
 const ELEMENT_ATTRIBUTION_LAYOUT = 'attribution-layout';
 const ELEMENT_ATTRIBUTION_AREA_ACTION = 'attribution-action';
-const ELEMENT_ATTRIBUTION_ACTION_PREVIEW = 'strip-preview';
 const ELEMENT_ATTRIBUTION_AREA_INPUT = 'wizard-attribution-content';
+const ELEMENT_ATTRIBUTION_ACTION_PREVIEW = 'strip-preview';
 const ELEMENT_ATTRIBUTION_TITLE = 'attribution-title';
 const ELEMENT_ATTRIBUTION_AUTHOR = 'attribution-author';
-const ELEMENT_PANEL_DELIMITER = '-';
 const ELEMENT_PANEL_PREFIX = 'p';
+const ELEMENT_PANEL_DELIMITER = '-';
 const ELEMENT_PANEL_SECTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'section';
 const ELEMENT_PANEL_SECTION_HEADER_SUFFIX = ELEMENT_PANEL_DELIMITER+'header';
 const ELEMENT_PANEL_SECTION_CONTENT_SUFFIX = ELEMENT_PANEL_DELIMITER+'content';
@@ -26,11 +26,17 @@ const ELEMENT_PANEL_TOGGLE_SUFFIX = ELEMENT_PANEL_DELIMITER+'toggle';
 const ELEMENT_PANEL_LAYOUT_SUFFIX = ELEMENT_PANEL_DELIMITER+'panel';
 const ELEMENT_PANEL_AREA_ACTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'action';
 const ELEMENT_PANEL_AREA_BUBBLE_SUFFIX = ELEMENT_PANEL_DELIMITER+'bubble';
-const ELEMENT_BUBBLE_PREFIX = 'b';
 const ELEMENT_PANEL_AREA_CAPTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'caption';
-const ELEMENT_CAPTION_PREFIX = 'c';
 const ELEMENT_PANEL_AREA_PEEK_SUFFIX = ELEMENT_PANEL_DELIMITER+'peek';
 const ELEMENT_PANEL_AREA_JSON_SUFFIX = ELEMENT_PANEL_DELIMITER+'json';
+const ELEMENT_PANEL_BUBBLE_PREFIX = 'b';
+const ELEMENT_PANEL_CAPTION_PREFIX = 'c';
+const ELEMENT_PANEL_CANVAS_SUFFIX = ELEMENT_PANEL_DELIMITER+'canvas';
+const ELEMENT_PANEL_PRE_SUFFIX = ELEMENT_PANEL_DELIMITER+'pre';
+const ELEMENT_MODAL_SECTION = 'modal';
+const ELEMENT_MODAL_AREA_PREVIEW = 'modal-preview';
+const ELEMENT_MODAL_CLOSE = 'modal-close';
+const ELEMENT_MODAL_CANVAS = 'modal-canvas';
 
 function _initPage() {
     nextPanelId = 1;
@@ -45,6 +51,8 @@ function _initPage() {
         sectionsElement.appendChild(panelElement);
         nextPanelId += 1;
     }
+    // Modal
+    _initModalSection();
 }
 
 function _initAttributionSection() {
@@ -265,7 +273,7 @@ function _initPanelInputBubbleImage(panelId,areaElement) {
     let headerElement = document.createElement('h3');
     headerElement.innerHTML = 'Bubble Image';
     areaElement.appendChild(headerElement);
-    let labelFor = panelId + ELEMENT_BUBBLE_PREFIX;
+    let labelFor = panelId + ELEMENT_PANEL_BUBBLE_PREFIX;
     let labelElement = document.createElement('label');
     labelElement.innerHTML = 'Choose: &nbsp; ';
     labelElement.htmlFor = labelFor;
@@ -287,7 +295,7 @@ function _initPanelInputBubbleText(panelId,areaElement) {
     headerElement.innerHTML = 'Bubble Text';
     areaElement.appendChild(headerElement);
     for (let i = 1; i <= 3; i++) {
-        let labelFor = panelId + ELEMENT_BUBBLE_PREFIX + i;
+        let labelFor = panelId + ELEMENT_PANEL_BUBBLE_PREFIX + i;
         let labelElement = document.createElement('label');
         let labelHtml = i;
         if (i === 1) {
@@ -323,7 +331,7 @@ function _initPanelInputCaptionText(panelId,areaElement) {
     headerElement.innerHTML = 'Caption Text';
     areaElement.appendChild(headerElement);
     for (let i = 1; i <= 4; i++) {
-        let labelFor = panelId + ELEMENT_CAPTION_PREFIX + i;
+        let labelFor = panelId + ELEMENT_PANEL_CAPTION_PREFIX + i;
         let labelElement = document.createElement('label');
         let labelHtml = i;
         let textValue = i;
@@ -364,6 +372,21 @@ function _initPanelJson(panelId,layoutElement) {
     areaElement.id = panelId + ELEMENT_PANEL_AREA_JSON_SUFFIX;
     areaElement.className = 'wizard-json';
     layoutElement.appendChild(areaElement);
+}
+
+function _initModalSection() {
+    let modalElement = document.getElementById(ELEMENT_MODAL_SECTION);
+    // When modal (x) clicked, close it
+    let closeElement = document.getElementById(ELEMENT_MODAL_CLOSE);
+    closeElement.onclick = function() {
+        modalElement.style.display = 'none';
+    }
+    // When anywhere outside modal clicked, close it
+    window.onclick = function(event) {
+        if (event.target === modalElement) {
+            modalElement.style.display = 'none';
+        }
+    }
 }
 
 //
@@ -410,7 +433,7 @@ function _inputPanels() {
 
 function _inputPanel(panelId) {
     // Parse image
-    let ebl = panelId+ELEMENT_BUBBLE_PREFIX;
+    let ebl = panelId+ELEMENT_PANEL_BUBBLE_PREFIX;
     let bl = document.getElementById(ebl).value;
     let bc = parsePanelBubbleCount(bl);
     // Parse bubbles
@@ -426,7 +449,7 @@ function _inputPanel(panelId) {
         bs.push(b);
     }
     // Parse captions
-    let ecl = panelId+ELEMENT_CAPTION_PREFIX;
+    let ecl = panelId+ELEMENT_PANEL_CAPTION_PREFIX;
     let cs = [];
     for (let i = 0; i < 4; i++) {
         let cp = i + 1;
@@ -507,18 +530,12 @@ function _uiPanelRemove(panelId) {
 // A C T I O N
 //
 
-const ELEMENT_PREVIEW = 'preview';
-const ELEMENT_PREVIEW_CANVAS = 'canvas';
-const ELEMENT_PREVIEW_MODAL = 'modal';
-const ELEMENT_PEEK_CANVAS_SUFFIX = ELEMENT_PANEL_DELIMITER+'canvas';
-const ELEMENT_PEEK_PRE_SUFFIX = ELEMENT_PANEL_DELIMITER+'pre';
-
 function _actionPreview() {
     // Remove previous
-    let canvasElement = document.getElementById(ELEMENT_PREVIEW_CANVAS);
+    let canvasElement = document.getElementById(ELEMENT_MODAL_CANVAS);
     if (canvasElement !== null) {
-        let previewElement = document.getElementById(ELEMENT_PREVIEW);
-        previewElement.removeChild(canvas);
+        let previewElement = document.getElementById(ELEMENT_MODAL_AREA_PREVIEW);
+        previewElement.removeChild(canvasElement);
     }
     // Parse input, preload images and draw
     _inputPreview();
@@ -532,24 +549,24 @@ function _drawPreview(images) {
     let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
     let canvasPrepared = prepareCanvas(canvasContext,input,images);
     // Draw
-    canvasElement.id = ELEMENT_PREVIEW_CANVAS;
+    canvasElement.id = ELEMENT_MODAL_CANVAS;
     canvasElement.width = canvasPrepared.w;
     canvasElement.height = canvasPrepared.h;
-    let previewElement = document.getElementById(ELEMENT_PREVIEW);
+    let previewElement = document.getElementById(ELEMENT_MODAL_AREA_PREVIEW);
     previewElement.appendChild(canvasElement);
-    let modalElement = document.getElementById(ELEMENT_PREVIEW_MODAL);
+    let modalElement = document.getElementById(ELEMENT_MODAL_SECTION);
     modalElement.style.display = "block";
     drawCanvas(canvasPrepared, false);
 }
 
 function _actionPeek(panelId) {
     // Remove previous
-    let canvasElement =  document.getElementById(panelId+ELEMENT_PEEK_CANVAS_SUFFIX);
+    let canvasElement =  document.getElementById(panelId+ELEMENT_PANEL_CANVAS_SUFFIX);
     if (canvasElement !== null) {
         let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
         peekElement.removeChild(canvasElement);
     }
-    let preElement =  document.getElementById(panelId+ELEMENT_PEEK_PRE_SUFFIX);
+    let preElement =  document.getElementById(panelId+ELEMENT_PANEL_PRE_SUFFIX);
     if (preElement !== null) {
         let jsonElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
         jsonElement.removeChild(preElement);
@@ -568,7 +585,7 @@ function _drawPeek(images) {
     let canvasPrepared = prepareCanvas(canvasContext,input,images);
     let preElement = document.createElement('pre');
     // Draw peek
-    canvasElement.id = peekPanelId+ELEMENT_PEEK_CANVAS_SUFFIX;
+    canvasElement.id = peekPanelId+ELEMENT_PANEL_CANVAS_SUFFIX;
     canvasElement.width = canvasPrepared.w;
     canvasElement.height = canvasPrepared.h;
     let peekElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
@@ -576,7 +593,7 @@ function _drawPeek(images) {
     peekElement.appendChild(canvasElement);
     drawCanvas(canvasPrepared, false);
     // Draw JSON (in background)
-    preElement.id = peekPanelId+ELEMENT_PEEK_PRE_SUFFIX;
+    preElement.id = peekPanelId+ELEMENT_PANEL_PRE_SUFFIX;
     let jsonElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
     jsonElement.style.display = 'none';
     jsonElement.appendChild(preElement);

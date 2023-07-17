@@ -30,7 +30,7 @@
   <li>This tool enables a content provider to create a comic strip for <a href="https://resurnate.com" target="_blank">Resurnate.com</a>.</li>
 </ul>
 
-<!-- Panel Sections -->
+<!-- Sections -->
 <div class="wizard-sections" id="panel-sections">
 </div>
 
@@ -45,32 +45,11 @@
 <!-- Modal -->
 <div id="modal" class="modal">
   <div class="modal-content">
-    <span class="close">&times;</span>
-    <div id="preview"></div>
+    <span id="modal-close" class="close">&times;</span>
+    <div id="modal-preview"></div>
   </div>
 </div>
 
-<script>
-
-  const MODAL_ELEMENT = 'modal';
-  const CLOSE_ELEMENT = 'close';
-
-  let modal = document.getElementById(MODAL_ELEMENT);
-  let span = document.getElementsByClassName(CLOSE_ELEMENT)[0];
-
-  // When <span> (x) clicked, close modal
-  span.onclick = function() {
-    modal.style.display = "none";
-  }
-
-  // When anywhere outside modal clicked, close it
-  window.onclick = function(event) {
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  }
-
-</script>
 <script type="text/javascript" src="/js/wizard.js"></script>
 <script type="text/javascript" src="/js/main.js"></script>
 <script type="text/javascript" src="/js/canvas.js"></script>
