@@ -1,201 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:url" content="https://canvas.resurnate.com/index.html">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Resurnate Canvas Tool">
-    <meta property="og:description" content="The Canvas tool enables a content provider to create a comic strip for Resurnate.com.">
-    <title>Canvas Tool</title>
-    <link rel="stylesheet" href="/css/main.css">
-    <script type="text/javascript">
-
-        const SERVER_ELEMENT = 'server';
-        const FILE_ELEMENT = 'file';
-        const CONTENT_ELEMENT = 'content';
-        const GRID_ELEMENT = 'grid';
-        const PREVIEW_ELEMENT = 'preview';
-        const CANVAS_ELEMENT = 'canvas';
-        const SAMPLE_PATHNAME = '/doc/sample.json';
-
-        let input;
-
-        function initPage() {
-            let server = document.getElementById(SERVER_ELEMENT);
-            server.value = window.location.origin;
-            let file = document.getElementById(FILE_ELEMENT);
-            file.value = server.value+SAMPLE_PATHNAME;
-            let content = document.getElementById(CONTENT_ELEMENT);
-            content.value = '';
-            let grid = document.getElementById(GRID_ELEMENT);
-            grid.checked = false;
-            input = '';
-            loadFile();
-        }
-
-        function loadFile() {
-            let url = document.getElementById(FILE_ELEMENT);
-            fetchJson(url.value)
-                .then((result) => {
-                    let content = document.getElementById(CONTENT_ELEMENT);
-                    content.value = result;
-                })
-                .catch(() => {
-                    alert("Failed to load file: " + url.value);
-                });
-        }
-
-        function preview() {
-            // Remove previous preview
-            let preview = document.getElementById(PREVIEW_ELEMENT);
-            let canvas = document.getElementById(CANVAS_ELEMENT);
-            if (canvas !== null) {
-                preview.removeChild(canvas);
-            }
-            // Preload images and generate canvas
-            let content = document.getElementById(CONTENT_ELEMENT);
-            input = JSON.parse(content.value);
-            let imageURLs = _parseImages();
-            loadImages(imageURLs,generate,loadError);
-        }
-
-        function _parseImages() {
-            let server = document.getElementById(SERVER_ELEMENT);
-            let origin = server.value;
-            let labels = [];
-            for (let panel of input.panels) {
-                labels.push(panel.image);
-            }
-            return prepareImages(origin,labels);
-        }
-
-        function generate(images) {
-            prepareAndDrawCanvas(images);
-        }
-
-        function loadError(url) {
-            alert('Failed to load one or more images: ' + url);
-        }
-
-        function prepareAndDrawCanvas(images) {
-            let prepared = _prepareCanvas(images);
-            _drawCanvas(prepared);
-        }
-
-        function _prepareCanvas(images) {
-            let canvas = document.createElement(CANVAS_ELEMENT);
-            let context = canvas.getContext(CANVAS_CONTEXT);
-            let filtered = prepareCanvas(context,input,images);
-            return {
-                canvas   : canvas,
-                filtered : filtered
-            };
-        }
-
-        function _drawCanvas(prepared) {
-            prepared.canvas.id     = CANVAS_ELEMENT;
-            prepared.canvas.width  = prepared.filtered.w;
-            prepared.canvas.height = prepared.filtered.h;
-            let preview = document.getElementById(PREVIEW_ELEMENT);
-            preview.appendChild(prepared.canvas);
-            let grid = document.getElementById(GRID_ELEMENT);
-            drawCanvas(prepared.filtered,grid.checked);
-        }
-
-    </script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:url" content="https://canvas.resurnate.com/index.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Resurnate Canvas Wizard">
+  <meta property="og:description" content="The Canvas tool enables a content provider to create a comic strip for Resurnate.com.">
+  <title>Canvas Wizard</title>
+  <link rel="stylesheet" href="/css/main.css">
 </head>
-<body onload="initPage();">
+<body onload="_initPage();">
 
 <!-- Header -->
 <div id="header">
-    <h1 class="title"><a href="/">Resurnate</a></h1>
+  <h1 class="title"><a href="/">Resurnate</a></h1>
 </div>
 
 <!-- Menu -->
 <div id="menu">
-    <a class="item" href="/">Tool</a>
-    <span style="color: white;">&#10192;</span>
-    <a class="item" href="/help.html">Help</a>
+  <a class="item" href="/advanced.html">Advanced</a>
+  <span style="color: white">&#10192;</span>
+  <a class="item" href="/help.html">Help</a>
 </div>
 
 <!-- Title -->
-<h1>Canvas Tool</h1>
+<h1>Canvas Wizard</h1>
 <ul>
-    <li>This tool enables a content provider to create a comic strip for <a href="https://resurnate.com" target="_blank">Resurnate.com</a>.</li>
+  <li>This tool enables a content provider to create a comic strip for <a href="https://resurnate.com" target="_blank">Resurnate.com</a>.</li>
 </ul>
 
-<!-- Server -->
-<h2>Server</h2>
-<label for="server">Server origin</label>
-<input id="server" type="text" name="server">
-
-<!-- File -->
-<h2>File</h2>
-<label for="file">Input file location</label>
-<input id="file" type="text" name="file">
-
-<!-- Content -->
-<h2>Content</h2>
-<p>
-    <input class="button" type="button" value="LOAD" onclick="loadFile()">
-    <input id="button" class="button" type="button" value="PREVIEW">
-    <input class="button" type="button" value="RESET" onclick="initPage()">
-</p>
-<div style="float: right">
-    <label for="grid">Show Grid</label>
-    <input id="grid" type="checkbox">
+<!-- Sections -->
+<div class="wizard-sections" id="panel-sections">
 </div>
-<label for="content">Load input file or copy and paste</label>
-<textarea id="content" name="content" rows=50 placeholder="Copy and paste your strip JSON formatted content here!"></textarea>
 
 <!-- Footer -->
 <br>
-<br>
 <p class="line">&nbsp;</p>
 <div id="footer">
-    <p><a href="/privacy.html">Privacy</a></p>
-    <p class="copyright">&#169; 2023 resurnate.com</p>
+  <p><a href="/privacy.html">Privacy</a></p>
+  <p class="copyright">&#169; 2023 resurnate.com</p>
 </div>
 
 <!-- Modal -->
 <div id="modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <div id="preview"></div>
-    </div>
+  <div class="modal-content">
+    <span id="modal-close" class="close">&times;</span>
+    <div id="modal-preview"></div>
+  </div>
 </div>
 
-<script>
-
-    const MODAL_ELEMENT = 'modal';
-    const BUTTON_ELEMENT = 'button';
-    const CLOSE_ELEMENT = 'close';
-
-    let modal = document.getElementById(MODAL_ELEMENT);
-    let btn = document.getElementById(BUTTON_ELEMENT);
-    let span = document.getElementsByClassName(CLOSE_ELEMENT)[0];
-
-    // Open modal and preview
-    btn.onclick = function() {
-        modal.style.display = "block";
-        preview();
-    }
-
-    // When <span> (x) clicked, close modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When anywhere outside modal clicked, close it
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    }
-
-</script>
+<script type="text/javascript" src="/js/wizard.js"></script>
 <script type="text/javascript" src="/js/main.js"></script>
 <script type="text/javascript" src="/js/canvas.js"></script>
 </body>
