@@ -246,7 +246,20 @@ label {
 }
 
 .wizard-attribution {
+    display: grid;
+    gap: 10px;
+    grid-template-areas:
+        "attribution-action"
+        "attribution-content";
     padding-right: 10px;
+}
+
+.wizard-attribution-action {
+    grid-area: attribution-action;
+}
+
+.wizard-attribution-content {
+    grid-area: attribution-content;
 }
 
 .wizard-attribution-group {

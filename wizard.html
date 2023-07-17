@@ -11,157 +11,13 @@
   <link rel="stylesheet" href="/css/main.css">
   <script type="text/javascript">
 
-    let nextPanelId = 1;
-    let peekPanelId = '';
-
-    function _initPage() {
-      peekPanelId = '';
-      let sectionsElement = document.getElementById('panel-sections');
-      // Attribution
-      let sectionElement = _initAttributionSection();
-      sectionsElement.appendChild(sectionElement);
-      // Panels
-      for (let i = 0; i < 4; i++) {
-        sectionElement = _initPanelSection(i === 0);
-        sectionsElement.appendChild(sectionElement);
-        nextPanelId += 1;
-      }
-    }
-
-    function _initAttributionSection() {
-      // Create section
-      let sectionElement = document.createElement('section');
-      sectionElement.id = 'attribution-section';
-      sectionElement.className = 'wizard-section';
-      // Create section header
-      let headerElement = document.createElement('div');
-      headerElement.id = 'attribution-header';
-      headerElement.className = 'wizard-header';
-      sectionElement.appendChild(headerElement);
-      _initAttributionHeader(headerElement);
-      // Create section content
-      let contentElement = document.createElement('div');
-      contentElement.id = 'attribution-content';
-      sectionElement.appendChild(contentElement);
-      _initAttributionContent(contentElement);
-      return sectionElement;
-    }
-
-    function _initAttributionHeader(headerElement) {
-      // Toggle
-      let toggleElement = document.createElement('a');
-      toggleElement.id = 'attribution-toggle';
-      toggleElement.href = 'javascript:';
-      toggleElement.text = _toggleAttributionText(true);
-      let onclick = '_toggleAttribution()';
-      toggleElement.setAttribute('onclick',onclick);
-      headerElement.appendChild(toggleElement);
-    }
-
-    function _initAttributionContent(contentElement) {
-      // Layout
-      let layoutElement = document.createElement('div');
-      layoutElement.id = 'attribution-layout';
-      layoutElement.className = 'wizard-attribution';
-      contentElement.appendChild(layoutElement);
-      // Title
-      let divElement = document.createElement('div');
-      divElement.className = 'wizard-attribution-group';
-      layoutElement.appendChild(divElement);
-      let labelElement = document.createElement('label');
-      labelElement.innerHTML = 'Strip title';
-      labelElement.htmlFor = 'attribution-title';
-      divElement.appendChild(labelElement);
-      let titleElement = document.createElement('input');
-      labelElement.id = 'attribution-title';
-      titleElement.type = 'text';
-      titleElement.name = 'attribution-title';
-      titleElement.value = 'Something catchy';
-      divElement.appendChild(titleElement);
-      // Author
-      divElement = document.createElement('div');
-      divElement.className = 'wizard-attribution-group';
-      layoutElement.appendChild(divElement);
-      labelElement = document.createElement('label');
-      labelElement.innerHTML = 'Strip author';
-      labelElement.htmlFor = 'attribution-author';
-      divElement.appendChild(labelElement);
-      let authorElement = document.createElement('input');
-      authorElement.id = 'author-title';
-      authorElement.type = 'text';
-      authorElement.name = 'author-title';
-      authorElement.value = 'Pen name';
-      divElement.appendChild(authorElement);
-    }
-
-    function _toggleAttribution() {
-      // Content
-      let elementId = 'attribution-content';
-      let open = toggleElement(elementId);
-      // Header
-      let element = document.getElementById('attribution-toggle');
-      element.text = _toggleAttributionText(open);
-    }
-
-    function _toggleAttributionText(open) {
-      let charCode = open ? 0x21F1 : 0x21F2;
-      let direction = String.fromCharCode(charCode);
-      return direction + ' Attribution';
-    }
-
-    function _initPanelSection(panelOpen) {
-      let panelId = 'p' + nextPanelId;
-      // Create section
-      let sectionElement = document.createElement('section');
-      sectionElement.id = panelId + '-section';
-      sectionElement.className = 'wizard-section';
-      // Create section header
-      let headerElement = document.createElement('div');
-      headerElement.id = panelId + '-header';
-      headerElement.className = 'wizard-header';
-      sectionElement.appendChild(headerElement);
-      _initPanelHeader(panelId,panelOpen,headerElement);
-      // Create section content
+    function _initPanelContent(panelId,sectionElement,panelOpen) {
       let contentElement = document.createElement('div');
       contentElement.id = panelId + '-content';
       if (!panelOpen) {
         contentElement.style = 'display: none';
       }
       sectionElement.appendChild(contentElement);
-      _initPanelContent(panelId,contentElement);
-      return sectionElement;
-    }
-
-    function _initPanelHeader(panelId,panelOpen,headerElement) {
-      // Toggle
-      let toggleElement = document.createElement('a');
-      toggleElement.id = panelId + '-toggle';
-      toggleElement.href = 'javascript:';
-      toggleElement.text = _togglePanelText(panelOpen);
-      let onclick = '_togglePanel("'+panelId+'")';
-      toggleElement.setAttribute('onclick',onclick);
-      headerElement.appendChild(toggleElement);
-      // Div
-      let actionElement = document.createElement('a');
-      actionElement.className = 'wizard-header-action';
-      headerElement.appendChild(actionElement);
-      // Add
-      let addElement = document.createElement('a');
-      addElement.href = 'javascript:';
-      addElement.text = String.fromCharCode(0x002B);
-      onclick = '_addPanel("'+panelId+'")';
-      addElement.setAttribute('onclick',onclick);
-      actionElement.appendChild(addElement);
-      // Remove
-      let removeElement = document.createElement('a');
-      removeElement.href = 'javascript:';
-      removeElement.text = String.fromCharCode(0x00D7);
-      onclick = '_removePanel("'+panelId+'")';
-      removeElement.setAttribute('onclick',onclick);
-      actionElement.appendChild(removeElement);
-    }
-
-    function _initPanelContent(panelId,contentElement) {
       let panelElement = document.createElement('div');
       panelElement.id = panelId + '-panel';
       panelElement.className = 'wizard-panel';
@@ -317,62 +173,6 @@
       panelElement.appendChild(jsonElement);
     }
 
-    function _togglePanel(panelId) {
-      // Content
-      let elementId = panelId+'-content';
-      let open = toggleElement(elementId);
-      // Header
-      let element = document.getElementById(panelId+'-toggle');
-      element.text = _togglePanelText(open);
-    }
-
-    function _togglePanelText(open) {
-      let charCode = open ? 0x21F1 : 0x21F2;
-      let direction = String.fromCharCode(charCode);
-      return direction + ' Panel';
-    }
-
-    function _addPanel(panelId) {
-      let sectionsElement = document.getElementById('panel-sections');
-      // Find next sibling
-      let sectionId = panelId + '-section';
-      let siblingElement;
-      let found = false;
-      for (let childElement of sectionsElement.childNodes) {
-        if (childElement.id !== undefined) {
-          if (childElement.id === sectionId) {
-            found = true;
-          } else if (found) {
-            siblingElement = childElement;
-            break;
-          }
-        }
-      }
-      // Insert before sibling
-      let sectionElement = _initPanelSection(true);
-      if (siblingElement === undefined) {
-        // Last panel section
-        sectionsElement.appendChild(sectionElement);
-      } else {
-        sectionsElement.insertBefore(sectionElement, siblingElement);
-      }
-      nextPanelId += 1;
-    }
-
-    function _removePanel(panelId) {
-      let sectionsElement = document.getElementById('panel-sections');
-      // Find next sibling
-      let sectionId = panelId + '-section';
-      for (let childElement of sectionsElement.childNodes) {
-        if (childElement.id !== undefined) {
-          if (childElement.id === sectionId) {
-            childElement.remove();
-            break;
-          }
-        }
-      }
-    }
-
     function _peekInit(panelId) {
       let imageElement = panelId+'b';
       let imageLabel = document.getElementById(imageElement).value;
@@ -418,57 +218,12 @@
     }
 
     function _peekParsePrepareAndDraw(images) {
-      let pi = _peekParse(peekPanelId);
-      let input = {
-        version: '1',
-        id: 'N/A',
-        title: 'N/A',
-        author: 'N/A',
-        panels: [ pi ]
-      };
-      let prepared = _canvasPrepare(input,images);
+      _inputPeek(peekPanelId);
+      let prepared = _canvasPrepare(images);
       _canvasDraw(peekPanelId,prepared);
     }
 
-    function _peekParse(panelId) {
-      // Parse image
-      let ebl = panelId+'b';
-      let bl = document.getElementById(ebl).value;
-      let bc = parsePanelBubbleCount(bl);
-      // Parse bubbles
-      let bs = [];
-      for (let i = 0; i < bc; i++) {
-        let bp = i + 1;
-        let ebts = ebl+bp;
-        let bts = document.getElementById(ebts).value;
-        let b = {
-          position: bp,
-          text: parsePanelText(bts)
-        };
-        bs.push(b);
-      }
-      // Parse captions
-      let ecl = panelId+'c';
-      let cs = [];
-      for (let i = 0; i < 4; i++) {
-        let cp = i + 1;
-        let ects = ecl+cp;
-        let cts = document.getElementById(ects).value;
-        let c = {
-          position: cp,
-          text: parsePanelText(cts)
-        };
-        cs.push(c);
-      }
-      // Return
-      return {
-        image: bl,
-        bubbles: bs,
-        captions: cs
-      };
-    }
-
-    function _canvasPrepare(input,images) {
+    function _canvasPrepare(images) {
       let canvas = document.createElement('canvas');
       let context = canvas.getContext('2d');
       let filtered = prepareCanvas(context,input,images);
@@ -532,6 +287,113 @@
   <p class="copyright">&#169; 2023 resurnate.com</p>
 </div>
 
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="preview"></div>
+  </div>
+</div>
+
+<script>
+
+  const MODAL_ELEMENT = 'modal';
+  // const BUTTON_ELEMENT = 'strip-preview';
+  const CLOSE_ELEMENT = 'close';
+
+  let modal = document.getElementById(MODAL_ELEMENT);
+  // let btn = document.getElementById(BUTTON_ELEMENT);
+  let span = document.getElementsByClassName(CLOSE_ELEMENT)[0];
+
+  // // Open modal and preview
+  // btn.onclick = function() {
+  //   modal.style.display = "block";
+  //   preview();
+  // }
+
+  // When <span> (x) clicked, close modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  // When anywhere outside modal clicked, close it
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  let input = {};
+
+  function _preview() {
+    // Remove previous preview
+    let preview = document.getElementById('preview');
+    let canvas = document.getElementById('canvas');
+    if (canvas !== null) {
+      preview.removeChild(canvas);
+    }
+    // Aggregate input, preload images and generate canvas
+    _inputPreview();
+    let imageURLs = parseImages();
+    loadImages(imageURLs,generate,loadError);
+  }
+
+  function parseImages() {
+    let origin = document.location.origin;
+    let labels = [];
+    for (let panel of input.panels) {
+      labels.push(panel.image);
+    }
+    return prepareImages(origin,labels);
+  }
+
+  function _inputPeek(panelId) {
+    input = _inputAttribution();
+    input.panels = [];
+    input.panels.push(_inputPanel(panelId));
+  }
+
+  function _inputPreview() {
+    input = _inputAttribution();
+    input.panels = _inputPanels();
+  }
+
+  function generate(images) {
+    prepareAndDrawCanvas(images);
+  }
+
+  function loadError(url) {
+    alert('Failed to load one or more images: ' + url);
+  }
+
+  function prepareAndDrawCanvas(images) {
+    let prepared = _prepareCanvas(images);
+    _drawCanvas(prepared);
+  }
+
+  function _prepareCanvas(images) {
+    let canvas = document.createElement('canvas');
+    let context = canvas.getContext('2d');
+    let filtered = prepareCanvas(context,input,images);
+    return {
+      canvas   : canvas,
+      filtered : filtered
+    };
+  }
+
+  function _drawCanvas(prepared) {
+    prepared.canvas.id     = 'canvas';
+    prepared.canvas.width  = prepared.filtered.w;
+    prepared.canvas.height = prepared.filtered.h;
+    let modal = document.getElementById('modal');
+    modal.style.display = "block";
+    let preview = document.getElementById('preview');
+    preview.appendChild(prepared.canvas);
+    drawCanvas(prepared.filtered,false);
+  }
+
+</script>
+<script type="text/javascript" src="/js/wizard.js"></script>
 <script type="text/javascript" src="/js/main.js"></script>
 <script type="text/javascript" src="/js/canvas.js"></script>
 </body>
