@@ -39,13 +39,15 @@ const ELEMENT_MODAL_CLOSE = 'modal-close';
 const ELEMENT_MODAL_CANVAS = 'modal-canvas';
 
 function _initPage() {
-    nextPanelId = 1;
-    peekPanelId = '';
-    let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
+    // Session
+    sessionUiInit();
     // Attribution
+    let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
     let attributionElement = _initAttributionSection();
     sectionsElement.appendChild(attributionElement);
     // Panels (opening first panel)
+    nextPanelId = 1;
+    peekPanelId = '';
     for (let i = 0; i < 4; i++) {
         let panelElement = _initPanelSection(i === 0);
         sectionsElement.appendChild(panelElement);
