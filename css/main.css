@@ -73,6 +73,19 @@ label {
     font-style: italic;
 }
 
+#session {
+    margin-right: 10px;
+    text-align: right;
+}
+
+#session .content {
+    font-weight: bold;
+}
+
+#session span {
+    margin-right: 10px;
+}
+
 #header {
     background: #41b6e6;
     padding: 10px;
