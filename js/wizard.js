@@ -14,6 +14,7 @@ const ELEMENT_ATTRIBUTION_TOGGLE = 'attribution-toggle';
 const ELEMENT_ATTRIBUTION_LAYOUT = 'attribution-layout';
 const ELEMENT_ATTRIBUTION_AREA_ACTION = 'attribution-action';
 const ELEMENT_ATTRIBUTION_AREA_INPUT = 'wizard-attribution-content';
+const ELEMENT_ATTRIBUTION_ACTION_LOAD = 'strip-load';
 const ELEMENT_ATTRIBUTION_ACTION_PREVIEW = 'strip-preview';
 const ELEMENT_ATTRIBUTION_TITLE = 'attribution-title';
 const ELEMENT_ATTRIBUTION_AUTHOR = 'attribution-author';
@@ -45,14 +46,8 @@ function _initPage() {
     let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
     let attributionElement = _initAttributionSection();
     sectionsElement.appendChild(attributionElement);
-    // Panels (opening first panel)
-    nextPanelId = 1;
-    peekPanelId = '';
-    for (let i = 0; i < 4; i++) {
-        let panelElement = _initPanelSection(i === 0);
-        sectionsElement.appendChild(panelElement);
-        nextPanelId += 1;
-    }
+    // Panels
+    _initPanelSections(sectionsElement,4);
     // Modal
     _initModalSection();
 }
@@ -110,13 +105,22 @@ function _initAttributionAction(layoutElement) {
     areaElement.id = ELEMENT_ATTRIBUTION_AREA_ACTION;
     areaElement.className = 'wizard-attribution-action';
     layoutElement.appendChild(areaElement);
+    // Load
+    let loadElement = document.createElement('input');
+    loadElement.id = ELEMENT_ATTRIBUTION_ACTION_LOAD;
+    loadElement.type = 'button';
+    loadElement.value = 'LOAD';
+    loadElement.className = 'button';
+    let onclick = '_actionLoad()';
+    loadElement.setAttribute('onclick', onclick);
+    areaElement.appendChild(loadElement);
     // Preview
     let previewElement = document.createElement('input');
     previewElement.id = ELEMENT_ATTRIBUTION_ACTION_PREVIEW;
     previewElement.type = 'button';
     previewElement.value = 'PREVIEW';
     previewElement.className = 'button';
-    let onclick = '_actionPreview()';
+    onclick = '_actionPreview()';
     previewElement.setAttribute('onclick', onclick);
     areaElement.appendChild(previewElement);
 }
@@ -154,6 +158,17 @@ function _initAttributionInput(layoutElement) {
     authorElement.name = ELEMENT_ATTRIBUTION_AUTHOR;
     authorElement.value = 'Pen name';
     itemElement.appendChild(authorElement);
+}
+
+function _initPanelSections(sectionsElement,sections) {
+    nextPanelId = 1;
+    peekPanelId = '';
+    for (let i = 0; i < sections; i++) {
+        // Opening first panel
+        let panelElement = _initPanelSection(i === 0);
+        sectionsElement.appendChild(panelElement);
+        nextPanelId += 1;
+    }
 }
 
 function _initPanelSection(panelOpen) {
@@ -391,6 +406,97 @@ function _initModalSection() {
     }
 }
 
+function _destroyPanelSections(sectionsElement) {
+    // Find panel section elements
+    let es = [];
+    for (let e of sectionsElement.childNodes) {
+        if (e.id !== undefined) {
+            if (e.id.startsWith(ELEMENT_PANEL_PREFIX) &&
+                e.id.endsWith(ELEMENT_PANEL_SECTION_SUFFIX)) {
+                es.push(e);
+            }
+        }
+    }
+    // Remove elements
+    for (let i = 0; i < es.length; i++) {
+        es[i].remove();
+    }
+}
+
+//
+// L O A D
+//
+
+function _loadPage() {
+    let origin = document.location.origin;
+    let url = origin+SAMPLE_PATHNAME;
+    fetchJson(url)
+        .then((result) => {
+            let data = JSON.parse(result);
+            _loadAttributionInput(data);
+            let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
+            _destroyPanelSections(sectionsElement);
+            _initPanelSections(sectionsElement,data.panels.length);
+            for (let i = 0; i < data.panels.length; i++) {
+                let panelId = ELEMENT_PANEL_PREFIX + (i + 1);
+                let panelData = data.panels[i];
+                _loadPanelInputBubbleImage(panelId,panelData);
+                _loadPanelInputBubbleText(panelId,panelData);
+                _loadPanelInputCaptionText(panelId,panelData);
+            }
+        })
+        .catch(() => {
+            alert("Failed to load file: " + url);
+        });
+}
+
+function _loadAttributionInput(data) {
+    // Title
+    let titleElement = document.getElementById(ELEMENT_ATTRIBUTION_TITLE);
+    titleElement.value = data.title;
+    // Author
+    let authorElement = document.getElementById(ELEMENT_ATTRIBUTION_AUTHOR);
+    authorElement.value = data.author;
+}
+
+function _loadPanelInputBubbleImage(panelId,panelData) {
+    let id = panelId + ELEMENT_PANEL_BUBBLE_PREFIX;
+    let selectElement = document.getElementById(id);
+    selectElement.value = panelData.image;
+}
+
+function _loadPanelInputBubbleText(panelId,panelData) {
+    for (let i = 1; i <= 3; i++) {
+        let id = panelId + ELEMENT_PANEL_BUBBLE_PREFIX + i;
+        let text = '';
+        for (let j = 0; j < panelData.bubbles.length; j++) {
+            let bubble = panelData.bubbles[j];
+            if (i === bubble.position) {
+                text = loadPanelText(bubble.text);
+                break;
+            }
+        }
+        let textareaElement = document.getElementById(id);
+        textareaElement.value = text;
+    }
+}
+
+function _loadPanelInputCaptionText(panelId,panelData) {
+    for (let i = 1; i <= 4; i++) {
+        let id = panelId + ELEMENT_PANEL_CAPTION_PREFIX + i;
+        let text = '';
+        for (let j = 0; j < panelData.captions.length; j++) {
+            let caption = panelData.captions[j];
+            if (i === caption.position) {
+                text = loadPanelText(caption.text);
+                break;
+            }
+        }
+        let textareaElement = document.getElementById(id);
+        textareaElement.value = text;
+    }
+}
+
 //
 // I N P U T
 //
@@ -531,6 +637,10 @@ function _uiPanelRemove(panelId) {
 //
 // A C T I O N
 //
+
+function _actionLoad() {
+    _loadPage();
+}
 
 function _actionPreview() {
     // Remove previous

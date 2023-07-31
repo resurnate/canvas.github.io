@@ -2,6 +2,7 @@
 const IMAGE_PATHNAME = '/img/';
 const IMAGE_SUFFIX = '.png';
 const CANVAS_CONTEXT = '2d';
+const SAMPLE_PATHNAME = '/doc/sample.json';
 
 function fetchJson(url) {
     return new Promise(function (resolve, reject) {

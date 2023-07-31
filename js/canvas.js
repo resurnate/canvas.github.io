@@ -783,6 +783,14 @@ function drawPanelGrid(c,p) {
 //
 
 /**
+ * Load all text lines in panel or caption.
+ * @param ts Array of text lines
+ */
+function loadPanelText(ts) {
+    return ts.join('\n');
+}
+
+/**
  * Parse number of bubbles in panel.
  * @param l Bubble image label
  */
