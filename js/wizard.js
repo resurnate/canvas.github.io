@@ -47,7 +47,7 @@ function _initPage() {
     let attributionElement = _initAttributionSection();
     sectionsElement.appendChild(attributionElement);
     // Panels
-    _initPanelSections(sectionsElement,4);
+    _initPanelSections(sectionsElement,4,1);
     // Modal
     _initModalSection();
 }
@@ -160,12 +160,12 @@ function _initAttributionInput(layoutElement) {
     itemElement.appendChild(authorElement);
 }
 
-function _initPanelSections(sectionsElement,sections) {
+function _initPanelSections(sectionsElement,sections,open) {
     nextPanelId = 1;
     peekPanelId = '';
     for (let i = 0; i < sections; i++) {
         // Opening first panel
-        let panelElement = _initPanelSection(i === 0);
+        let panelElement = _initPanelSection((i + 1) === open);
         sectionsElement.appendChild(panelElement);
         nextPanelId += 1;
     }
@@ -429,14 +429,14 @@ function _destroyPanelSections(sectionsElement) {
 
 function _loadPage() {
     let origin = document.location.origin;
-    let url = origin+SAMPLE_PATHNAME;
+    let url = origin+PLAY_PATHNAME;
     fetchJson(url)
         .then((result) => {
             let data = JSON.parse(result);
             _loadAttributionInput(data);
             let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
             _destroyPanelSections(sectionsElement);
-            _initPanelSections(sectionsElement,data.panels.length);
+            _initPanelSections(sectionsElement,data.panels.length,data.panels.length);
             for (let i = 0; i < data.panels.length; i++) {
                 let panelId = ELEMENT_PANEL_PREFIX + (i + 1);
                 let panelData = data.panels[i];

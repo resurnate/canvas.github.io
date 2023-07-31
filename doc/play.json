@@ -1,0 +1,158 @@
+{
+  "version": "1",
+  "id": "2023-001",
+  "title": "Inviting Death",
+  "author": "Quigley",
+  "panels": [
+    {
+      "image": "speech1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "I see the",
+            "toilet seat",
+            "is up...",
+            "",
+            "again!"
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "position": 1,
+          "text": [
+            "Man watching",
+            "TV"
+          ]
+        },
+        {
+          "position": 2,
+          "text": [
+            "Woman enters",
+            "room"
+          ]
+        },
+        {
+          "position": 3,
+          "text": [
+            "Woman to Man",
+            "(Perturbed)"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Man",
+            "(Content)"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "Come on,",
+            "let's here it..."
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "position": 1,
+          "text": []
+        },
+        {
+          "position": 2,
+          "text": []
+        },
+        {
+          "position": 3,
+          "text": [
+            "woman to man",
+            "(snidely)"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Man",
+            "(uncomfortably)"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "thought1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": [
+            "I probably",
+            "shouldn't,",
+            "",
+            "but..."
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "position": 1,
+          "text": []
+        },
+        {
+          "position": 2,
+          "text": []
+        },
+        {
+          "position": 3,
+          "text": [
+            "Man",
+            "(Ponders)"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Woman",
+            "(Judging)"
+          ]
+        }
+      ]
+    },
+    {
+      "image": "speech1",
+      "bubbles": [
+        {
+          "position": 1,
+          "text": []
+        }
+      ],
+      "captions": [
+        {
+          "position": 1,
+          "text": []
+        },
+        {
+          "position": 2,
+          "text": []
+        },
+        {
+          "position": 3,
+          "text": [
+            "Man To Woman"
+          ]
+        },
+        {
+          "position": 4,
+          "text": [
+            "Woman"
+          ]
+        }
+      ]
+    }
+  ]
+}
