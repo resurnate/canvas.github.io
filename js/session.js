@@ -62,7 +62,8 @@ function sessionDiscordAuthenticated() {
             JSON.stringify({
                 provider: SESSION_PROVIDER_DISCORD,
                 access_token: accessToken,
-                token_type: tokenType
+                token_type: tokenType,
+                expires_in: expiresIn
             }))
             .then((result) => {
                 let data = JSON.parse(result);
