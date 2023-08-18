@@ -7,7 +7,9 @@ const SESSION_DISCORD_API = SESSION_DISCORD_URL+'/api';
 const SESSION_DISCORD_AUTH = SESSION_DISCORD_API+'/oauth2/authorize'
 const SESSION_DISCORD_AUTH_CLIENT = '1130981795589013535';
 const SESSION_DISCORD_AUTH_REDIRECT = '/discord.html';
-const SESSION_DISCORD_USER = SESSION_DISCORD_API+'/users/@me';
+//const SESSION_DISCORD_USER = SESSION_DISCORD_API+'/users/@me';
+const SESSION_HUB_AUTH_IMPLICIT = '/authn/implicit';
+const SESSION_PROVIDER_DISCORD = 'discord';
 const SESSION_ELEMENT_CONTAINER = 'session';
 const SESSION_ELEMENT_CONTENT = 'session-content';
 
@@ -54,20 +56,38 @@ function sessionDiscordAuthenticated() {
         let expiresDate = date.setSeconds(date.getSeconds() + Number(expiresIn));
         localStorage.setItem(SESSION_TOKEN, `${tokenType} ${accessToken}`);
         localStorage.setItem(SESSION_EXPIRES, expiresDate.toString());
-        // User
-        fetch(SESSION_DISCORD_USER, {
-            headers: {
-                authorization: `${tokenType} ${accessToken}`,
-            },
-        })
-            .then(result => result.json())
-            .then(response => {
-                let { username, discriminator } = response;
-                let user = `${username}#${discriminator}`
+        // Implicit grant
+        postJsonThenJsonXhr(
+            hubOrigin()+SESSION_HUB_AUTH_IMPLICIT,
+            JSON.stringify({
+                provider: SESSION_PROVIDER_DISCORD,
+                access_token: accessToken,
+                token_type: tokenType
+            }))
+            .then((result) => {
+                let data = JSON.parse(result);
+                let user = data.whoami.moniker;
                 localStorage.setItem(SESSION_USER, user);
-                window.location.replace("/");
             })
-            .catch(console.error);
+            .catch((err) => {
+                console.log("Failed to grant implicit session: " + err);
+            })
+            .finally(() => {
+                window.location.replace("/");
+            });
+        // fetch(SESSION_DISCORD_USER, {
+        //     headers: {
+        //         authorization: `${tokenType} ${accessToken}`,
+        //     },
+        // })
+        //     .then(result => result.json())
+        //     .then(response => {
+        //         let { username, discriminator } = response;
+        //         let user = `${username}#${discriminator}`
+        //         localStorage.setItem(SESSION_USER, user);
+        //         window.location.replace("/");
+        //     })
+        //     .catch(console.error);
     }
 }
 
