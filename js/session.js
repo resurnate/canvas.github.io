@@ -64,7 +64,8 @@ function sessionDiscordAuthenticated() {
                 access_token: accessToken,
                 token_type: tokenType,
                 expires_in: expiresIn
-            }))
+            }),
+            true)
             .then((result) => {
                 let data = JSON.parse(result);
                 let user = data.whoami.moniker;

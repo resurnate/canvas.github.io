@@ -16,7 +16,7 @@ function hubOrigin() {
     return r;
 }
 
-function postJsonThenJsonXhr(url, content) {
+function postJsonThenJsonXhr(url, content, xsac) {
     let headers = [];
     headers.push({
         name: 'Content-Type',
@@ -26,10 +26,10 @@ function postJsonThenJsonXhr(url, content) {
         name: 'Accept',
         value: 'application/json; charset=UTF-8'
     });
-    return doXhr('POST', url, content, headers);
+    return doXhr('POST', url, content, headers, xsac);
 }
 
-function doXhr(method, url, content, headers) {
+function doXhr(method, url, content, headers, xsac) {
     return new Promise(function (resolve, reject) {
         let xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", () => {
@@ -44,6 +44,9 @@ function doXhr(method, url, content, headers) {
             for (let header of headers) {
                 xhr.setRequestHeader(header.name, header.value);
             }
+        }
+        if (xsac) { // cross-site Access-Control (cookies, authorization headers, and so on)
+            xhr.withCredentials = true;
         }
         if (content === undefined) {
             xhr.send();
