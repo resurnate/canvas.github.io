@@ -137,6 +137,16 @@ function sessionUiInitLogin() {
 
 function sessionUiInitLogout() {
     let contentElement = document.getElementById(SESSION_ELEMENT_CONTENT);
+
+    // XXX: For testing purposes only!
+    let testElement = document.createElement('a');
+    testElement.text = 'Test';
+    testElement.href = 'javascript:void(0);';
+    testElement.style.marginRight = '10px';
+    let onclick = 'testUserFindAll()';
+    testElement.setAttribute('onclick',onclick);
+    contentElement.appendChild(testElement);
+
     // User
     let userElement = document.createElement('span');
     userElement.innerHTML = 'Hello '+localStorage.getItem(SESSION_USER);
@@ -147,7 +157,29 @@ function sessionUiInitLogout() {
     // logoutElement.style.fontSize = '24px';
     // Uncomment when testing!
     logoutElement.href = 'javascript:';
-    let onclick = 'sessionAuthLogoutMock()';
+    onclick = 'sessionAuthLogoutMock()';
     logoutElement.setAttribute('onclick',onclick);
     contentElement.appendChild(logoutElement);
+}
+
+function testUserFindAll() {
+    const url=hubOrigin()+'/users/find/all';
+    const token = localStorage.getItem(SESSION_TOKEN);
+    const headers = [];
+    headers.push({
+        name: 'Authorization',
+        value: `Bearer ${token}`
+    });
+    headers.push({
+        name: 'Accept',
+        value: 'application/json; charset=UTF-8'
+    });
+    doXhr('GET', url, undefined, headers, true)
+        .then((result) => {
+            let data = JSON.parse(result);
+            console.log("Result: " + JSON.stringify(data));
+        })
+        .catch((err) => {
+            console.log("Failed to find all users: " + err);
+        })
 }
