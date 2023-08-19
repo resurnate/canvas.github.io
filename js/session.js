@@ -51,11 +51,6 @@ function sessionDiscordAuthenticated() {
     if (!accessToken) {
         window.location.href = '/';
     } else {
-        // Initialize
-        let date = new Date();
-        let expiresDate = date.setSeconds(date.getSeconds() + Number(expiresIn));
-        localStorage.setItem(SESSION_TOKEN, `${tokenType} ${accessToken}`);
-        localStorage.setItem(SESSION_EXPIRES, expiresDate.toString());
         // Implicit grant
         postJsonThenJsonXhr(
             hubOrigin()+SESSION_HUB_AUTH_IMPLICIT,
@@ -68,6 +63,13 @@ function sessionDiscordAuthenticated() {
             true)
             .then((result) => {
                 let data = JSON.parse(result);
+                // XXX: This is obviously very insecure!!
+                let jwt = data.jwt;
+                localStorage.setItem(SESSION_TOKEN, jwt);
+                let date = new Date();
+                let expires = data.expires; // Seconds
+                let expiresDate = date.setSeconds(date.getSeconds() + Number(expires));
+                localStorage.setItem(SESSION_EXPIRES, expiresDate.toString());
                 let user = data.whoami.moniker;
                 localStorage.setItem(SESSION_USER, user);
             })
