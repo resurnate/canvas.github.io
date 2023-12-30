@@ -157,6 +157,221 @@ function drawAttribution(c,a) {
 }
 
 //
+// C O V E R
+//
+
+const COVER_CAPTION_BOX_COLORS = [ '#FFFF88','#CCE5FF' ];
+const COVER_IMAGE_OFFSETS = { w : 38, h : -140, x : -26, y : 70 };
+
+/**
+ * Prepare cover panel in canvas from input.
+ * @param c   Canvas context
+ * @param i   All input
+ * @param ppi Preloaded panel image
+ */
+function prepareCover(c,i,ppi) {
+    let rx = 0; // Upper-left x-coordinate
+    let ry = 0; // Upper-left y-coordinate
+    let rw = PANEL_WIDTH;
+    let rh = PANEL_HEIGHT;
+    let rbg = preparePanelBackground(rx,ry);
+    let rcts = prepareCoverCaptions(rx,ry,i);
+    return {
+        c   : c,
+        x   : rx,
+        y   : ry,
+        w   : rw,
+        h   : rh,
+        i   : ppi,
+        bg  : rbg,
+        cts : rcts
+    };
+}
+
+/**
+ * Prepare cover panel captions from input.
+ * @param x X-coordinate (relative to panel)
+ * @param y Y-coordinate (relative to panel)
+ * @param i All input
+ */
+function prepareCoverCaptions(x,y,i) {
+    let r = [];
+    for (let p = 0; p < 2; p++) {
+        r.push(prepareCoverCaption(x,y,i,p));
+    }
+    return r;
+}
+
+/**
+ * Prepare cover panel caption box and text from input.
+ * @param x X-coordinate (relative to panel)
+ * @param y Y-coordinate (relative to panel)
+ * @param i All input
+ * @param p Caption position index
+ */
+function prepareCoverCaption(x,y,i,p) {
+    let rb = prepareCoverCaptionBox(x,y,p);
+    let rt = prepareCoverCaptionText(i,p);
+    return {
+        b : rb,
+        t : rt
+    };
+}
+
+/**
+ * Prepare cover panel caption box from input.
+ * @param x X-coordinate (relative to panel)
+ * @param y Y-coordinate (relative to panel)
+ * @param p Caption position index
+ */
+function prepareCoverCaptionBox(x,y,p) {
+    let rx = x;
+    let ry = y;    // Top
+    if (p !== 0) { // Bottom
+        ry = y + PANEL_HEIGHT - CAPTION_HEIGHT;
+    }
+    let rw = PANEL_WIDTH;
+    let rh = CAPTION_HEIGHT;
+    let rc = COVER_CAPTION_BOX_COLORS[p];
+    return {
+        x: rx,
+        y: ry,
+        w: rw,
+        h: rh,
+        c: rc
+    };
+}
+
+/**
+ * Prepare cover panel caption text from input.
+ * @param i All input
+ * @param p Caption position index
+ */
+function prepareCoverCaptionText(i,p) {
+    let r = [];
+    if (p === 0) { // Top
+        let l = i.title;
+        r.push(prepareCoverCaptionTextLine(p,l,0));
+        l = 'By '+i.author
+        r.push(prepareCoverCaptionTextLine(p,l,1));
+    } else {       // Bottom
+        let dy = new Date().getFullYear();
+        let l = '\u00A9'+' '+dy+' '+COPYRIGHT;
+        r.push(prepareCoverCaptionTextLine(p,l,0));
+    }
+    return r;
+}
+
+/**
+ * Prepare single text line for cover panel caption.
+ * @param p Caption position index
+ * @param l Line of text
+ * @param i Line index
+ */
+function prepareCoverCaptionTextLine(p,l,i) {
+    let rf = CAPTION_FONT;
+    if (p === 0) {     // Top
+        if (i === 0) { // Title
+            rf = FONT_WEIGHT_BOLD+' '+CAPTION_FONT;
+        } else {       // Author
+            rf = FONT_STYLE_ITALIC+' '+CAPTION_FONT;
+        }
+    }                  // Else Bottom
+    return {
+        t : l,
+        c : FONT_COLOR_BLACK,
+        f : rf,
+        a : FONT_ALIGN_CENTER
+    };
+}
+
+/**
+ * Draw cover panel background and captions in canvas.
+ * @param c Prepared canvas
+ */
+function drawCover(c) {
+    drawPanelBackground(c,c.bg);
+    drawCoverCaptions(c);
+    drawCoverImage(c); // On top of captions - bursting!
+}
+
+/**
+ * Draw captions in cover panel.
+ * @param c Prepared canvas
+ */
+function drawCoverCaptions(c) {
+    for (let i = 0; i < c.cts.length; i++) {
+        drawCoverCaption(c,c.cts[i]);
+    }
+}
+
+/**
+ * Draw caption box and text in cover panel.
+ * @param c  Prepared canvas
+ * @param ct Prepared caption
+ */
+function drawCoverCaption(c,ct) {
+    // Draw box
+    drawCoverCaptionBox(c,ct);
+    // Draw text
+    drawCoverCaptionText(c,ct);
+}
+
+/**
+ * Draw caption box in cover panel.
+ * @param c  Prepared canvas
+ * @param ct Prepared caption
+ */
+function drawCoverCaptionBox(c,ct) {
+    c.c.fillStyle = ct.b.c;
+    c.c.fillRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
+    c.c.strokeStyle = CAPTION_BORDER_STYLE;
+    c.c.strokeRect(ct.b.x,ct.b.y,ct.b.w,ct.b.h);
+}
+
+/**
+ * Draw caption box text in cover panel.
+ * @param c  Prepared canvas
+ * @param ct Prepared caption
+ */
+function drawCoverCaptionText(c,ct) {
+
+    // Offset (leveraging caption box)
+    let x = ct.b.x + (ct.b.w / 2) + CAPTION_OFFSETS.t.x;
+    let y = ct.b.y + (ct.b.h / 2) - (Math.floor(ct.t.length / 2) * CAPTION_FONT_SIZE);
+    // Recenter if even number of lines
+    if ((ct.t.length % 2) === 0) { y += (CAPTION_FONT_SIZE / 2); }
+    y += CAPTION_OFFSETS.t.y;
+
+    // Draw
+    let t = {
+        x  : x,
+        y  : y,
+        s  : CAPTION_FONT_SIZE,
+        ls : ct.t
+    };
+    drawPanelText(c,t);
+
+}
+
+/**
+ * Draw background image in cover panel.
+ * @param c Prepared canvas
+ */
+function drawCoverImage(c) {
+
+    // Offset (leveraging panel background)
+    let w = c.bg.w + COVER_IMAGE_OFFSETS.w;
+    let h = c.bg.h + COVER_IMAGE_OFFSETS.h;
+    let x = c.bg.ux + COVER_IMAGE_OFFSETS.x;
+    let y = c.bg.uy + COVER_IMAGE_OFFSETS.y;
+
+    // Draw
+    c.c.drawImage(c.i, x, y, w, h);
+
+}
+
+//
 // P A N E L S
 //
 
@@ -234,7 +449,7 @@ function preparePanelBackground(x,y) {
     return {
         w  : rw,
         h  : rh,
-        ux : rux,       // Upper-left
+        ux : rux,      // Upper-left
         uy : ruy,
         lx : rux + rw, // Lower-right
         ly : ruy + rh

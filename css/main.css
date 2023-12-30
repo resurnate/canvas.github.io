@@ -279,6 +279,29 @@ label {
     padding-top: 10px;
 }
 
+.wizard-cover {
+    display: grid;
+    gap: 10px;
+    grid-template-areas:
+        "cover-action"
+        "cover-peek";
+    padding-right: 10px;
+}
+
+.wizard-cover-action {
+    grid-area: cover-action;
+}
+
+.wizard-cover-peek {
+    align-items: center;
+    background-color: white;
+    border: 1px solid #898d8d;
+    display: none;
+    grid-area: cover-peek;
+    justify-content: center;
+    padding: 20px;
+}
+
 .wizard-panel {
     display: grid;
     gap: 10px;

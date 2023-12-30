@@ -18,6 +18,14 @@ const ELEMENT_ATTRIBUTION_ACTION_LOAD = 'strip-load';
 const ELEMENT_ATTRIBUTION_ACTION_PREVIEW = 'strip-preview';
 const ELEMENT_ATTRIBUTION_TITLE = 'attribution-title';
 const ELEMENT_ATTRIBUTION_AUTHOR = 'attribution-author';
+const ELEMENT_COVER_SECTION = 'cover-section';
+const ELEMENT_COVER_SECTION_HEADER = 'cover-header';
+const ELEMENT_COVER_SECTION_CONTENT = 'cover-content';
+const ELEMENT_COVER_TOGGLE = 'cover-toggle';
+const ELEMENT_COVER_LAYOUT = 'cover-layout';
+const ELEMENT_COVER_AREA_ACTION = 'cover-action';
+const ELEMENT_COVER_AREA_PEEK = 'cover-peek';
+const ELEMENT_COVER_CANVAS = 'cover-canvas';
 const ELEMENT_PANEL_PREFIX = 'p';
 const ELEMENT_PANEL_DELIMITER = '-';
 const ELEMENT_PANEL_SECTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'section';
@@ -46,6 +54,9 @@ function _initPage() {
     let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
     let attributionElement = _initAttributionSection();
     sectionsElement.appendChild(attributionElement);
+    // Cover
+    let coverElement = _initCoverSection();
+    sectionsElement.appendChild(coverElement);
     // Panels
     _initPanelSections(sectionsElement,4,1);
     // Modal
@@ -158,6 +169,84 @@ function _initAttributionInput(layoutElement) {
     authorElement.name = ELEMENT_ATTRIBUTION_AUTHOR;
     authorElement.value = 'Pen name';
     itemElement.appendChild(authorElement);
+}
+
+function _initCoverSection() {
+    // Create section
+    let sectionElement = document.createElement('section');
+    sectionElement.id = ELEMENT_COVER_SECTION;
+    sectionElement.className = 'wizard-section';
+    // Create header
+    _initCoverHeader(sectionElement);
+    // Create content
+    _initCoverContent(sectionElement);
+    return sectionElement;
+}
+
+function _initCoverHeader(sectionElement) {
+    let headerElement = document.createElement('div');
+    headerElement.id = ELEMENT_COVER_SECTION_HEADER;
+    headerElement.className = 'wizard-header';
+    sectionElement.appendChild(headerElement);
+    // Toggle
+    let toggleLabel = 'Cover';
+    let toggleElement = document.createElement('a');
+    toggleElement.id = ELEMENT_COVER_TOGGLE;
+    toggleElement.href = 'javascript:';
+    toggleElement.text = _uiToggleText(true,toggleLabel);
+    let onclick =
+        '_uiToggle("'+
+        ELEMENT_COVER_SECTION_CONTENT+'","'+
+        ELEMENT_COVER_TOGGLE+'","'+
+        toggleLabel+'")';
+    toggleElement.setAttribute('onclick',onclick);
+    headerElement.appendChild(toggleElement);
+}
+
+function _initCoverContent(sectionElement) {
+    let contentElement = document.createElement('div');
+    contentElement.id = ELEMENT_COVER_SECTION_CONTENT;
+    sectionElement.appendChild(contentElement);
+    // Layout
+    let layoutElement = document.createElement('div');
+    layoutElement.id = ELEMENT_COVER_LAYOUT;
+    layoutElement.className = 'wizard-cover';
+    contentElement.appendChild(layoutElement);
+    // Area: Action
+    _initCoverAction(layoutElement);
+    // Area: Peek
+    _initCoverPeek(layoutElement);
+}
+
+function _initCoverAction(layoutElement) {
+    // Area
+    let areaElement = document.createElement('div');
+    areaElement.id = ELEMENT_COVER_AREA_ACTION;
+    areaElement.className = 'wizard-cover-action';
+    layoutElement.appendChild(areaElement);
+    // Peek
+    let peekElement = document.createElement('input');
+    peekElement.type = 'button';
+    peekElement.value = 'PEEK';
+    peekElement.className = 'button';
+    let onclick = '_coverPeek()';
+    peekElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(peekElement);
+    // Hide
+    let hideElement = document.createElement('input');
+    hideElement.type = 'button';
+    hideElement.value = 'HIDE';
+    hideElement.className = 'button';
+    onclick = '_coverHide()';
+    hideElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(hideElement);
+}
+
+function _initCoverPeek(layoutElement) {
+    let areaElement = document.createElement('div');
+    areaElement.id = ELEMENT_COVER_AREA_PEEK;
+    areaElement.className = 'wizard-cover-peek';
+    layoutElement.appendChild(areaElement);
 }
 
 function _initPanelSections(sectionsElement,sections,open) {
@@ -434,6 +523,7 @@ function _loadPage() {
         .then((result) => {
             let data = JSON.parse(result);
             _loadAttributionInput(data);
+            _coverHide();
             let sectionsElement = document.getElementById(ELEMENT_SECTIONS);
             _destroyPanelSections(sectionsElement);
             _initPanelSections(sectionsElement,data.panels.length,data.panels.length);
@@ -506,6 +596,11 @@ let input;
 function _inputPreview() {
     input = _inputAttribution();
     input.panels = _inputPanels();
+}
+
+function _inputCover() {
+    input = _inputAttribution();
+    input.panels = [];
 }
 
 function _inputPeek(panelId) {
@@ -671,6 +766,39 @@ function _drawPreview(images) {
     drawCanvas(canvasPrepared, false);
 }
 
+function _coverPeek() {
+    // Remove previous
+    let canvasElement =  document.getElementById(ELEMENT_COVER_CANVAS);
+    if (canvasElement !== null) {
+        let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
+        peekElement.removeChild(canvasElement);
+    }
+    // Parse input, preload images and draw
+    _inputCover();
+    let imageURLs = _miscPrepareCover();
+    loadImages(imageURLs,_drawCover,_miscLoadImagesError);
+}
+
+function _drawCover(images) {
+    // Prepare
+    let canvasElement = document.createElement('canvas');
+    let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
+    let canvasPrepared = prepareCover(canvasContext,input,images[0]);
+    // Draw
+    canvasElement.id = ELEMENT_COVER_CANVAS;
+    canvasElement.width = canvasPrepared.w;
+    canvasElement.height = canvasPrepared.h;
+    let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
+    peekElement.style.display = 'flex';
+    peekElement.appendChild(canvasElement);
+    drawCover(canvasPrepared);
+}
+
+function _coverHide() {
+    let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
+    peekElement.style.display = 'none';
+}
+
 function _actionPeek(panelId) {
     // Remove previous
     let canvasElement =  document.getElementById(panelId+ELEMENT_PANEL_CANVAS_SUFFIX);
@@ -729,6 +857,12 @@ function _actionPeekHide(panelId) {
 //
 // M I S C E L L A N E O U S
 //
+
+function _miscPrepareCover() {
+    let origin = document.location.origin;
+    let labels = ['cover'];
+    return prepareImages(origin,labels);
+}
 
 function _miscPrepareImages(input) {
     let origin = document.location.origin;
