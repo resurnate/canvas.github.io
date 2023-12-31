@@ -26,6 +26,7 @@ const ELEMENT_COVER_LAYOUT = 'cover-layout';
 const ELEMENT_COVER_AREA_ACTION = 'cover-action';
 const ELEMENT_COVER_AREA_PEEK = 'cover-peek';
 const ELEMENT_COVER_CANVAS = 'cover-canvas';
+const ELEMENT_COVER_IMAGE = 'cover-image';
 const ELEMENT_PANEL_PREFIX = 'p';
 const ELEMENT_PANEL_DELIMITER = '-';
 const ELEMENT_PANEL_SECTION_SUFFIX = ELEMENT_PANEL_DELIMITER+'section';
@@ -232,14 +233,6 @@ function _initCoverAction(layoutElement) {
     let onclick = '_coverPeek()';
     peekElement.setAttribute('onclick',onclick);
     areaElement.appendChild(peekElement);
-    // Save
-    let saveElement = document.createElement('input');
-    saveElement.type = 'button';
-    saveElement.value = 'SAVE';
-    saveElement.className = 'button';
-    onclick = '_coverSave()';
-    saveElement.setAttribute('onclick',onclick);
-    areaElement.appendChild(saveElement);
     // Hide
     let hideElement = document.createElement('input');
     hideElement.type = 'button';
@@ -776,10 +769,14 @@ function _drawPreview(images) {
 
 function _coverPeek() {
     // Remove previous
+    let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
     let canvasElement =  document.getElementById(ELEMENT_COVER_CANVAS);
     if (canvasElement !== null) {
-        let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
         peekElement.removeChild(canvasElement);
+    }
+    let imageElement =  document.getElementById(ELEMENT_COVER_IMAGE);
+    if (imageElement !== null) {
+        peekElement.removeChild(imageElement);
     }
     // Parse input, preload images and draw
     _inputCover();
@@ -788,28 +785,24 @@ function _coverPeek() {
 }
 
 function _drawCover(images) {
-    // Prepare
+    // Prepare canvas
     let canvasElement = document.createElement('canvas');
     let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
     let canvasPrepared = prepareCover(canvasContext,input,images[0]);
-    // Draw
+    // Draw canvas (hidden)
     canvasElement.id = ELEMENT_COVER_CANVAS;
     canvasElement.width = canvasPrepared.w;
     canvasElement.height = canvasPrepared.h;
+    // canvasElement.style.display = 'none';
     let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
     peekElement.style.display = 'flex';
-    peekElement.appendChild(canvasElement);
+    // peekElement.appendChild(canvasElement);
     drawCover(canvasPrepared);
-}
-
-function _coverSave() {
-    let canvasElement =  document.getElementById(ELEMENT_COVER_CANVAS);
-    if (canvasElement !== null) {
-        let anchorElement = document.createElement('a');
-        anchorElement.download = 'cover.png';
-        anchorElement.href = canvasElement.toDataURL();
-        anchorElement.click();
-    }
+    // Draw image
+    let imgElement = document.createElement('img');
+    imgElement.id = ELEMENT_COVER_IMAGE;
+    imgElement.src = canvasElement.toDataURL();
+    peekElement.appendChild(imgElement);
 }
 
 function _coverHide() {
