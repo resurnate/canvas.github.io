@@ -42,6 +42,7 @@ const ELEMENT_PANEL_AREA_JSON_SUFFIX = ELEMENT_PANEL_DELIMITER+'json';
 const ELEMENT_PANEL_BUBBLE_PREFIX = 'b';
 const ELEMENT_PANEL_CAPTION_PREFIX = 'c';
 const ELEMENT_PANEL_CANVAS_SUFFIX = ELEMENT_PANEL_DELIMITER+'canvas';
+const ELEMENT_PANEL_IMAGE_SUFFIX = ELEMENT_PANEL_DELIMITER+'image';
 const ELEMENT_PANEL_PRE_SUFFIX = ELEMENT_PANEL_DELIMITER+'pre';
 const ELEMENT_MODAL_SECTION = 'modal';
 const ELEMENT_MODAL_AREA_PREVIEW = 'modal-preview';
@@ -793,7 +794,6 @@ function _drawCover(images) {
     canvasElement.id = ELEMENT_COVER_CANVAS;
     canvasElement.width = canvasPrepared.w;
     canvasElement.height = canvasPrepared.h;
-    // canvasElement.style.display = 'none';
     let peekElement = document.getElementById(ELEMENT_COVER_AREA_PEEK);
     peekElement.style.display = 'flex';
     // peekElement.appendChild(canvasElement);
@@ -812,10 +812,14 @@ function _coverHide() {
 
 function _actionPeek(panelId) {
     // Remove previous
+    let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
     let canvasElement =  document.getElementById(panelId+ELEMENT_PANEL_CANVAS_SUFFIX);
     if (canvasElement !== null) {
-        let peekElement = document.getElementById(panelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
         peekElement.removeChild(canvasElement);
+    }
+    let imageElement =  document.getElementById(panelId+ELEMENT_PANEL_IMAGE_SUFFIX);
+    if (imageElement !== null) {
+        peekElement.removeChild(imageElement);
     }
     let preElement =  document.getElementById(panelId+ELEMENT_PANEL_PRE_SUFFIX);
     if (preElement !== null) {
@@ -835,14 +839,19 @@ function _drawPeek(images) {
     let canvasContext = canvasElement.getContext(CANVAS_CONTEXT);
     let canvasPrepared = prepareCanvas(canvasContext,input,images);
     let preElement = document.createElement('pre');
-    // Draw peek
+    // Draw canvas (hidden)
     canvasElement.id = peekPanelId+ELEMENT_PANEL_CANVAS_SUFFIX;
     canvasElement.width = canvasPrepared.w;
     canvasElement.height = canvasPrepared.h;
     let peekElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_PEEK_SUFFIX);
     peekElement.style.display = 'flex';
-    peekElement.appendChild(canvasElement);
+    // peekElement.appendChild(canvasElement);
     drawCanvas(canvasPrepared, false);
+    // Draw image
+    let imgElement = document.createElement('img');
+    imgElement.id =  peekPanelId+ELEMENT_PANEL_IMAGE_SUFFIX;
+    imgElement.src = canvasElement.toDataURL();
+    peekElement.appendChild(imgElement);
     // Draw JSON (in background)
     preElement.id = peekPanelId+ELEMENT_PANEL_PRE_SUFFIX;
     let jsonElement = document.getElementById(peekPanelId+ELEMENT_PANEL_AREA_JSON_SUFFIX);
