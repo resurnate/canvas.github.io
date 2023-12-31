@@ -232,6 +232,14 @@ function _initCoverAction(layoutElement) {
     let onclick = '_coverPeek()';
     peekElement.setAttribute('onclick',onclick);
     areaElement.appendChild(peekElement);
+    // Save
+    let saveElement = document.createElement('input');
+    saveElement.type = 'button';
+    saveElement.value = 'SAVE';
+    saveElement.className = 'button';
+    onclick = '_coverSave()';
+    saveElement.setAttribute('onclick',onclick);
+    areaElement.appendChild(saveElement);
     // Hide
     let hideElement = document.createElement('input');
     hideElement.type = 'button';
@@ -792,6 +800,16 @@ function _drawCover(images) {
     peekElement.style.display = 'flex';
     peekElement.appendChild(canvasElement);
     drawCover(canvasPrepared);
+}
+
+function _coverSave() {
+    let canvasElement =  document.getElementById(ELEMENT_COVER_CANVAS);
+    if (canvasElement !== null) {
+        let anchorElement = document.createElement('a');
+        anchorElement.download = 'cover.png';
+        anchorElement.href = canvasElement.toDataURL();
+        anchorElement.click();
+    }
 }
 
 function _coverHide() {
