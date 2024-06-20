@@ -409,6 +409,7 @@
                     }
                     if ((r === 1) && (c === 4)) {
                         let choiceElement = document.createElement('button');
+                        choiceElement.id = 'choice-enter';
                         choiceElement.type = 'button';
                         choiceElement.innerText = 'Enter';
                         choiceElement.style.fontSize = '20px';
@@ -644,7 +645,7 @@
                 checked += 1;
             } else {
                 let remaining = round.hint.same - same;
-                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.innerHTML = '&#10007'+' '+remaining;
                 progressElement.style.color = 'red';
             }
             progressElement = document.getElementById('down');
@@ -654,7 +655,7 @@
                 checked += 1;
             } else {
                 let remaining = round.hint.below - down;
-                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.innerHTML = '&#10007'+' '+remaining;
                 progressElement.style.color = 'red';
             }
             progressElement = document.getElementById('up');
@@ -664,7 +665,7 @@
                 checked += 1;
             } else {
                 let remaining = round.hint.above - up;
-                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.innerHTML = '&#10007'+' '+remaining;
                 progressElement.style.color = 'red';
             }
             progressElement = document.getElementById('total');
@@ -674,11 +675,11 @@
                 checked += 1;
             } else {
                 let remaining = round.hint.total - total;
-                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.innerHTML = '&#10007'+' '+remaining;
                 progressElement.style.color = 'red';
             }
-            // If checked === 4 then enable Enter button
-            // Otherwise, disable it always!
+            let enterElement = document.getElementById('choice-enter');
+            enterElement.hidden = checked !== 4;
         }
 
         function _actionFocus(choice) {
