@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Play</title>
+    <style>
+        .item1 { grid-area: level; }
+        .item2 { grid-area: score; }
+        .item3 { grid-area: guess; }
+        .item4 { grid-area: hint; }
+        .item5 { grid-area: choose; }
+        .item6 { grid-area: history; }
+        .item7 { grid-area: message; }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas:
+                'level level score score'
+                'message message message message'
+                'guess guess guess guess'
+                'hint hint hint hint'
+                'choose choose choose choose'
+                'history history history history';
+            /*gap: 10px;*/
+            background-color: #2196F3;
+            padding: 10px;
+        }
+
+        .grid-container > div {
+            /*background-color: rgba(255, 255, 255, 0.8);*/
+            background-color: lightblue;
+            text-align: center;
+            padding: 10px 0;
+            /*font-size: 30px;*/
+        }
+
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            border: none;
+            background: #898D8D;
+            font-weight: bold;
+            color: white;
+            padding: 10px;
+            margin: 2px;
+            border-radius: 5px;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(200,200,200,0.8); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        .row_block {
+            font-size: 20px;
+            border: 5px solid lightblue;
+            width: 30px;
+            height: 30px;
+            border-radius: 12px;
+            align-content: center; /* Might be necessary */
+        }
+
+    </style>
+    <script>
+
+        const _PROGRESS_FIRST = '0';
+        const _PROGRESS_HIT_FIRST = 'H';
+        const _PROGRESS_HIT_AFTER_MISS = 'G';
+        const _PROGRESS_HIT_AFTER_ALMOST = 'F';
+        const _PROGRESS_ALMOST_FIRST = 'A';
+        const _PROGRESS_ALMOST_AFTER_MISS = 'Z';
+        const _PROGRESS_MISS = 'M';
+
+        class Game {
+
+            constructor(id) {
+                this.id = id;
+                this.level = 1;
+                this.round = new Round(this.level);
+                this.score = 0;
+            }
+
+            guess(code) {
+                let outcome = this.round.guess(code);
+                this.score += outcome.points;
+                return outcome;
+            }
+
+            next() {
+                this.level += 1;
+                this.round = new Round(this.level);
+                return this.round;
+            }
+
+        }
+
+        class Round {
+
+            constructor(level) {
+                this.level = level;
+                this.length = this.level + 2;
+                this.answer = this._answer(this.length);
+                this.hint = new Hint(this.answer);
+                this.outcomes = [];
+                this.attempts = 0;
+                this.progress = [];
+            }
+
+            guess(code) {
+                const r = new Outcome(this.answer, code, this.progress);
+                this.outcomes.unshift(r);
+                if (this.outcomes.length > 5) { this.outcomes.splice(5); }
+                this.attempts += 1;
+                return r;
+            }
+
+            _answer(length) {
+                let r = '';
+                const min = Math.ceil(0);
+                const max = Math.floor(10);
+                for (let i=0; i<length; i++) {
+                    r += Math.floor(Math.random() * (max - min) + min);
+                }
+                return r;
+            }
+
+        }
+
+        class Hint {
+
+            constructor(answer) {
+                this.first = -1;
+                this.same = 0;
+                this.above = 0;
+                this.below = 0;
+                this.total = 0;
+                this._hint(answer);
+            }
+
+            _hint(answer) {
+                const answerArray = Array.from(answer);
+                this.first = Number(answerArray[0]);
+                for (let i=0; i<answerArray.length; i++) {
+                    let nextNumeral = Number(answerArray[i]);
+                    if (i > 0) {
+                        if (this.first === nextNumeral) {
+                            this.same += 1;
+                        } else if (this.first < nextNumeral) {
+                            this.above += 1;
+                        } else {
+                            this.below += 1;
+                        }
+                    }
+                    this.total += nextNumeral;
+                }
+            }
+
+        }
+
+        class Outcome {
+
+            constructor(answer, guess, progress) {
+                this.guess = guess;
+                this.hit = 0;
+                this.almost = 0;
+                this.miss = 0;
+                this.ham = '';
+                this.solved = false;
+                this._match(answer);
+                this.points = 0;
+                this._progress(progress);
+            }
+
+            _match(answer) {
+                const answerArray = Array.from(answer);
+                const guessArray = Array.from(this.guess);
+                const occurrences = this._occurrences(answerArray);
+                const hits = this._hits(answerArray, guessArray);
+                let almosts = new Map();
+                for (let i=0; i<answerArray.length; i++) {
+                    const partialAnswer = answerArray[i];
+                    const partialGuess = guessArray[i];
+                    if (partialAnswer === partialGuess) {
+                        // HIT
+                        this.hit += 1;
+                        this.ham += 'H';
+                    } else if (occurrences.has(partialGuess)) {
+                        // Potential ALMOST
+                        const occurrence = occurrences.get(partialGuess);
+                        const hit = hits.has(partialGuess) ? hits.get(partialGuess) : 0;
+                        let almost = almosts.has(partialGuess) ? almosts.get(partialGuess) : 0;
+                        if ((occurrence - hit - almost) > 0) {
+                            this.almost += 1;
+                            this.ham += 'A';
+                            almost += 1;
+                            almosts.set(partialGuess, almost);
+                        } else {
+                            this.miss += 1;
+                            this.ham += 'M';
+                        }
+                    } else {
+                        // Otherwise MISS
+                        this.miss += 1;
+                        this.ham += 'M';
+                    }
+                }
+                this.solved = this.hit === answerArray.length;
+            }
+
+            _occurrences(answerArray) {
+                let r = new Map();
+                for (let i=0; i<answerArray.length; i++) {
+                    let numeral=answerArray[i];
+                    let rOccurrences = r.has(numeral) ? r.get(numeral) : 0;
+                    rOccurrences += 1;
+                    r.set(numeral, rOccurrences);
+                }
+                return r;
+            }
+
+            _hits(answerArray, guessArray) {
+                let r = new Map();
+                for (let i=0; i<answerArray.length; i++) {
+                    if (answerArray[i] === guessArray[i]) {
+                        let numeral=answerArray[i];
+                        let rHits = r.has(numeral) ? r.get(numeral) : 0;
+                        rHits += 1;
+                        r.set(numeral, rHits);
+                    }
+                }
+                return r;
+            }
+
+            _progress(current) {
+                const firstGuess = current.length === 0;
+                const hamArray = Array.from(this.ham);
+                for (let i=0; i<hamArray.length; i++) {
+                    let nextProgress = !firstGuess ? current[i] : _PROGRESS_FIRST;
+                    let nextHam = hamArray[i];
+                    if (nextHam === 'H') {
+                        // HIT
+                        if (nextProgress === _PROGRESS_FIRST) {
+                            current[i] = _PROGRESS_HIT_FIRST;
+                            this.points += 2;
+                        } else if (nextProgress === _PROGRESS_MISS) {
+                            current[i] = _PROGRESS_HIT_AFTER_MISS;
+                            this.points += 1;
+                        } else if (nextProgress === _PROGRESS_ALMOST_FIRST) {
+                            current[i] = _PROGRESS_HIT_AFTER_ALMOST;
+                            this.points += 1;
+                        } else if (nextProgress === _PROGRESS_ALMOST_AFTER_MISS) {
+                            current[i] = _PROGRESS_HIT_AFTER_ALMOST;
+                            this.points += 1;
+                        }
+                    } else if (nextHam === 'A') {
+                        // ALMOST
+                        if (nextProgress === _PROGRESS_FIRST) {
+                            current[i] = _PROGRESS_ALMOST_FIRST;
+                            this.points += 0;
+                        } else if (nextProgress === _PROGRESS_MISS) {
+                            current[i] = _PROGRESS_ALMOST_AFTER_MISS;
+                            this.points += 0;
+                        }
+                    } else {
+                        // MISS
+                        if (nextProgress === _PROGRESS_FIRST) {
+                            current[i] = _PROGRESS_MISS;
+                        }
+                        this.points -= 1; // It always costs to miss!
+                    }
+                }
+            }
+        }
+        
+        var game = new Game(1);
+        var focus = 0;
+        _nextFocus();
+
+        function _initPage() {
+            _initGame();
+        }
+
+        function _initGame() {
+            _initUi();
+            _initRound();
+        }
+
+        function _initRound() {
+            //console.log(JSON.stringify(game));
+            _resetUi();
+            _refreshUi();
+        }
+
+        function _initUi() {
+            _resetUiSectionAction();
+        }
+
+        function _resetElement(element) {
+            while (element.firstChild) {
+                element.removeChild(element.lastChild);
+            }
+        }
+
+        function _resetUi() {
+            _resetUiSectionMessage();
+            _resetUiSectionGuess();
+            _resetUiSectionHistory();
+        }
+
+        function _resetUiSectionMessage() {
+            let containerElement = document.getElementById('container-message');
+            _resetElement(containerElement);
+        }
+
+        function _resetUiSectionGuess() {
+            let containerElement = document.getElementById('guess-container');
+            _resetElement(containerElement);
+            let i = 0;
+            let rows = Math.ceil(game.round.length / 5);
+            for (let r = 1; r <= rows; r++) {
+                let rowElement = document.createElement('div');
+                rowElement.className = 'row';
+                containerElement.append(rowElement);
+                let remaining = (5 * r) - game.round.length;
+                let columns = (remaining > 0) ? (5 - remaining) : 5;
+                for (let c = 0; c < columns; c++) {
+                    let blockElement = document.createElement('div');
+                    blockElement.id = 'g-' + i;
+                    blockElement.className = 'row_block';
+                    let onclick = '_actionFocus(' + i + ')';
+                    blockElement.setAttribute('onclick', onclick);
+                    rowElement.append(blockElement);
+                    i += 1;
+                }
+            }
+        }
+
+        function _resetUiSectionAction() {
+            let actionElement = document.getElementById('action-container');
+            let i = 0;
+            for (let r = 0; r < 2; r++) {
+                let divElement = document.createElement('div');
+                for (let c = 0; c < 6; c++) {
+                    if ((r < 1) || (c < 4)) {
+                        let choiceElement = document.createElement('button');
+                        choiceElement.type = 'button';
+                        choiceElement.innerText = i;
+                        choiceElement.style.border = 'none';
+                        choiceElement.style.background = '#898D8D';
+                        choiceElement.style.fontWeight = 'bold';
+                        choiceElement.style.color = 'white';
+                        choiceElement.style.padding = '10px';
+                        choiceElement.style.margin = '2px';
+                        choiceElement.style.borderRadius = '5px';
+                        let onclick = '_actionChoice("' + i + '")';
+                        choiceElement.setAttribute('onclick', onclick);
+                        divElement.appendChild(choiceElement);
+                        i += 1;
+                    }
+                    if ((r === 1) && (c === 4)) {
+                        let choiceElement = document.createElement('button');
+                        choiceElement.type = 'button';
+                        choiceElement.innerText = 'Enter';
+                        choiceElement.style.border = 'none';
+                        choiceElement.style.background = '#898D8D';
+                        choiceElement.style.fontWeight = 'bold';
+                        choiceElement.style.color = 'white';
+                        choiceElement.style.padding = '10px';
+                        choiceElement.style.margin = '2px';
+                        choiceElement.style.borderRadius = '5px';
+                        let onclick = '_submitGuess()';
+                        choiceElement.setAttribute('onclick', onclick);
+                        divElement.appendChild(choiceElement);
+                    }
+                }
+                actionElement.appendChild(divElement);
+            }
+        }
+
+        function _resetUiSectionHistory() {
+            let containerElement = document.getElementById('container-history');
+            _resetElement(containerElement);
+        }
+
+        function _refreshUi() {
+            _refreshUiSectionMessage();
+            _refreshUiSectionLevel();
+            _refreshUiSectionScore();
+            _refreshUiSectionGuess();
+            _refreshUiSectionHint();
+            _refreshUiSectionHistory();
+        }
+
+        function _refreshUiSectionMessage() {
+            let message;
+            if ((game.level === 1) && !game.round.attempts) {
+                message = 'Welcome to Cronkle!';
+            } else if ((game.level !== 1) && !game.round.attempts) {
+                message = 'Congrats, you solved level '+(game.level-1)+'!';
+            } else {
+                let attempts = (game.round.attempts === 1) ? ' attempt).' : ' attempts).';
+                message = 'Try again ('+game.round.attempts+attempts;
+            }
+            let containerElement = document.getElementById('container-message');
+            _resetElement(containerElement);
+            let pElement = document.createElement('p');
+            pElement.innerText = message;
+            containerElement.appendChild(pElement);
+        }
+
+        function _refreshUiSectionLevel() {
+            const element = document.getElementById('game-level');
+            element.innerText = game.level;
+        }
+
+        function _refreshUiSectionScore() {
+            const element = document.getElementById('game-score');
+            element.innerText = game.score;
+        }
+
+        function _refreshUiSectionGuess() {
+            let outcome = game.round.outcomes ? game.round.outcomes[0] : null;
+            let guess = outcome ? outcome.guess : null;
+            for (let i = 0; i < game.round.length; i++) {
+                let codeElement = document.getElementById('g-'+i);
+                codeElement.style.background = 'white';
+                codeElement.style.fontWeight = 'bold';
+                codeElement.style.color = 'black';
+                codeElement.style.padding = '15px';
+                codeElement.style.margin = '2px';
+                codeElement.style.borderRadius = '5px';
+                //codeElement.style.borderWidth = null; // reset
+                codeElement.style.borderColor = null;
+                if ((i !== 0) && (i === focus)) {
+                    // codeElement.style.borderWidth = "5px";
+                    codeElement.style.borderColor = "black";
+                }
+                let ham = _ham(i);
+                if (ham === 'H') {
+                    codeElement.style.background = "green";
+                    codeElement.style.color = "white";
+                } else if (ham === 'A') {
+                    codeElement.style.background = "orange";
+                    codeElement.style.color = "white";
+                }
+                // codeElement.value = _parseGuessCode(guess, game.round.hint.first, i);
+                codeElement.innerText = _parseGuessCode(guess, game.round.hint.first, i);
+            }
+        }
+
+        function _refreshUiSectionHint() {
+            // Same
+            let hintElement = document.getElementById('hint-same');
+            hintElement.innerText = game.round.hint.same;
+            // Above
+            hintElement = document.getElementById('hint-above');
+            hintElement.innerText = game.round.hint.above;
+            // Below
+            hintElement = document.getElementById('hint-below');
+            hintElement.innerText = game.round.hint.below;
+            // Total
+            hintElement = document.getElementById('hint-total');
+            hintElement.innerText = game.round.hint.total;
+            _progress(game.round);
+        }
+
+        function _refreshUiSectionHistory() {
+            let containerHistory = document.getElementById('container-history');
+            let outcome = game.round.outcomes ? game.round.outcomes[0] : null;
+            if (outcome) {
+                // Add most recent outcome
+                let divElement = document.createElement('div');
+                divElement.style.padding = '5px';
+                containerHistory.prepend(divElement);
+                let gArray = outcome.guess.split("");
+                let hCode = outcome.ham;
+                for (let j = 0; j < gArray.length; j++) {
+                    let spanElement = document.createElement('span');
+                    spanElement.innerText = gArray[j];
+                    spanElement.style.borderStyle = 'solid';
+                    spanElement.style.fontWeight = 'bold';
+                    spanElement.style.padding = '2px';
+                    spanElement.style.margin = '2px';
+                    spanElement.style.borderRadius = '5px';
+                    let ham = _hammy(hCode, j);
+                     if (ham === 'H') {
+                        spanElement.style.borderColor = 'black';
+                        spanElement.style.background = "green";
+                        spanElement.style.color = "white";
+                    } else if (ham === 'A') {
+                        spanElement.style.borderColor = 'black';
+                        spanElement.style.background = "orange";
+                        spanElement.style.color = "white";
+                    }
+                    divElement.appendChild(spanElement);
+                }
+                // Crop oldest outcome
+                if (game.round.attempts > 5) {
+                    containerHistory.removeChild(containerHistory.lastChild);
+                }
+            }
+        }
+
+        function _nextFocus() {
+            let next = focus + 1;
+            if (next === game.round.length) { next = 0; }
+            // After current
+            let found = false;
+            for (let i = next; i < game.round.length; i++) {
+                let ham = _ham(i);
+                if (ham !== 'H') {
+                    focus = i;
+                    found = true;
+                    break;
+                }
+            }
+            // From beginning (if haven't checked already)
+            if (!found && (next !== 0)) {
+                for (let i = 0; i < next; i++) {
+                    let ham = _ham(i);
+                    if (ham !== 'H') {
+                        focus = i;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        function _ham(position) {
+            let outcome = game.round.outcomes ? game.round.outcomes[0] : null;
+            let ham = outcome ? outcome.ham : null;
+            return _hammy(ham, position);
+        }
+
+        function _hammy(ham, position) {
+            let r = 'M';
+            if (position === 0) {
+                r = 'H';
+            } else if (ham) {
+                r = ham.split("")[position];
+            }
+            return r;
+        }
+
+        function _actionChoice(choice) {
+            // What is already selected... where did that go?
+            let actionElement = document.getElementById('g-'+focus);
+            if (actionElement) {
+                // Reset current focus
+                //actionElement.value = choice;
+                actionElement.innerText = choice;
+                // actionElement.style.borderWidth = null;
+                actionElement.style.borderColor = null;
+                _progress(game.round);
+                // Refocus
+                _nextFocus();
+                actionElement = document.getElementById('g-' + focus);
+                if (actionElement) {
+                    // actionElement.style.borderWidth = "5px";
+                    actionElement.style.borderColor = 'black';
+                }
+            }
+        }
+
+        function _progress(round) {
+            let same = 0;
+            let down = 0;
+            let up = 0;
+            let total = 0;
+            for (let i = 0; i < round.length; i++) {
+                let guessElement = document.getElementById('g-' + i);
+                // let incomplete = guessElement.value === "";
+                // let value = incomplete ? 0 : Number(guessElement.value);
+                let incomplete = guessElement.innerText === "";
+                let value = incomplete ? 0 : Number(guessElement.innerText);
+                if ((i !== 0) && !incomplete) {
+                    if (round.hint.first === value) {
+                        same += 1;
+                    } else if (round.hint.first < value) {
+                        up += 1;
+                    } else {
+                        down += 1;
+                    }
+                }
+                total += value;
+            }
+            let checked = 0;
+            let progressElement = document.getElementById('same');
+            if (round.hint.same === same) {
+                progressElement.innerHTML = '&#10003';
+                progressElement.style.color = 'green';
+                checked += 1;
+            } else {
+                let remaining = round.hint.same - same;
+                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.style.color = 'red';
+            }
+            progressElement = document.getElementById('down');
+            if (round.hint.below === down) {
+                progressElement.innerHTML = '&#10003';
+                progressElement.style.color = 'green';
+                checked += 1;
+            } else {
+                let remaining = round.hint.below - down;
+                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.style.color = 'red';
+            }
+            progressElement = document.getElementById('up');
+            if (round.hint.above === up) {
+                progressElement.innerHTML = '&#10003';
+                progressElement.style.color = 'green';
+                checked += 1;
+            } else {
+                let remaining = round.hint.above - up;
+                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.style.color = 'red';
+            }
+            progressElement = document.getElementById('total');
+            if (round.hint.total === total) {
+                progressElement.innerHTML = '&#10003';
+                progressElement.style.color = 'green';
+                checked += 1;
+            } else {
+                let remaining = round.hint.total - total;
+                progressElement.innerHTML = '&#10007'+' ('+remaining+')';
+                progressElement.style.color = 'red';
+            }
+            // If checked === 4 then enable Enter button
+            // Otherwise, disable it always!
+        }
+
+        function _actionFocus(choice) {
+            if (choice !== focus) {
+                let ham = _ham(choice);
+                if (ham !== 'H') {
+                    let actionElement = document.getElementById('g-'+focus);
+                    if (actionElement) {
+                        // Reset current focus
+                        // actionElement.style.borderWidth = null;
+                        actionElement.style.borderColor = null;
+                    }
+                    // Refocus
+                    focus = choice;
+                    actionElement = document.getElementById('g-'+focus);
+                    if (actionElement) {
+                        // actionElement.style.borderWidth = "5px";
+                        actionElement.style.borderColor = 'black';
+                    }
+                }
+            }
+        }
+
+        function _parseGuessCode(guess, first, index) {
+            let r = '';
+            if (index === 0) {
+                r = first;
+            } else if (guess) {
+                r = guess.split("")[index];
+            }
+            return r;
+        }
+
+        function _submitGuess() {
+            let code = '';
+            // let containerElement = document.getElementById('guess-container');
+            // let children = containerElement.children;
+            // for (let i = 0; i < children.length; i++) {
+            //     let child = children[i];
+            //     if (child.id.startsWith('g-')) {
+            //         code += child.value;
+            //     }
+            // }
+            let gameBlockElements = document.getElementsByClassName('row_block');
+            for (let i = 0; i < gameBlockElements.length; i++) {
+                let gameBlockElement = gameBlockElements[i];
+                code += gameBlockElement.innerText;
+            }
+            // let codeElement = document.getElementById('code');
+            // codeElement.value = code;
+            const outcome = game.guess(code);
+            if (outcome.solved) {
+                if (game.level >= 10) {
+                    let message = 'You won!';
+                    _openModal(message);
+                    game = new Game(1);
+                    focus = 0;
+                    _nextFocus();
+                    _initRound();
+                } else {
+                    let message = 'You solved level ' + game.level + ' with ' + game.round.answer + '!';
+                    _openModal(message);
+                    game.next();
+                    focus = 0;
+                    _nextFocus();
+                    _initRound();
+                }
+            } else if (game.round.attempts >= 5) {
+                let message = 'You lose!';
+                _openModal(message);
+                game = new Game(game.id+1);
+                focus = 0;
+                _nextFocus();
+                _initRound();
+            } else {
+                focus = 0;
+                _nextFocus();
+                _refreshUi();
+            }
+        }
+
+        function _openModal(message) {
+            let messageElement = document.getElementById('modal-message');
+            messageElement.innerText = message;
+            let element = document.getElementById('myModal');
+            element.style.display = "block";
+        }
+
+        function _closeModal() {
+            let element = document.getElementById('myModal');
+            element.style.display = "none";
+        }
+
+    </script>
+</head>
+<body onload="_initPage()">
+
+<div class="grid-container">
+
+    <div id="section-level" class="item1">
+        <h2>Level: <span id="game-level">0</span></h2>
+    </div>
+
+    <div id="section-score" class="item2">
+        <h2>Score: <span id="game-score">0</span></h2>
+    </div>
+
+    <div id="section-guess" class="item3">
+        <div id="guess-container">
+        </div>
+    </div>
+
+    <div id="section-hint" class="item4">
+        <div id="container-hint" style="padding: 5px;">
+            <span id="hint-same">&nbsp;</span> &#8801; <span id="same">&nbsp;</span> &#9474;
+            <span id="hint-below">&nbsp;</span> &#8804; <span id="down">&nbsp;</span> &#9474;
+            <span id="hint-above">&nbsp;</span> &#8805; <span id="up">&nbsp;</span> &#9474;
+            <span id="hint-total">&nbsp;</span> &#8862; <span id="total">&nbsp;</span>
+        </div>
+    </div>
+
+    <div id="container-action" class="item5">
+        <div id="action-container">
+        </div>
+    </div>
+
+    <div id="section-history" class="item6">
+        <div id="container-history">
+        </div>
+    </div>
+
+    <div id="section-message" class="item7">
+        <div id="container-message"></div>
+    </div>
+
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" onclick="_closeModal();">&times;</span>
+        <p id="modal-message"></p>
+    </div>
+
+</div>
+
+</body>
+</html>
